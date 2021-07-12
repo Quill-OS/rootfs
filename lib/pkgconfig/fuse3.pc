@@ -1,0 +1,10 @@
+prefix=/root/libfuse/release
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: fuse3
+Description: Filesystem in Userspace
+Version: 3.10.3
+Libs: -L${libdir} -lfuse3 -lpthread
+Libs.private: -ldl -pthread -lrt
+Cflags: -I${includedir}/fuse3

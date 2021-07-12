@@ -1,0 +1,34 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+	echo "You must provide a message!"
+	exit 1
+else
+	TTY=$(tty)
+	DATE=$(date +%H:%M:%S)
+
+	echo_message() {
+		echo > "$f"
+		echo "Broadcast message from ${USER}@${HOSTNAME}" > "$f"
+		echo -e "\t(${TTY}) at ${DATE} ..." > "$f"
+		echo > "$f"
+		echo -e "$1" > "$f"
+	}
+
+	for f in /dev/pts/* ; do
+		if [ "$f" == "/dev/pts/*" ]; then
+			continue
+		else
+			echo_message "$1"
+		fi
+	done
+
+	for f in /dev/ttymxc* ; do
+		if [ "$f" == "/dev/ttymxc*" ]; then
+			continue
+		else
+			echo_message "$1"
+		fi
+	done
+fi
+

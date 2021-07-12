@@ -1,0 +1,34 @@
+#!/bin/sh
+
+DEVICE=$(cat /opt/inkbox_device)
+BRIGHTNESS_SYSFS_FILE="/sys/class/backlight/mxc_msp430.0/brightness"
+/opt/bin/wall "The system is going down for power off NOW!"
+
+if [ "$1" != "no_splash" ]; then
+	sleep 2
+	/opt/bin/fbink/fbink -k -f -q
+	/opt/bin/fbink/fbink -k -f -h -q
+	/opt/bin/fbink/fbink -t regular=/etc/init.d/splash.d/fonts/resources/inter-b.ttf,size=20 "Powered off" -m -M -h -q
+	sleep 1
+	if [ "${DEVICE}" != "n613" ]; then
+		if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ]; then
+			:
+		else
+			/opt/bin/cinematic-brightness.sh 0 1
+		fi
+	else
+		/opt/bin/cinematic-brightness.sh 0 1
+	fi
+	/sbin/prepare_shutdown poweroff
+else
+	if [ "${DEVICE}" != "n613" ]; then
+		if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ]; then
+			:
+		else
+			echo 0 > "${BRIGHTNESS_SYSFS_FILE}"
+		fi
+	else
+		/opt/bin/frontlight 0
+	fi
+	/sbin/prepare_shutdown poweroff
+fi

@@ -1,0 +1,13 @@
+#!/sbin/openrc-run
+
+description="Shows a splash screen"
+
+depend() {
+	keyword -prefix -lxc
+}
+
+start() {
+	ebegin "Splash screen"
+	/etc/init.d/splash.sh
+	eend $?
+}

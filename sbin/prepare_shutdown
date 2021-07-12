@@ -1,0 +1,54 @@
+#!/bin/sh
+
+sync
+rc-service onboard_mount stop 2>/dev/null
+rc-service mass_storage stop 2>/dev/null
+rc-service inkbox_gui stop 2>/dev/null
+rc-service xorg stop 2>/dev/null
+rc-service sleep_standby stop 2>/dev/null
+rc-service wake_standby stop 2>/dev/null
+killall -q X vnc vnc-nographic
+rc-service sshd stop 2>/dev/null
+sync
+
+timeout 15s ifsctl mnt rootfs ro
+
+umount -l -f /opt/gui_rootfs/read 2>/dev/null
+umount -l -f /opt/gui_rootfs 2>/dev/null
+umount -l -f /opt/config 2>/dev/null
+umount -l -f /opt/update 2>/dev/null
+umount -l -f /xorg 2>/dev/null
+umount -l -f /opt/X11/merged 2>/dev/null
+umount -l -f /opt/X11/base 2>/dev/null
+umount -l -f /opt/X11/rootfs 2>/dev/null
+umount -l -f /opt/X11/vnc-touch 2>/dev/null
+umount -l -f /opt/X11/extensions-merged 2>/dev/null
+umount -l -f /opt/X11/extension-storage-merged 2>/dev/null
+umount -l -f /opt/X11/extensions-base 2>/dev/null
+umount -l -f /opt/X11/extensions-user 2>/dev/null
+umount -l -f /opt/X11/*_list 2>/dev/null
+umount -l -f /opt/key 2>/dev/null
+umount -l -f /opt/developer/key 2>/dev/null
+umount -l -f /opt/developer 2>/dev/null
+umount -l -f /opt/storage/tmpfs 2>/dev/null
+
+mount -o remount,ro /boot 2>/dev/null
+umount -l -f /boot
+mount -o remount,ro /opt/storage 2>/dev/null
+umount -l -f /opt/storage
+sync
+
+if [ "$1" == "poweroff" ]; then
+	echo "poweroff" > /run/initrd-fifo
+elif [ "$1" == "reboot" ]; then
+	if [ "$2" == "reset_kobox" ]; then
+		echo "reboot_reset_kobox" > /run/initrd-fifo
+	else
+		echo "reboot" > /run/initrd-fifo
+	fi
+elif [ "$1" == "update_rootfs" ]; then
+	echo "update_rootfs" > /run/initrd-fifo
+else
+	echo "Invalid argument."
+	exit 1
+fi

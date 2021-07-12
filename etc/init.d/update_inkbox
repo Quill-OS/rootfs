@@ -1,0 +1,37 @@
+#!/sbin/openrc-run
+
+description="Updates Inkbox Software Archives (ISA) and cleans up the onboard storage after."
+
+depend() {
+	after onboard_mount
+	before inkbox_gui
+	keyword -prefix -lxc
+}
+
+start() {
+	ebegin "Checking for available updates"
+	DEVMODE=$(cat /opt/developer/key/valid-key 2>/dev/null)
+	if [ "${DEVMODE}" == "true" ]; then
+		echo "developer_fake-openssl_mount" > /run/initrd-fifo
+	fi
+	/etc/init.d/update.sh
+	EXITCODE=$?
+	if [ "${DEVMODE}" == "true" ]; then
+		echo "developer_fake-openssl_unmount" > /run/initrd-fifo
+	fi
+	WRITEABLE_BASEPATH="/kobo/mnt/onboard/onboard/.inkbox"
+	ISA_PACKAGE=$(ls "${WRITEABLE_BASEPATH}/"*".upd.isa" 2>/dev/null)
+	if [ -e "${ISA_PACKAGE}" ]; then
+		echo "true" > /data/onboard/.inkbox/can_update
+		echo "false" > /data/onboard/.inkbox/can_really_update
+	else
+		echo "false" > /data/onboard/.inkbox/can_update
+		echo "false" > /data/onboard/.inkbox/can_really_update
+	fi
+	sync
+	killall -q update-splash
+	if [ ${EXITCODE} == 25 ]; then
+		/sbin/prepare_shutdown update_rootfs
+	fi
+	eend $?
+}

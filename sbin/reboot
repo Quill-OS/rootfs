@@ -1,0 +1,27 @@
+#!/bin/sh
+
+DEVICE=$(cat /opt/inkbox_device)
+BRIGHTNESS_SYSFS_FILE="/sys/class/backlight/mxc_msp430.0/brightness"
+/opt/bin/wall "The system is going down for reboot NOW!"
+
+if [ "$1" != "no_splash" ]; then
+	sleep 2
+	/opt/bin/fbink/fbink -k -f -h -q
+	/opt/bin/fbink/fbink -k -f -q
+	/opt/bin/fbink/fbink -t regular=/etc/init.d/splash.d/fonts/resources/inter-b.ttf,size=20 "Rebooting" -m -M -q
+	sleep 1
+	/opt/bin/cinematic-brightness.sh 0 1
+else
+	if [ "${DEVICE}" == "n613" ]; then
+		sleep 1
+		/opt/bin/frontlight 0
+	else
+		echo 0 > "${BRIGHTNESS_SYSFS_FILE}"
+	fi
+fi
+
+if [ "$2" == "reset_kobox" ]; then
+	/sbin/prepare_shutdown reboot reset_kobox
+else
+	/sbin/prepare_shutdown reboot
+fi
