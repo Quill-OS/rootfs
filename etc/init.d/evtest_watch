@@ -1,0 +1,16 @@
+#!/sbin/openrc-run
+
+description="Waits for a power button event and SIGSTOPs InkBox"
+
+depend() {
+	before sleep_standby
+	before inkbox_gui
+	keyword -prefix -lxc
+}
+
+start() {
+	ebegin "Starting evtest watch"
+	evtest --grab /dev/input/event0 > /tmp/power &
+	evtest /dev/input/event1 > /tmp/touch_event &
+	eend $?
+}

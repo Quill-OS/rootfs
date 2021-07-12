@@ -1,0 +1,26 @@
+#!/bin/sh
+
+DEVICE=$(cat /opt/inkbox_device)
+if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ]; then
+	ROW=30
+elif [ "${DEVICE}" == "n613" ]; then
+	ROW=37
+elif [ "${DEVICE}" == "n873" ]; then
+	#TODO
+	ROW=50
+fi
+
+while true; do
+	/opt/bin/fbink/fbink "██ ████████" -y ${ROW} -m -q
+	sleep 1
+	/opt/bin/fbink/fbink "██ ██ █████" -y ${ROW} -m -q
+	sleep 1
+	/opt/bin/fbink/fbink "██ ██ ██ ██" -y ${ROW} -m -q
+	sleep 1
+	/opt/bin/fbink/fbink "█████ ██ ██" -y ${ROW} -m -q
+	sleep 1
+	/opt/bin/fbink/fbink "████████ ██" -y ${ROW} -m -q
+	sleep 1
+	/opt/bin/fbink/fbink "███████████" -y ${ROW} -m -q
+	sleep 1;
+done

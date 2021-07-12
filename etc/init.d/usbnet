@@ -1,0 +1,19 @@
+#!/sbin/openrc-run
+
+description="Starts USBNetworking"
+
+depend() {
+	keyword -prefix -lxc
+}
+
+start() {
+	ebegin "Starting USBNet"
+	/etc/init.d/usbnet.sh
+	eend $?
+}
+stop() {
+	ebegin "Stopping USBNet"
+	rmmod /modules/g_ether.ko
+	rmmod /modules/arcotg_udc.ko
+	eend $?
+}

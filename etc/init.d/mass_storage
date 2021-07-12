@@ -1,0 +1,21 @@
+#!/sbin/openrc-run
+
+description="Uses the g_mass_storage module to add mass storage capabilities to the device"
+
+depend() {
+	keyword -prefix -lxc
+}
+
+start() {
+	ebegin "Exporting onboard storage over USB..."
+	rc-service usbnet stop
+	insmod /modules/arcotg_udc.ko
+	insmod /modules/g_mass_storage.ko file=/opt/storage/onboard removable=y stall=0
+	eend $?
+}
+stop() {
+	ebegin "Exiting USBMS session..."
+	rmmod /modules/g_mass_storage.ko
+	rmmod /modules/arcotg_udc.ko
+	eend $?
+}

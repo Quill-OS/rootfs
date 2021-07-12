@@ -1,0 +1,72 @@
+#!/sbin/openrc-run
+
+description="Sets the reader to sleep mode after x time of inactivity (touch)."
+
+depend() {
+	keyword -prefix -lxc
+}
+
+start() {
+	ebegin "Starting sleep timeout timer"
+	touch "/opt/config/15-sleep_timeout/config"
+	TIMEOUT=$(cat /opt/config/15-sleep_timeout/config)
+	if grep -q "true" /tmp/sleep_mode 2>/dev/null; then
+		SLEEPING=1
+	else
+		SLEEPING=0
+	fi
+	while true; do
+		if [ ${SLEEPING} == 0 ]; then
+			if [ ${TIMEOUT} != -1 ]; then
+				touch /tmp/touch_event
+				> /tmp/touch_event
+				timeout ${TIMEOUT}m inotifywait -e modify /tmp/touch_event
+				if [ $? == 0 ]; then
+					# A touch event was detected
+					# Don't overload the CPU too much
+					sleep 15
+					# Re-reading config file to see if some configuration setting was changed
+					TIMEOUT=$(cat "/opt/config/15-sleep_timeout/config")
+					if grep -q "true" /tmp/sleep_mode 2>/dev/null; then
+						SLEEPING=1
+					else
+						SLEEPING=0
+					fi
+				else
+					# No touch event was detected in the past defined timeout; sleep time
+					if grep -q "true" /tmp/sleep_mode 2>/dev/null; then
+						SLEEPING=1
+					else
+						# Checking if we are in USBMS
+						if grep -q "true" /kobo/tmp/in_usbms 2>/dev/null; then
+							:
+						else
+							SLEEPING=0
+							echo "KEY_POWER" > /tmp/power
+							sleep 10
+							# Wait until we get out of sleep mode
+							touch /tmp/sleep_mode
+							inotifywait -e modify /tmp/sleep_mode
+						fi
+					fi
+				fi
+			else
+				einfo "Sleep mode timeout configuration setting is set to 'Never'. Not starting timer."
+				inotifywait -e modify "/opt/config/15-sleep_timeout/config"
+				TIMEOUT=$(cat "/opt/config/15-sleep_timeout/config")
+			fi
+		else
+			# Wait until we get out of sleep mode
+			touch /tmp/sleep_mode
+			inotifywait -e modify /tmp/sleep_mode
+			if grep -q "true" /tmp/sleep_mode 2>/dev/null; then
+				# Shouldn't happen
+				SLEEPING=1
+			else
+				# Should happen
+				SLEEPING=0
+			fi
+		fi
+	done &
+	eend $?
+}

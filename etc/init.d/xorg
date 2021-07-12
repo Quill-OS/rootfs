@@ -1,0 +1,22 @@
+#!/sbin/openrc-run
+
+description="Sets up X.org server"
+
+depend() {
+        keyword -prefix -lxc
+}
+
+start() {
+        ebegin "Setting up X.org server"
+        /etc/init.d/xorg.sh &
+        eend $?
+}
+
+stop() {
+        ebegin "Stopping X.org server"
+        killall vnc-nographic vnc 2> /dev/null
+	kill -9 `pidof X` 2> /dev/null
+	/opt/bin/fbink/fbink -k -f -h -q
+	rc-service splash restart
+	eend $?
+}

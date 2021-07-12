@@ -1,0 +1,80 @@
+#!/sbin/openrc-run
+
+description="InkBox Daemon (ibxd) permits the execution of certain actions as an unpriviledged user and/or from a chroot environment."
+
+depend() {
+	keyword -prefix -lxc
+}
+
+start() {
+	ebegin "Starting InkBox Daemon (ibxd)"
+
+	mkfifo /run/ibxd 2>/dev/null
+	umount /kobo/opt/ibxd -l -f 2>/dev/null
+	umount /xorg/opt/ibxd -l -f 2>/dev/null
+
+	touch /xorg/opt/ibxd 2>/dev/null
+	mount --bind /run/ibxd /kobo/opt/ibxd 2>/dev/null
+	mount --bind /run/ibxd /xorg/opt/ibxd 2>/dev/null
+
+	while true
+	do
+		if read line < /run/ibxd; then
+			if [[ "$line" == "sleep_toggle" ]]; then
+				echo "state changed" > /tmp/power
+
+
+			elif [[ "$line" == "reboot" ]]; then
+				/sbin/reboot
+			elif [[ "$line" == "reboot splash reset_kobox" ]]; then
+				/sbin/reboot splash reset_kobox
+			elif [[ "$line" == "reboot no_splash reset_kobox" ]]; then
+				/sbin/reboot no_splash reset_kobox
+			elif [[ "$line" == "reboot no_splash" ]]; then
+				/sbin/reboot no_splash
+
+			elif [[ "$line" == "poweroff" ]]; then
+				/sbin/poweroff
+			elif [[ "$line" == "poweroff no_splash" ]]; then
+				/sbin/poweroff no_splash
+
+
+			elif [[ "$line" == "qt_stop_gui" ]]; then
+				rc-service inkbox_gui stop
+			elif [[ "$line" == "qt_start_gui" ]]; then
+				rc-service inkbox_gui start
+			elif [[ "$line" == "x_start_gui" ]]; then
+				rc-service xorg start
+			elif [[ "$line" == "x_stop_gui" ]]; then
+				rc-service xorg stop
+			elif [[ "$line" == "app_start_vnc" ]]; then
+				rc-service inkbox_gui stop
+				/usr/local/bin/appvnc_start.sh &
+			elif [[ "$line" == "list_wifi_networks" ]]; then
+				/usr/local/bin/wifi/list_networks.sh
+				cp /run/wifi_networks_list /kobo/run/wifi_networks_list
+			elif [[ "$line" == "connect_to_wifi_network" ]]; then
+				NET_ESSID=$(cat /kobo/run/wifi_network_essid)
+				NET_PASSPHRASE=$(cat /kobo/run/wifi_network_passphrase)
+				rm -f /kobo/run/wifi_network_essid
+				rm -f /kobo/run/wifi_network_passphrase
+				/usr/local/bin/wifi/connect_to_network.sh "${NET_ESSID}" "${NET_PASSPHRASE}"
+				if [ ${?} != 0 ]; then
+					echo "false" > /kobo/run/wifi_connected_successfully
+				else
+					echo "true" > /kobo/run/wifi_connected_successfully
+				fi
+			elif [[ "$line" == "toggle_wifi_off" ]]; then
+				/usr/local/bin/wifi/toggle.sh off
+			elif [[ "$line" == "toggle_wifi_on" ]]; then
+				/usr/local/bin/wifi/toggle.sh on
+			elif [[ "$line" == "inkbox_splash" ]]; then
+				rc-service splash restart
+			elif [[ "$line" == "netsurf_launch" ]]; then
+				su -c "sh -c 'env DISPLAY=:0 chroot /xorg /bin/netsurf-gtk2'"
+				echo "stop" > /xorg/tmp/netsurf-fifo
+			fi
+		fi
+	done &
+	eend $?
+}

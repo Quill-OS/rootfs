@@ -1,0 +1,50 @@
+#!/sbin/openrc-run
+
+description="Checks battery status/level every 5 mins. and if it is at a critical state, displays a splash and turns off the device."
+
+depend() {
+	keyword -prefix -lxc
+}
+
+battery_check() {
+	DEVICE=$(cat /opt/inkbox_device)
+	SYSFS_PATH="/sys/devices/platform/pmic_battery.1/power_supply/mc13892_bat"
+	FBINK="/opt/bin/fbink/fbink"
+	IMAGES_PATH="/etc/images"
+
+	if grep -q "Charging" "${SYSFS_PATH}/status" &>/dev/null; then
+		# Skip since the battery is charging
+			:
+	else
+		BT_LEVEL=$(cat "${SYSFS_PATH}/capacity")
+		if [ ${BT_LEVEL} -le 5 ]; then
+			"${FBINK}" -k -f -q
+			sleep 0.5
+			"${FBINK}" -k -f -q
+			sleep 0.5
+			"${FBINK}" -q -g file="${IMAGES_PATH}/${DEVICE}-battery_critical.png"
+			# Prevent other processes from printing over what we just showed on the screen
+			rm -f /dev/fb0
+			/sbin/poweroff no_splash
+		else
+			:
+		fi
+	fi
+}
+
+start() {
+	ebegin "Starting battery watchdog"
+	while true; do
+		if grep -q "true" "/kobo/tmp/inkbox_running" &>/dev/null; then
+			if grep -q "true" "/tmp/sleep_mode" &>/dev/null; then
+				battery_check
+			else
+				:
+			fi
+		else
+			battery_check
+		fi
+		sleep 30
+	done &
+	eend $?
+}

@@ -1,0 +1,22 @@
+#!/sbin/openrc-run
+
+description="Mounts the onboard storage backing file to a suitable location for InkBox"
+
+depend() {
+	keyword -prefix -lxc
+}
+
+start() {
+	ebegin "Mounting onboard storage filesystem"
+	losetup /dev/loop0 /opt/storage/onboard
+	mount /dev/loop0 /data/onboard -o nosuid,noexec,nodev
+	mount --bind /data/onboard /kobo/mnt/onboard/onboard
+	eend $?
+}
+stop() {
+	ebegin "Unmounting onboard storage filesystem"
+	sync
+	umount /dev/loop0 -l -f
+	losetup -d /dev/loop0
+	eend $?
+}

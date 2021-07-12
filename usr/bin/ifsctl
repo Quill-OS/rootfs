@@ -1,0 +1,96 @@
+#!/bin/sh
+
+#    ifsctl: Manage filesystems
+#    Copyright (C) 2021 Nicolas Mailloux <nicolecrivain@gmail.com>
+#    SPDX-License-Identifier: GPL-3.0-only
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+MUST_SPECIFY_ARGUMENT="You must specify a valid argument."
+MUST_SPECIFY_FOLDER="You must specify a folder path."
+NEEDS_ARGUMENT="Error: needs an argument."
+NEEDS_COMMAND="Error: needs a command."
+NEEDS_VALID_COMMAND="Error: needs a valid command."
+
+display_help() {
+        echo "ifsctl: Manage filesystems"
+        echo "Copyright (C) 2021 Nicolas Mailloux <nicolecrivain@gmail.com>"
+	echo "Licensed under the GNU General Public License version 3"
+	echo
+        echo "Available commands:"
+        echo -e "\tmnt - Mount"
+	echo -e "\t\trootfs - Root filesystem mountpoint management"
+	echo -e "\t\t\trw - Mount root filesystem read-write"
+	echo -e "\t\t\tro - Mount root filesystem read-only"
+	echo -e "\t\t\tstat - Check status"
+        echo -e "\tchkmnt - Check if folder is a mountpoint"
+	echo -e "\t\tFOLDER - Folder to check"
+        echo -e "\ttree - Displays a mount tree with \`findmnt'"
+	echo -e "\thelp - Displays this help"
+	echo
+}
+
+if [ -z "$1" ]; then
+	display_help
+	echo $NEEDS_COMMAND
+	exit 1
+fi
+
+if [ "$1" == "mnt" ]; then
+	if [ -z "$2" ]; then
+		echo $NEEDS_ARGUMENT
+		exit 1
+	else
+		if [ "$2" == "rootfs" ]; then
+			if [ -z "$3" ]; then
+				echo $NEEDS_ARGUMENT
+				exit 1
+			else
+				if [ "$3" == "rw" ]; then
+					echo "**** Mounting root filesystem read-write ****"
+					sync
+					mount -o remount,rw /
+				elif [ "$3" == "ro" ]; then
+					echo "**** Mounting root filesystem read-only ****"
+					sync
+					mount -o remount,ro /
+				elif [ "$3" == "stat" ]; then
+					if findmnt -n -o OPTIONS / | egrep "^ro,|,ro,|,ro$" &>/dev/null; then
+						echo "Root filesystem is mounted read-only."
+					else
+						echo "Root filesystem is mounted read-write."
+					fi
+				else
+					echo $MUST_SPECIFY_ARGUMENT
+					exit 1
+				fi
+			fi
+		else
+			echo $MUST_SPECIFY_ARGUMENT
+			exit 1
+		fi	
+	fi
+elif [ "$1" == "chkmnt" ]; then
+	if [ -z "$2" ]; then
+		echo $MUST_SPECIFY_FOLDER
+	else
+		mountpoint $2
+	fi
+elif [ "$1" == "tree" ]; then
+	findmnt
+elif [ "$1" == "help" ]; then
+	display_help
+	exit 0
+else
+	echo $NEEDS_VALID_COMMAND
+	exit 1
+fi
