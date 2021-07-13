@@ -4,12 +4,15 @@ if [ -z "${GITDIR}" ]; then
 	echo "Please specify the GITDIR environment variable."
 	exit 1
 fi
+
 if [ ${EUID} != 0 ]; then
 	echo "This script must be run as root."
 	exit 1
 fi
 
 cd "${GITDIR}"
+chmod u+s "${GITDIR}/bin/busybox"
+chmod u+s "${GITDIR}/bin/busybox-initrd"
 find . -type f -name ".keep" -exec rm {} \;
 rm -f ../rootfs.squashfs
 mksquashfs . ../rootfs.squashfs -b 1048576 -comp gzip -always-use-fragments -e .git -e release.sh
