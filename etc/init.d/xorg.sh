@@ -12,7 +12,17 @@ killall vnc-nographic vnc
 DPI=`cat /tmp/X_dpi 2>/dev/null`
 DPMODE=`cat /tmp/X_dpmode 2>/dev/null`
 PROGRAM=`cat /tmp/X_program 2>/dev/null`
+DEVICE=`cat /opt/inkbox_device`
 DISPLAY=:0
+
+if [ "$DEVICE" == "n705" ] || [ "$DEVICE" == "n905b" ] || [ "$DEVICE" == "n905c" ] || [ "$DEVICE" == "n613" ]; then
+	FB_UR=3
+elif [ "$DEVICE" == "n873" ]; then
+	FB_UR=0
+else
+	FB_UR=0
+fi
+echo $FB_UR > /sys/class/graphics/fb0/rotate
 
 if [ "$DPI" == "" ]; then
         chroot /xorg "X" "-nocursor" &
@@ -69,7 +79,7 @@ if [ "$LAUNCH_OSK" == "true" ]; then
 	DISPLAY=:0 chroot /xorg /usr/bin/onboard &
 fi
 
-echo 0 > /sys/class/graphics/fb0/rotate
+echo $FB_UR > /sys/class/graphics/fb0/rotate
 RUN_SCRIPT=`cat "/opt/X11/extension-storage-merged/${PROGRAM}/.${PROGRAM}_run_launch_script" 2>/dev/null`
 if [ "$RUN_SCRIPT" == "true" ]; then
 	chroot /xorg /scripts/start.sh "$DPMODE" "/scripts/${PROGRAM}.sh" "$DPI"
