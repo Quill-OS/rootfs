@@ -11,15 +11,18 @@ else
 	echo "false" > /kobo/tmp/first_launch_since_boot
 fi
 
-echo 0 > /sys/class/graphics/fb0/rotate
-chroot /kobo /mnt/onboard/.adds/inkbox/inkbox.sh &
 if [ "$DEVICE" == "n705" ] || [ "$DEVICE" == "n905b" ] || [ "$DEVICE" == "n905c" ] || [ "$DEVICE" == "n613" ]; then
+	FB_UR=3
 	echo 0 > /sys/class/leds/pmic_ledsb/brightness
 elif [ "$DEVICE" == "n873" ]; then
+	FB_UR=0
 	echo 1 > /sys/class/leds/GLED/brightness ; echo 0 > /sys/class/leds/GLED/brightness
 else
+	FB_UR=0
 	echo 0 > /sys/class/leds/pmic_ledsb/brightness
 fi
+echo ${FB_UR} > /sys/class/graphics/fb0/rotate
+chroot /kobo /mnt/onboard/.adds/inkbox/inkbox.sh &
 
 if [ "$ROOTED" == "true" ]; then
 	rc-service sshd start &
