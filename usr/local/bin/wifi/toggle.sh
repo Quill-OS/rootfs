@@ -1,8 +1,18 @@
 DEVICE=$(cat /opt/inkbox_device)
 
-if [ -z "${1}" ] || [ "${1}" != "off" ] || [ "${1}" != "on" ]; then
+if [ -z "${1}" ]; then
 	echo "You must specify the 'mode' argument."
 	echo "Available options: off, on"
+	exit 1
+fi
+
+if [ "${1}" == "off" ]; then
+	echo "Turning Wi-Fi OFF"
+elif [ "${1}" == "on" ]; then
+	echo "Turning Wi-Fi ON"
+else
+	echo "Invalid 'mode' argument."
+	echo "AVailable options: off, on"
 	exit 1
 fi
 
