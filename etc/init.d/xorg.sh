@@ -35,7 +35,7 @@ else
 fi
 
 # Launch touch input handler
-echo 0 > /sys/class/graphics/fb0/rotate
+echo $FB_UR > /sys/class/graphics/fb0/rotate
 chroot /opt/X11/vnc-touch /bin/bash -c 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/qt5/lib QT_QPA_PLATFORM=kobo /root/vnc/vnc-nographic vnc://localhost' &
 
 # Rebuilding caches; here, the FUSE version of OverlayFS does not allow renaming/moving files (probably due to an old 2.6.35.3 kernel version), so we have to circumvent that sometimes by mounting a tmpfs where the files have to be moved.
