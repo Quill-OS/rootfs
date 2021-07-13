@@ -52,6 +52,9 @@ start() {
 	mount --bind /boot /kobo/external_root/boot
 	mount --bind /modules /kobo/external_root/modules
 
+	touch /kobo/tmp/resolv.conf
+	mount --bind /etc/resolv.conf /kobo/tmp/resolv.conf
+
         echo 3 > /sys/class/graphics/fb0/rotate
         /usr/bin/inkbox.sh
 
