@@ -4,9 +4,12 @@ LOCKSCREEN=`cat /opt/config/12-lockscreen/config 2>/dev/null`
 DEVICE=`cat /opt/inkbox_device`
 
 rc-service wake_standby stop
+> /tmp/power
+
 while true; do
 	inotifywait -e modify /tmp/power
 	if grep -q "KEY_POWER" /tmp/power; then
+		> /tmp/power
 		break
 	else
 		> /tmp/power
