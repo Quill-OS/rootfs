@@ -42,6 +42,9 @@ setup() {
 	# Race condition
 	sleep 1.5
 	ifconfig "${WIFI_DEV}" up
+	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
+		wlarm_le up
+	fi
 }
 
 cleanup
