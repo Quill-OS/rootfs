@@ -32,6 +32,9 @@ fi
 
 cleanup() {
 	killall -q dhcpcd wpa_supplicant
+	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
+		wlarm_le down
+	fi
 	ifconfig "${WIFI_DEV}" down
 	rmmod "${WIFI_MODULE}"
 	rmmod "${SDIO_WIFI_PWR_MODULE}"

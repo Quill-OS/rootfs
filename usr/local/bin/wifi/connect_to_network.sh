@@ -31,6 +31,9 @@ fi
 
 cleanup() {
 	killall -q dhcpcd wpa_supplicant
+	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
+		wlarm_le down
+	fi
 	ifconfig "${WIFI_DEV}" down
 	rmmod "${WIFI_MODULE}" 2> /dev/null
 	rmmod "${SDIO_WIFI_PWR_MODULE}" 2> /dev/null
@@ -52,7 +55,12 @@ setup
 
 wpa_passphrase "${ESSID}" "${PASSPHRASE}" > /run/wpa_supplicant.conf
 wpa_supplicant -D wext -i eth0 -c /run/wpa_supplicant.conf -O /run/wpa_supplicant -B
-dhcpcd eth0
+if [ "${DEVICE}" == "n905b" ];
+	busybox udhcpc
+else
+	dhcpcd eth0
+fi
+
 if [ ${?} != 0 ]; then
 	echo "DHCP request failed."
 	cleanup
