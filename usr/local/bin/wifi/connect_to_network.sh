@@ -55,7 +55,7 @@ setup
 
 wpa_passphrase "${ESSID}" "${PASSPHRASE}" > /run/wpa_supplicant.conf
 wpa_supplicant -D wext -i eth0 -c /run/wpa_supplicant.conf -O /run/wpa_supplicant -B
-if [ "${DEVICE}" == "n905b" ];
+if [ "${DEVICE}" == "n905b" ]; then
 	busybox udhcpc
 else
 	dhcpcd eth0
