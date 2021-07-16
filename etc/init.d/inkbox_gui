@@ -9,6 +9,7 @@ depend() {
 
 start() {
 	ebegin "Starting InkBox GUI"
+	DEVICE=$(cat /opt/inkbox_device)
 
 	rc-service xorg stop
 
@@ -55,8 +56,16 @@ start() {
 	touch /kobo/tmp/resolv.conf
 	mount --bind /etc/resolv.conf /kobo/tmp/resolv.conf
 
-        echo 3 > /sys/class/graphics/fb0/rotate
-        /usr/bin/inkbox.sh
+	# Currently, Mini, Touch N905C and Glo don't have Wi-Fi (c.f. https://github.com/kobolabs/Kobo-Reader/issues/105)
+	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
+		echo "false" > /kobo/run/wifi_able
+	elif [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n873" ]; then
+		echo "true" > /kobo/run/wifi_able
+	else
+		echo "false" > /kobo/run/wifi_able
+	fi
+
+	/usr/bin/inkbox.sh
 
 	eend $?
 }
