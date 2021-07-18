@@ -68,6 +68,8 @@ start() {
 				/usr/local/bin/wifi/toggle.sh off
 			elif [[ "$line" == "toggle_wifi_on" ]]; then
 				/usr/local/bin/wifi/toggle.sh on
+			elif [[ "$line" == "ota_update_check" ]]; then
+				/usr/local/bin/ota_update.sh
 			elif [[ "$line" == "inkbox_splash" ]]; then
 				rc-service splash restart
 			elif [[ "$line" == "netsurf_launch" ]]; then

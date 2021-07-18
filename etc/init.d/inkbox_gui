@@ -45,6 +45,7 @@ start() {
 	touch /opt/version 2>/dev/null
 	touch /kobo/opt/version 2>/dev/null
 	mount --bind /opt/version /kobo/opt/version
+	mount --bind /opt/inkbox_device /kobo/external_root/opt/inkbox_device
 	mount --bind /opt/X11/extensions_folders_list /kobo/external_root/opt/X11/extensions_folders_list
 	mount --bind /opt/X11/extensions_list /kobo/external_root/opt/X11/extensions_list
 	mount --bind /opt/X11/nographic_extensions_folders_list /kobo/external_root/opt/X11/nographic_extensions_folders_list
