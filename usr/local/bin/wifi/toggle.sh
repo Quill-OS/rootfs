@@ -12,7 +12,7 @@ elif [ "${1}" == "on" ]; then
 	echo "Turning Wi-Fi ON"
 else
 	echo "Invalid 'mode' argument."
-	echo "AVailable options: off, on"
+	echo "Available options: off, on"
 	exit 1
 fi
 
@@ -42,7 +42,7 @@ cleanup() {
 
 setup() {
 	insmod "${SDIO_WIFI_PWR_MODULE}"
-	insmod "${WIFI_MODULE}"	
+	insmod "${WIFI_MODULE}"
 	# Race condition
 	sleep 1.5
 	ifconfig "${WIFI_DEV}" up
