@@ -72,6 +72,19 @@ start() {
 				/usr/local/bin/ota_update.sh
 			elif [[ "$line" == "ota_update_download" ]]; then
 				/usr/local/bin/ota_update.sh download
+			elif [[ "$line" == "bookconfig_mount" ]]; then
+				BOOK_FILE=$(cat /kobo/tmp/inkboxBookPath)
+				BOOK_CSUM=$(sha256sum "${BOOK_FILE}")
+				BOOK_CSUM_DIR=".${BOOK_CSUM}"
+				if [ -e "${BOOK_CSUM_DIR} ]; then
+					mount --bind "${BOOK_CSUM_DIR}" /kobo/mnt/onboard/.adds/inkbox/.config
+					echo "true" > /kobo/inkbox/bookConfigSetup
+				else
+					mkdir -p "${BOOK_CSUM_DIR"
+					cp -rv /opt/config "${BOOK_CSUM_DIR}"
+					mount --bind "${BOOK_CSUM_DIR}" /kobo/mnt/onboard/.adds/inkbox/.config
+					echo "true" > /kobo/inkbox/bookConfigSetup
+				fi
 			elif [[ "$line" == "inkbox_splash" ]]; then
 				rc-service splash restart
 			elif [[ "$line" == "netsurf_launch" ]]; then
