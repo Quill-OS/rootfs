@@ -73,15 +73,16 @@ start() {
 			elif [[ "$line" == "ota_update_download" ]]; then
 				/usr/local/bin/ota_update.sh download
 			elif [[ "$line" == "bookconfig_mount" ]]; then
-				BOOK_FILE=$(cat /kobo/tmp/inkboxBookPath)
+				BOOK_FILE_RAW=$(cat /kobo/tmp/inkboxBookPath)
+				BOOK_FILE="/kobo${BOOK_FILE_RAW}"
 				BOOK_CSUM=$(sha256sum "${BOOK_FILE}" | awk '{ print $1 }')
-				BOOK_CSUM_DIR=".${BOOK_CSUM}"
+				BOOK_CSUM_DIR="/data/onboard/.${BOOK_CSUM}"
 				if [ -e "${BOOK_CSUM_DIR}" ]; then
 					mount --bind "${BOOK_CSUM_DIR}" /kobo/mnt/onboard/.adds/inkbox/.config
 					echo "true" > /kobo/inkbox/bookConfigSetup
 				else
 					mkdir -p "${BOOK_CSUM_DIR}"
-					cp -rv /opt/config "${BOOK_CSUM_DIR}"
+					cp -r /opt/config "${BOOK_CSUM_DIR}"
 					mount --bind "${BOOK_CSUM_DIR}" /kobo/mnt/onboard/.adds/inkbox/.config
 					echo "true" > /kobo/inkbox/bookConfigSetup
 				fi
