@@ -86,6 +86,8 @@ start() {
 					mount --bind "${BOOK_CSUM_DIR}" /kobo/mnt/onboard/.adds/inkbox/.config
 					echo "true" > /kobo/inkbox/bookConfigSetup
 				fi
+			elif [[ "$line" == "bookconfig_unmount" ]]; then
+				umount -l -f /kobo/mnt/onboard/.adds/inkbox/.config
 			elif [[ "$line" == "inkbox_splash" ]]; then
 				rc-service splash restart
 			elif [[ "$line" == "netsurf_launch" ]]; then
