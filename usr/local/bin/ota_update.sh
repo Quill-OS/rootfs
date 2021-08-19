@@ -1,6 +1,6 @@
 #!/bin/sh
 
-INSTALLED_VERSION=$(/opt/update/version)
+INSTALLED_VERSION=$(cat /opt/isa/version)
 OTA_CURRENT=$(busybox-initrd wget -O - http://pkgs.kobox.fermino.me/bundles/inkbox/native/update/ota_current 2>/dev/null)
 # Fully Qualified Device Identifier
 FQDI=$(cat /opt/inkbox_device)
