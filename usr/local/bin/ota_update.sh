@@ -13,7 +13,6 @@ if [ ${OTA_CURRENT} -gt ${INSTALLED_VERSION} ]; then
 		rc-service update_inkbox restart
 		echo "true" > /kobo/run/can_install_ota_update
 	fi
-	
 else
 	echo "false" > /data/onboard/.inkbox/can_update
 	echo "false" > /kobo/run/can_ota_update
