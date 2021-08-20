@@ -1,14 +1,16 @@
 #!/bin/sh
 
+SERVER="pkgs.kobox.fermino.me"
 INSTALLED_VERSION=$(cat /opt/isa/version)
-OTA_CURRENT=$(busybox-initrd wget -O - http://pkgs.kobox.fermino.me/bundles/inkbox/native/update/ota_current 2>/dev/null)
+OTA_CURRENT=$(busybox-initrd wget -O - http://${SERVER}/bundles/inkbox/native/update/ota_current 2>/dev/null)
 # Fully Qualified Device Identifier
 FQDI=$(cat /opt/inkbox_device)
 
-if [ ${OTA_CURRENT} -gt ${INSTALLED_VERSION} ]; then
+UPDATE_COMP=$(echo ${OTA_CURRENT}'>'${INSTALLED_VERSION} | bc -l)
+if [ "${UPDATE_COMP}" == "1" ]; then
 	echo "true" > /kobo/run/can_ota_update
 	if [ "${1}" == "download" ]; then
-		busybox-initrd wget "http://pkgs.kobox.fermino.me/bundles/inkbox/native/update/${OTA_CURRENT}/${FQDI}/inkbox-update-${OTA_CURRENT}.upd.isa" -O "/data/onboard/.inkbox/inkbox-update-${OTA_CURRENT}.upd.isa"
+		busybox-initrd wget "http://${SERVER}/bundles/inkbox/native/update/${OTA_CURRENT}/${FQDI}/inkbox-update-${OTA_CURRENT}.upd.isa" -O "/data/onboard/.inkbox/inkbox-update-${OTA_CURRENT}.upd.isa"
 		echo "true" > /data/onboard/.inkbox/can_update
 		rc-service update_inkbox restart
 		echo "true" > /kobo/run/can_install_ota_update
