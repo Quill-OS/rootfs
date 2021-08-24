@@ -2,7 +2,7 @@
 
 SERVER="pkgs.kobox.fermino.me"
 INSTALLED_VERSION=$(cat /opt/isa/version)
-OTA_CURRENT=$(busybox-initrd wget -O - http://${SERVER}/bundles/inkbox/native/update/ota_current 2>/dev/null)
+OTA_CURRENT=$(busybox wget -O - http://${SERVER}/bundles/inkbox/native/update/ota_current 2>/dev/null)
 # Fully Qualified Device Identifier
 FQDI=$(cat /opt/inkbox_device)
 
