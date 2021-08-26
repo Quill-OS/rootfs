@@ -30,8 +30,7 @@ start() {
 			openssl dgst -sha256 -verify /opt/key/public.pem -signature "${f}.dgst" "${f}" &>/dev/null
 			if [ "${?}" != 0 ]; then
 				EXIT_SIGN_FAILURE=1
-			else
-				EXIT_SIGN_FAILURE=0
+				break
 			fi
 		fi
 	done
