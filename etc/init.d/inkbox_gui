@@ -20,53 +20,72 @@ start() {
 	rc-service ibxd restart
 
 	squashfuse /opt/update/update.isa /opt/isa
-	squashfuse /opt/isa/inkbox.isa /kobo/mnt/onboard/.adds/inkbox
-	mount --bind /opt/config /kobo/mnt/onboard/.adds/inkbox/.config
-	squashfuse /opt/isa/qt.isa /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo
-	squashfuse /opt/isa/python.isa /kobo/mnt/onboard/.adds/Python-3.9.2
+	
+	for f in /opt/isa/*.isa; do
+		if [ "${f}" != "/opt/isa/gui_rootfs.isa" ]; then
+			openssl dgst -sha256 -verify /opt/key/public.pem -signature "${f}.dgst" "${f}"
+			if [ "${?}" != 0 ]; then
+				EXIT_SIGN_FAILURE=1
+			else
+				EXIT_SIGN_FAILURE=0
+			fi
+		fi
+	done
 
-        mount -t sysfs sysfs /kobo/sys
-        mount -t proc proc /kobo/proc
-        mount -t tmpfs tmpfs /kobo/tmp
-        mount -t tmpfs tmpfs /kobo/var/run
-        mount --bind /dev /kobo/dev
-        mount --bind /dev/pts /kobo/dev/pts
+	if [ "${EXIT_SIGN_FAILURE}" == 0 ]; then
+		squashfuse /opt/isa/inkbox.isa /kobo/mnt/onboard/.adds/inkbox
+		mount --bind /opt/config /kobo/mnt/onboard/.adds/inkbox/.config
+		squashfuse /opt/isa/qt.isa /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo
+		squashfuse /opt/isa/python.isa /kobo/mnt/onboard/.adds/Python-3.9.2
 
-	mount --bind / /kobo/external_root
-	mount --bind /dev /kobo/external_root/dev
-	mount --bind /dev/pts /kobo/external_root/dev/pts
-	mount --bind /proc /kobo/external_root/proc
-	mount --bind /tmp /kobo/external_root/tmp
-	mount --bind /run /kobo/external_root/run
-	mount --bind /opt/isa /kobo/external_root/opt/isa
-	mount --bind /opt/root /kobo/external_root/opt/root
-	mount --bind /opt/update /kobo/external_root/opt/update
-	mount --bind /opt/storage /kobo/external_root/opt/storage
-	touch /opt/version 2>/dev/null
-	touch /kobo/opt/version 2>/dev/null
-	mount --bind /opt/version /kobo/opt/version
-	mount --bind /opt/inkbox_device /kobo/external_root/opt/inkbox_device
-	mount --bind /opt/X11/extensions_folders_list /kobo/external_root/opt/X11/extensions_folders_list
-	mount --bind /opt/X11/extensions_list /kobo/external_root/opt/X11/extensions_list
-	mount --bind /opt/X11/nographic_extensions_folders_list /kobo/external_root/opt/X11/nographic_extensions_folders_list
-	mount --bind /opt/X11/nographic_extensions_list /kobo/external_root/opt/X11/nographic_extensions_list
+	        mount -t sysfs sysfs /kobo/sys
+	        mount -t proc proc /kobo/proc
+	        mount -t tmpfs tmpfs /kobo/tmp
+	        mount -t tmpfs tmpfs /kobo/var/run
+	        mount --bind /dev /kobo/dev
+	        mount --bind /dev/pts /kobo/dev/pts
 
-	mount --bind /boot /kobo/external_root/boot
-	mount --bind /modules /kobo/external_root/modules
+		mount --bind / /kobo/external_root
+		mount --bind /dev /kobo/external_root/dev
+		mount --bind /dev/pts /kobo/external_root/dev/pts
+		mount --bind /proc /kobo/external_root/proc
+		mount --bind /tmp /kobo/external_root/tmp
+		mount --bind /run /kobo/external_root/run
+		mount --bind /opt/isa /kobo/external_root/opt/isa
+		mount --bind /opt/root /kobo/external_root/opt/root
+		mount --bind /opt/update /kobo/external_root/opt/update
+		mount --bind /opt/storage /kobo/external_root/opt/storage
+		touch /opt/version 2>/dev/null
+		touch /kobo/opt/version 2>/dev/null
+		mount --bind /opt/version /kobo/opt/version
+		mount --bind /opt/inkbox_device /kobo/external_root/opt/inkbox_device
+		mount --bind /opt/X11/extensions_folders_list /kobo/external_root/opt/X11/extensions_folders_list
+		mount --bind /opt/X11/extensions_list /kobo/external_root/opt/X11/extensions_list
+		mount --bind /opt/X11/nographic_extensions_folders_list /kobo/external_root/opt/X11/nographic_extensions_folders_list
+		mount --bind /opt/X11/nographic_extensions_list /kobo/external_root/opt/X11/nographic_extensions_list
 
-	touch /kobo/tmp/resolv.conf
-	mount --bind /etc/resolv.conf /kobo/tmp/resolv.conf
+		mount --bind /boot /kobo/external_root/boot
+		mount --bind /modules /kobo/external_root/modules
 
-	# Currently, Mini, Touch N905C and Glo don't have Wi-Fi (c.f. https://github.com/kobolabs/Kobo-Reader/issues/105)
-	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
-		echo "false" > /kobo/run/wifi_able
-	elif [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n873" ]; then
-		echo "true" > /kobo/run/wifi_able
+		touch /kobo/tmp/resolv.conf
+		mount --bind /etc/resolv.conf /kobo/tmp/resolv.conf
+
+		# Currently, Mini, Touch N905C and Glo don't have Wi-Fi (c.f. https://github.com/kobolabs/Kobo-Reader/issues/105)
+		if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
+			echo "false" > /kobo/run/wifi_able
+		elif [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n873" ]; then
+			echo "true" > /kobo/run/wifi_able
+		else
+			echo "false" > /kobo/run/wifi_able
+		fi
+
+		/usr/bin/inkbox.sh
 	else
-		echo "false" > /kobo/run/wifi_able
+		echo "UI bundle signature verification failed! Aborting launch ..."
+		echo "6" > /run/alert_splash_error_code
+		echo "alert_splash" > /run/initrd-fifo
+		/sbin/poweroff no_splash
 	fi
-
-	/usr/bin/inkbox.sh
 
 	eend $?
 }
