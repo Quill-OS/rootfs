@@ -27,7 +27,7 @@ start() {
 	fi
 	for f in /opt/isa/*.isa; do
 		if [ "${f}" != "/opt/isa/gui_rootfs.isa" ]; then
-			openssl dgst -sha256 -verify /opt/key/public.pem -signature "${f}.dgst" "${f}"
+			openssl dgst -sha256 -verify /opt/key/public.pem -signature "${f}.dgst" "${f}" &>/dev/null
 			if [ "${?}" != 0 ]; then
 				EXIT_SIGN_FAILURE=1
 			else
