@@ -10,6 +10,7 @@ depend() {
 start() {
 	ebegin "Starting InkBox GUI"
 	DEVICE=$(cat /opt/inkbox_device)
+	EXIT_SIGN_FAILURE=0
 
 	rc-service xorg stop
 
