@@ -20,7 +20,11 @@ start() {
 	rc-service ibxd restart
 
 	squashfuse /opt/update/update.isa /opt/isa
-	
+
+	DEVMODE=$(cat /opt/developer/key/valid-key 2>/dev/null)
+	if [ "${DEVMODE}" == "true" ]; then
+		echo "developer_fake-openssl_mount" > /run/initrd-fifo
+	fi
 	for f in /opt/isa/*.isa; do
 		if [ "${f}" != "/opt/isa/gui_rootfs.isa" ]; then
 			openssl dgst -sha256 -verify /opt/key/public.pem -signature "${f}.dgst" "${f}"
@@ -31,6 +35,9 @@ start() {
 			fi
 		fi
 	done
+	if [ "${DEVMODE}" == "true" ]; then
+		echo "developer_fake-openssl_unmount" > /run/initrd-fifo
+	fi
 
 	if [ "${EXIT_SIGN_FAILURE}" == 0 ]; then
 		squashfuse /opt/isa/inkbox.isa /kobo/mnt/onboard/.adds/inkbox
