@@ -94,7 +94,7 @@ start() {
 			elif [[ "$line" == "inkbox_splash" ]]; then
 				rc-service splash restart
 			elif [[ "$line" == "netsurf_launch" ]]; then
-				su -c "sh -c 'env DISPLAY=:0 chroot /xorg /bin/netsurf-gtk2'"
+				su -s /bin/sh -c "env DISPLAY=:0 chroot /xorg /bin/netsurf-gtk2"
 				echo "stop" > /xorg/tmp/netsurf-fifo
 			fi
 		fi
