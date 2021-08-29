@@ -23,6 +23,7 @@ evtest
 findmnt
 haveged
 haveged-openrc
+imagemagick
 inotify-tools
 kbd-bkeymaps
 libblkid

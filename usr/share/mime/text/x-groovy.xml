@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="text/x-groovy">
+  <!--Created automatically by update-mime-database. DO NOT EDIT!-->
+  <comment>Groovy script</comment>
+  <comment xml:lang="af">Groovy-skrip</comment>
+  <comment xml:lang="ca">script Groovy</comment>
+  <comment xml:lang="cs">skript Groovy</comment>
+  <comment xml:lang="de">Groovy-Skript</comment>
+  <comment xml:lang="es">secuencia de órdenes de Groovy</comment>
+  <comment xml:lang="fr">script Groovy</comment>
+  <comment xml:lang="ga">script Groovy</comment>
+  <comment xml:lang="hr">Groovy skripta</comment>
+  <comment xml:lang="hu">Groovy-parancsfájl</comment>
+  <comment xml:lang="id">Skrip Groovy</comment>
+  <comment xml:lang="it">Script Groovy</comment>
+  <comment xml:lang="kk">Groovy сценарийі</comment>
+  <comment xml:lang="pl">Skrypt Groovy</comment>
+  <comment xml:lang="pt_BR">Script Groovy</comment>
+  <comment xml:lang="sk">Skript Groovy</comment>
+  <comment xml:lang="sv">Groovy-skript</comment>
+  <comment xml:lang="uk">скрипт Groovy</comment>
+  <comment xml:lang="zh_CN">Groovy 脚本</comment>
+  <comment xml:lang="zh_TW">Groovy 指令稿</comment>
+  <sub-class-of type="text/plain"/>
+  <generic-icon name="text-x-generic"/>
+  <glob pattern="*.groovy"/>
+</mime-type>
