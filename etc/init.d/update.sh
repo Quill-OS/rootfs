@@ -53,11 +53,11 @@ error_msg() {
 
 write_alert() {
 	echo "true" > /boot/flags/ALERT
-	if [ "$1" == "illegal_downgrade" ]; then
+	if [ "${1}" == "illegal_downgrade" ]; then
 		echo "true" > /boot/flags/ALERT_DOWNGRADE
-	elif [ "$1" == "signature" ]; then
+	elif [ "${1}" == "signature" ]; then
 		echo "true" > /boot/flags/ALERT_SIGN
-	elif [ "$1" == "invalid_package" ]; then
+	elif [ "${1}" == "invalid_package" ]; then
 		echo "true" > /boot/flags/ALERT_INVALID_UPDATE_PACKAGE
 	fi
 	sync
@@ -70,10 +70,10 @@ write_alert() {
 
 apply_update_ui_bundle() {
 	echo "Updating from InkBox ${CURRENT_VERSION} to InkBox ${NEXT_VERSION} ..."
-	cp ${UI_BUNDLE} ${UPDATE_DIR}
+	cp "${UI_BUNDLE}" "${UPDATE_DIR}"
 	sync
 	rm /opt/update/will_update
-	echo "true" > ${UPDATE_DIR}/inkbox_updated
+	echo "true" > "${UPDATE_DIR}/inkbox_updated"
 	echo "false" > /boot/flags/WILL_UPDATE
 	echo "false" > /opt/update/will_update
 	sync
@@ -82,7 +82,7 @@ apply_update_ui_bundle() {
 
 update_ui_bundle() {
 	openssl dgst -sha256 -verify /opt/key/public.pem -signature "${UI_BUNDLE_DGST}" "${UI_BUNDLE}"
-	if [ $? != 0 ]; then
+	if [ ${?} != 0 ]; then
 		SUB_VERIFIED="${UI_BUNDLE}"
 		error_msg
 		write_alert signature
@@ -121,7 +121,7 @@ update_ui_bundle() {
 
 update_u_boot() {
 	openssl dgst -sha256 -verify /opt/key/public.pem -signature "${U_BOOT_DGST}" "${U_BOOT}"
-	if [ $? != 0 ]; then
+	if [ ${?} != 0 ]; then
 		SUB_VERIFIED="${U_BOOT}"
 		error_msg
 		write_alert signature
@@ -129,7 +129,7 @@ update_u_boot() {
 	else
 		dd if="${U_BOOT}" of=/dev/mmcblk0 bs=1K seek=1 skip=1
 		rm /opt/update/will_update
-		echo "true" > ${UPDATE_DIR}/inkbox_updated
+		echo "true" > "${UPDATE_DIR}/inkbox_updated"
 		echo "false" > /boot/flags/WILL_UPDATE
 		echo "false" > /opt/update/will_update
 		sync
@@ -140,7 +140,7 @@ update_u_boot() {
 
 update_kernel() {
 	openssl dgst -sha256 -verify /opt/key/public.pem -signature "${KERNEL_DGST}" "${KERNEL}"
-	if [ $? != 0 ]; then
+	if [ ${?} != 0 ]; then
 		SUB_VERIFIED="${KERNEL}"
 		error_msg
 		write_alert signature
@@ -148,7 +148,7 @@ update_kernel() {
 	else
 		dd if="${KERNEL}" of=/dev/mmcblk0 bs=512 seek=81920
 		rm /opt/update/will_update
-		echo "true" > ${UPDATE_DIR}/inkbox_updated
+		echo "true" > "${UPDATE_DIR}/inkbox_updated"
 		echo "false" > /boot/flags/WILL_UPDATE
 		echo "false" > /opt/update/will_update
 		sync
@@ -159,7 +159,7 @@ update_kernel() {
 
 update_recoveryfs() {
 	openssl dgst -sha256 -verify /opt/key/public.pem -signature "${RECOVERYFS_DGST}" "${RECOVERYFS}"
-	if [ $? != 0 ]; then
+	if [ ${?} != 0 ]; then
 		SUB_VERIFIED="${RECOVERYFS}"
 		error_msg
 		write_alert signature
@@ -173,7 +173,7 @@ update_recoveryfs() {
 		umount /tmp/update/recoveryfs -l -f
 		sync
 		rm /opt/update/will_update
-		echo "true" > ${UPDATE_DIR}/inkbox_updated
+		echo "true" > "${UPDATE_DIR}/inkbox_updated"
 		echo "false" > /boot/flags/WILL_UPDATE
 		echo "false" > /opt/update/will_update
 		sync
@@ -183,7 +183,7 @@ update_recoveryfs() {
 
 update_rootfs() {
 	openssl dgst -sha256 -verify /opt/key/public.pem -signature "${ROOTFS_DGST}" "${ROOTFS}"
-	if [ $? != 0 ]; then
+	if [ ${?} != 0 ]; then
 		SUB_VERIFIED="${ROOTFS}"
 		write_alert signature
 		error_msg
@@ -194,7 +194,7 @@ update_rootfs() {
 		cp "${ROOTFS_DGST}" /tmp/update/rootfs/rootfs.squashfs.dgst
 		sync
 		rm /opt/update/will_update
-		echo "true" > ${UPDATE_DIR}/inkbox_updated
+		echo "true" > "${UPDATE_DIR}/inkbox_updated"
 		echo "false" > /boot/flags/WILL_UPDATE
 		echo "false" > /opt/update/will_update
 		sync
@@ -223,7 +223,7 @@ if [ ${CAN_UPDATE} == 1 ]; then
 		if [ -e "${ISA_PACKAGE}" ]; then
 			mkdir -p "${BASEPATH}"
 			squashfuse "${ISA_PACKAGE}" "${BASEPATH}"
-			if [ $? != 0 ]; then
+			if [ ${?} != 0 ]; then
 				echo "FATAL: Error mounting ISA update package. Aborting ..."
 				write_alert invalid_package
 				exit 1
