@@ -19,6 +19,7 @@ dbus-libs
 dhclient
 e2fsprogs
 e2fsprogs-libs
+encfs
 evtest
 findmnt
 haveged
