@@ -16995,3 +16995,149 @@ R:convert
 a:0:0:777
 Z:Q1kI683pyjCBSiglSlv6nydNCTRvU=
 
+C:Q1OdlUTejnNrL8WqT8silk7DcASNg=
+P:fuse-common
+V:3.2.6-r1
+A:armv7
+S:1396
+I:12288
+T:Common files for fuse2 and fuse3
+U:https://github.com/libfuse/libfuse
+L:GPL-2.0-only LGPL-2.1-only
+o:fuse3
+m:Natanael Copa <ncopa@alpinelinux.org>
+t:1556978687
+c:b0cd6e9587eeb263fc48855ed246edf9b0bdac86
+F:etc
+R:fuse.conf
+Z:Q1O0LjenQdRlEJkiWYfcQOfwKnFq0=
+
+C:Q1uFpzPEcNpASM3HsbfyPdGvTgjzw=
+P:fuse-openrc
+V:3.2.6-r1
+A:armv7
+S:1745
+I:16384
+T:The reference implementation of the Linux FUSE (Filesystem in Userspace) interface (OpenRC init scripts)
+U:https://github.com/libfuse/libfuse
+L:GPL-2.0-only LGPL-2.1-only
+o:fuse3
+m:Natanael Copa <ncopa@alpinelinux.org>
+t:1556978688
+c:b0cd6e9587eeb263fc48855ed246edf9b0bdac86
+i:openrc fuse-common=3.2.6-r1
+F:etc
+F:etc/init.d
+R:fuse
+a:0:0:755
+Z:Q1TcJF+Bxhh7Gxv2jYkhYbxcr49s0=
+
+C:Q1MJB/WvoL+JqRp84evfdfAiyN/2w=
+P:fuse
+V:2.9.8-r2
+A:armv7
+S:77020
+I:237568
+T:A library that makes it possible to implement a filesystem in a userspace program.
+U:https://github.com/libfuse/
+L:GPL-2.0-only LGPL-2.1-only
+o:fuse
+m:Natanael Copa <ncopa@alpinelinux.org>
+t:1556992881
+c:165ba7eebbe3ff10a4fa7fd599f06de7802043f9
+D:fuse-common so:libc.musl-armv7.so.1
+p:so:libfuse.so.2=2.9.8 so:libulockmgr.so.1=1.0.1 cmd:fusermount cmd:mount.fuse cmd:ulockmgr_server
+F:bin
+R:fusermount
+a:0:0:4755
+Z:Q1oTgB2V7k8R+nbXHvy9hkA4/zW/Q=
+R:ulockmgr_server
+a:0:0:755
+Z:Q17YyZMlefbLj84aTThjnOsTGva28=
+F:etc
+F:lib
+F:lib/udev
+F:lib/udev/rules.d
+R:99-fuse.rules
+Z:Q1gNqvh6R2GVGhDITUe/dQ+GlRGl0=
+F:sbin
+R:mount.fuse
+a:0:0:755
+Z:Q1jZXOznnqtf91hclkeF7BHjZE+MM=
+F:usr
+F:usr/lib
+R:libfuse.so.2.9.8
+a:0:0:755
+Z:Q1T5b5YWB0B+nsFDr8c/q6DEvw2gU=
+R:libfuse.so.2
+a:0:0:777
+Z:Q1F0zEmzj0kh9McHHM9oSrVbWZWMg=
+R:libulockmgr.so.1
+a:0:0:777
+Z:Q11L0f8VD2UBCACpdgJzA7PknOjJA=
+R:libulockmgr.so.1.0.1
+a:0:0:755
+Z:Q1RVoPQkAJFvz/n77shyqWMUlWk8g=
+
+C:Q14fqZjC3gSL6VIzxRQ4CgGdPOEF8=
+P:tinyxml2
+V:7.0.1-r0
+A:armv7
+S:23642
+I:65536
+T:Simple, small and efficient C++ XML parser
+U:http://www.grinninglizard.com/tinyxml2
+L:zlib
+o:tinyxml2
+m:André Klitzing <aklitzing@gmail.com>
+t:1557086020
+c:d7a6f015c444d9120cef57798279a7a71b51d274
+D:so:libc.musl-armv7.so.1 so:libgcc_s.so.1 so:libstdc++.so.6
+p:so:libtinyxml2.so.7=7.0.1
+F:usr
+F:usr/lib
+R:libtinyxml2.so.7
+a:0:0:777
+Z:Q1eFw9YOh1yNOtZvC3e3dYCifceIs=
+R:libtinyxml2.so.7.0.1
+a:0:0:755
+Z:Q1qBVCpjBownfQhSXupJw0hU12b/Y=
+
+C:Q12yWGOYdzz+1pT8kMQUZPetXexVI=
+P:encfs
+V:1.9.5-r3
+A:armv7
+S:275119
+I:618496
+T:EncFS provides an encrypted filesystem in user-space
+U:https://vgough.github.io/encfs/
+L:GPL
+o:encfs
+m:Natanael Copa <ncopa@alpinelinux.org>
+t:1557167729
+c:18d88cd88c11706e9b249663978931aabed15657
+D:so:libc.musl-armv7.so.1 so:libcrypto.so.1.1 so:libfuse.so.2 so:libgcc_s.so.1 so:libintl.so.8 so:libssl.so.1.1 so:libstdc++.so.6 so:libtinyxml2.so.7
+p:so:libencfs.so.1.9=1.9.5 cmd:encfs cmd:encfsctl cmd:encfssh
+F:usr
+F:usr/share
+F:usr/lib
+R:libencfs.so
+a:0:0:777
+Z:Q1Z6965z8b2pZ0Nr+irfD8WAB6Plk=
+R:libencfs.so.1.9.5
+a:0:0:755
+Z:Q1ss3YjP19dJk2irvzsf0elPUAQ7Y=
+R:libencfs.so.1.9
+a:0:0:777
+Z:Q1Yw6J5dkia9xcaFCVry5xq+hOWew=
+F:usr/bin
+R:encfs
+a:0:0:755
+Z:Q1sj+9+tIZRonuDTUYyz2mAqI8lfk=
+R:encfsctl
+a:0:0:755
+Z:Q1BzXOIhSGhYaFVLS+dUWMT+6pg6g=
+R:encfssh
+a:0:0:755
+Z:Q1c6Ck7+u48qK3E9Io6cJUjEX9UzA=
+
