@@ -6,6 +6,17 @@ depend() {
 	keyword -prefix -lxc
 }
 
+bookconfig_mount() {
+	mount --bind "${BOOK_CSUM_DIR}" /kobo/mnt/onboard/.adds/inkbox/.config
+	# Exceptions
+	mount --bind /opt/config/07-words_number /kobo/mnt/onboard/.adds/inkbox/.config/07-words_number
+	mount --bind /opt/config/08-recent_books /kobo/mnt/onboard/.adds/inkbox/.config/08-recent_books
+	mount --bind /opt/config/11-menubar /kobo/mnt/onboard/.adds/inkbox/.config/11-menubar
+	mount --bind /opt/config/13-epub_page_size /kobo/mnt/onboard/.adds/inkbox/.config/13-epub_page_size
+	mount --bind /opt/config/14-reader_scrollbar /kobo/mnt/onboard/.adds/inkbox/.config/14-reader_scrollbar
+	echo "true" > /kobo/inkbox/bookConfigSetUp
+}
+
 start() {
 	ebegin "Starting InkBox Daemon (ibxd)"
 
@@ -80,15 +91,14 @@ start() {
 				sync
 				umount -l -f /kobo/mnt/onboard/.adds/inkbox/.config
 				if [ -e "${BOOK_CSUM_DIR}" ]; then
-					mount --bind "${BOOK_CSUM_DIR}" /kobo/mnt/onboard/.adds/inkbox/.config
-					echo "true" > /kobo/inkbox/bookConfigSetUp
+					bookconfig_mount
 				else
 					mkdir -p "${BOOK_CSUM_DIR}"
 					cp -r /opt/config/* "${BOOK_CSUM_DIR}"
-					mount --bind "${BOOK_CSUM_DIR}" /kobo/mnt/onboard/.adds/inkbox/.config
-					echo "true" > /kobo/inkbox/bookConfigSetUp
+					bookconfig_mount
 				fi
 			elif [[ "$line" == "bookconfig_unmount" ]]; then
+				sync
 				umount -l -f /kobo/mnt/onboard/.adds/inkbox/.config
 				mount --bind /opt/config /kobo/mnt/onboard/.adds/inkbox/.config
 			elif [[ "$line" == "inkbox_splash" ]]; then

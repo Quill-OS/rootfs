@@ -55,6 +55,12 @@ setup
 
 wpa_passphrase "${ESSID}" "${PASSPHRASE}" > /run/wpa_supplicant.conf
 wpa_supplicant -D wext -i eth0 -c /run/wpa_supplicant.conf -O /run/wpa_supplicant -B
+if [ ${?} != 0 ]; then
+	echo "Failed to connect to network '${ESSID}'"
+	cleanup
+	exit 1
+fi
+
 if [ "${DEVICE}" == "n905b" ]; then
 	busybox udhcpc
 else
