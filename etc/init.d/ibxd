@@ -108,6 +108,8 @@ start() {
 			elif [[ "$line" == "kobox_extensions_storage_unmount" ]]; then
 				sync
 				umount -l -f /opt/X11/extensions-user
+			elif [[ "$line" == "ibxd_stop" ]]; then
+				break
 			elif [[ "$line" == "inkbox_splash" ]]; then
 				rc-service splash restart
 			elif [[ "$line" == "netsurf_launch" ]]; then
@@ -117,4 +119,8 @@ start() {
 		fi
 	done &
 	eend $?
+}
+
+stop() {
+	echo "ibxd_stop" > /run/ibxd
 }
