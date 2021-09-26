@@ -101,6 +101,13 @@ start() {
 				sync
 				umount -l -f /kobo/mnt/onboard/.adds/inkbox/.config
 				mount --bind /opt/config /kobo/mnt/onboard/.adds/inkbox/.config
+			elif [[ "$line" == "onboard_mount" ]]; then
+				rc-service onboard_mount start
+			elif [[ "$line" == "onboard_unmount" ]]; then
+				rc-service onboard_mount stop
+			elif [[ "$line" == "kobox_extensions_storage_unmount" ]]; then
+				sync
+				umount -l -f /opt/X11/extensions-user
 			elif [[ "$line" == "inkbox_splash" ]]; then
 				rc-service splash restart
 			elif [[ "$line" == "netsurf_launch" ]]; then
