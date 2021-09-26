@@ -110,6 +110,10 @@ start() {
 				umount -l -f /opt/X11/extensions-user
 			elif [[ "$line" == "ibxd_stop" ]]; then
 				break
+			elif [[ "$line" == "usbnet_start" ]]; then
+				rc-service usbnet start
+			elif [[ "$line" == "usbnet_stop" ]]; then
+				rc-service usbnet stop
 			elif [[ "$line" == "inkbox_splash" ]]; then
 				rc-service splash restart
 			elif [[ "$line" == "netsurf_launch" ]]; then
