@@ -114,6 +114,8 @@ start() {
 				rc-service usbnet start
 			elif [[ "$line" == "usbnet_stop" ]]; then
 				rc-service usbnet stop
+			elif [[ "$line" == "update_inkbox_restart" ]]; then
+				rc-service update_inkbox restart
 			elif [[ "$line" == "inkbox_splash" ]]; then
 				rc-service splash restart
 			elif [[ "$line" == "netsurf_launch" ]]; then
