@@ -8,14 +8,16 @@ depend() {
 
 start() {
 	ebegin "Exporting onboard storage over USB..."
+	FILE=$(cat /run/mass_storage_export)
+	if [ -z "${FILE}" ]; then
+		FILE="/opt/storage/onboard"
+	fi
 	rc-service usbnet stop
-	insmod /modules/arcotg_udc.ko
-	insmod /modules/g_mass_storage.ko file=/opt/storage/onboard removable=y stall=0
+	insmod /modules/g_mass_storage.ko file="${FILE}" removable=y stall=0
 	eend $?
 }
 stop() {
 	ebegin "Exiting USBMS session..."
 	rmmod /modules/g_mass_storage.ko
-	rmmod /modules/arcotg_udc.ko
 	eend $?
 }
