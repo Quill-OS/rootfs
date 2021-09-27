@@ -1,0 +1,16 @@
+#!/sbin/openrc-run
+
+description="Loads necessary core kernel modules."
+
+depend() {
+	before mass_storage usbnet
+	keyword -prefix -lxc
+}
+
+start() {
+	DEVICE=$(cat /opt/inkbox_device)
+	if [ "${DEVICE}" != "n873" ]; then
+		insmod /modules/arcotg_udc.ko
+	fi
+	eend $?
+}
