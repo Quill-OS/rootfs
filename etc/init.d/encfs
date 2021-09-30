@@ -1,0 +1,32 @@
+#!/sbin/openrc-run
+
+description="Sets up encrypted storage."
+
+depend() {
+	keyword -prefix -lxc
+}
+
+error_exit() {
+	echo "Error: ${1}. Exiting."
+	[ -z "${2}" ] && exit 1
+	exit "${2}"
+}
+
+start() {
+	ENCRYPTED_STORAGE_CONFIG=$(cat /opt/config/18-encrypted_storage/status)
+	[ "${ENCRYPTED_STORAGE_CONFIG}" == "disabled" ] && echo "Storage encryption disabled. Exiting." && exit 0
+	ENCRYPTED_STORAGE_ARCHIVE=$(cat /run/encrypted_storage_archive 2>/dev/null)
+	ENCRYPTED_STORAGE_MOUNTPOINT=$(cat /run/encrypted_storage_mountpoint 2>/dev/null)
+	ENCRYPTED_STORAGE_PASSPHRASE=$(cat /run/encrypted_storage_passphrase 2>/dev/null)
+	if [ ! -z "${ENCRYPTED_STORAGE_ARCHIVE}" ] && [ ! -z "${ENCRYPTED_STORAGE_MOUNTPOINT}" ] && [ ! -z "${ENCRYPTED_STORAGE_PASSPHRASE}" ]; then
+		# Encrypted storage archive is a SquashFS file, mounting it
+		mkdir -p /run/encfs/encrypted
+		squashfuse "${ENCRYPTED_STORAGE_ARCHIVE}" /run/encfs/encrypted
+		# TODO: Find a way to input password
+		encfs "${ENCRYPTED_STORAGE_ARCHIVE}" "${ENCRYPTED_STORAGE_MOUNTPOINT}"
+		[ ${?} != 0 ] && error_exit "Encrypted storage setup" 1
+		exit 0
+	else
+		error_exit "Arguments parsing" 2
+	fi
+}
