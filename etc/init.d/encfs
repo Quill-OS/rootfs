@@ -22,8 +22,9 @@ start() {
 		# Encrypted storage archive is a SquashFS file, mounting it
 		mkdir -p /run/encfs/encrypted
 		squashfuse "${ENCRYPTED_STORAGE_ARCHIVE}" /run/encfs/encrypted
-		# TODO: Find a way to input password
-		encfs "${ENCRYPTED_STORAGE_ARCHIVE}" "${ENCRYPTED_STORAGE_MOUNTPOINT}"
+		# Writing to script which returns passphrase to encfs program
+		printf "#!/bin/sh\nprintf '${ENCRYPTED_STORAGE_PASSPHRASE}\p'\nreturn 0\n" | sed 's/\\p/\\n/g' > /run/encfs/encfs_passphrase_return.sh && chmod +x /run/encfs/encfs_passphrase_return.sh
+		encfs --extpass=/run/encfs/encfs_passphrase_return.sh "${ENCRYPTED_STORAGE_ARCHIVE}" "${ENCRYPTED_STORAGE_MOUNTPOINT}"
 		[ ${?} != 0 ] && error_exit "Encrypted storage setup" 1
 		exit 0
 	else
