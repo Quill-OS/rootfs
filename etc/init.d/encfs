@@ -18,10 +18,10 @@ calculate() {
 
 start() {
 	BOOTSTRAP_CREATE=$(cat /run/encrypted_storage_create 2>/dev/null)
-	if ! grep -q "true" <<< "${BOOTSTRAP_CREATE}"; then
+	if ! echo "${BOOTSTRAP_CREATE}" | grep -q "true"; then
 		ENCRYPTED_STORAGE_CONFIG=$(cat /opt/config/18-encrypted_storage/status 2>/dev/null)
 		STORAGE_LIST=$(cat /opt/config/18-encrypted_storage/storage_list 2>/dev/null)
-		if ! grep -q "true" <<< "${ENCRYPTED_STORAGE_CONFIG}"; then echo "Storage encryption disabled. Exiting."; exit 0; fi
+		if ! echo "${ENCRYPTED_STORAGE_CONFIG}" | grep -q "true"; then echo "Storage encryption disabled. Exiting."; exit 0; fi
 		ENCRYPTED_STORAGE_ARCHIVE=$(cat /run/encrypted_storage_archive 2>/dev/null)
 		ENCRYPTED_STORAGE_MOUNTPOINT=$(cat /run/encrypted_storage_mountpoint 2>/dev/null)
 		ENCRYPTED_STORAGE_PASSPHRASE=$(cat /run/encrypted_storage_passphrase 2>/dev/null)
@@ -30,7 +30,7 @@ start() {
 			mkdir -p /run/encfs
 			mkdir -p /run/encfsd/encrypted
 			squashfuse "${ENCRYPTED_STORAGE_ARCHIVE}" /run/encfs/encrypted
-			if ! grep -q "${ENCRYPTED_STORAGE_MOUNTPOINT}" <<< "${STORAGE_LIST}"; then
+			if ! echo "${STORAGE_LIST}" | grep -q "${ENCRYPTED_STORAGE_MOUNTPOINT}"; then
 				error_exit "Mountpoint is not in trusted storage list" 2
 			else
 				# Writing script which returns passphrase to encfs program
