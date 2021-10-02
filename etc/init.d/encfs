@@ -18,10 +18,10 @@ calculate() {
 
 start() {
 	BOOTSTRAP_CREATE=$(cat /run/encrypted_storage_create 2>/dev/null)
-	if ! grep -q "true" "${BOOTSTRAP_CREATE}"; then
+	if ! grep -q "true" <<< "${BOOTSTRAP_CREATE}"; then
 		ENCRYPTED_STORAGE_CONFIG=$(cat /opt/config/18-encrypted_storage/status 2>/dev/null)
 		STORAGE_LIST=$(cat /opt/config/18-encrypted_storage/storage_list 2>/dev/null)
-		if ! grep -q "true" "${ENCRYPTED_STORAGE_CONFIG}"; then echo "Storage encryption disabled. Exiting."; exit 0; fi
+		if ! grep -q "true" <<< "${ENCRYPTED_STORAGE_CONFIG}"; then echo "Storage encryption disabled. Exiting."; exit 0; fi
 		ENCRYPTED_STORAGE_ARCHIVE=$(cat /run/encrypted_storage_archive 2>/dev/null)
 		ENCRYPTED_STORAGE_MOUNTPOINT=$(cat /run/encrypted_storage_mountpoint 2>/dev/null)
 		ENCRYPTED_STORAGE_PASSPHRASE=$(cat /run/encrypted_storage_passphrase 2>/dev/null)
@@ -30,7 +30,7 @@ start() {
 			mkdir -p /run/encfs
 			mkdir -p /run/encfsd/encrypted
 			squashfuse "${ENCRYPTED_STORAGE_ARCHIVE}" /run/encfs/encrypted
-			if ! grep -q "${ENCRYPTED_STORAGE_MOUNTPOINT}" "${STORAGE_LIST}"; then
+			if ! grep -q "${ENCRYPTED_STORAGE_MOUNTPOINT}" <<< "${STORAGE_LIST}"; then
 				error_exit "Mountpoint is not in trusted storage list" 2
 			else
 				# Writing script which returns passphrase to encfs program
@@ -44,7 +44,6 @@ start() {
 		fi
 	else
 		BOOTSTRAP_FILES_LOCATION=$(cat /run/encrypted_storage_bootstrap_files_location 2>/dev/null)
-		BOOTSTRAP_ENCRYPTED_STORAGE_LOCATION=$(cat /run/encrypted_storage_bootstrap_location 2>/dev/null)
 		BOOTSTRAP_PASSPHRASE=$(cat /run/encrypted_storage_bootstrap_passphrase 2>/dev/null)
 		MEMTOTAL=$(grep "MemTotal" /proc/meminfo | awk '{ print $2 }')
 		[ ! -e "${BOOTSTRAP_FILES_LOCATION}" ] && error_exit "Bootstrap files location not found" 127
@@ -59,7 +58,7 @@ start() {
 			BOOTSTRAP_ROOT_ENCRYPTED="/run/encfsd/bootstrap_root_encrypted"
 			BOOTSTRAP_ROOT_VISIBLE="/run/encfsd/bootstrap_root_visible"
 		else
-			BOOTSTRAP_ROOT="/data/storage/encfsd/bootstrap_root_encrypted"
+			BOOTSTRAP_ROOT_ENCRYPTED="/data/storage/encfsd/bootstrap_root_encrypted"
 			BOOTSTRAP_ROOT_VISIBLE="/data/storage/encfsd/bootstrap_root_visible"
 		fi
 		mkdir -p "${BOOTSTRAP_ROOT_ENCRYPTED}"
