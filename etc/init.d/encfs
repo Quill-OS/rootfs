@@ -70,7 +70,7 @@ start() {
 		printf "#!/bin/sh\nprintf '${BOOTSTRAP_PASSPHRASE}\p${BOOTSTRAP_PASSPHRASE}\p'\nreturn 0\n" | sed 's/\\p/\\n/g' > /run/encfs/encfs_bootstrap_return.sh && chmod +x /run/encfs/encfs_bootstrap_return.sh
 		encfs --paranoia --extpass=/run/encfs/encfs_bootstrap_return.sh "${BOOTSTRAP_ROOT_ENCRYPTED}" "${BOOTSTRAP_ROOT_VISIBLE}" || error_exit "Encrypted storage setup" 2
 		rm -rf /run/encfs
-		find "${BOOTSTRAP_FILES_LOCATION}" -type f -exec cp {} "${BOOTSTRAP_ROOT_VISIBLE}" \; || error_exit "Files copy" 1
+		find "${BOOTSTRAP_FILES_LOCATION}" -type f -exec cp -r {} "${BOOTSTRAP_ROOT_VISIBLE}" \; || error_exit "Files copy" 1
 		mksquashfs "${BOOTSTRAP_ROOT_ENCRYPTED}" "${BOOTSTRAP_ARCHIVE_LOCATION}" -b 1048576 -comp xz -Xdict-size 100% -always-use-fragments || error_exit "Failure in compressing encrypted archive" 1
 		sync
 		umount -l -f "${BOOTSTRAP_ROOT_VISIBLE}"
