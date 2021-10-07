@@ -35,8 +35,7 @@ start() {
 			else
 				# Writing script which returns passphrase to encfs program
 				printf "#!/bin/sh\nprintf '${ENCRYPTED_STORAGE_PASSPHRASE}\p'\nreturn 0\n" | sed 's/\\p/\\n/g' > /run/encfs/encfs_passphrase_return.sh && chmod +x /run/encfs/encfs_passphrase_return.sh
-				encfs --extpass=/run/encfs/encfs_passphrase_return.sh /run/encfsd/encrypted "${ENCRYPTED_STORAGE_MOUNTPOINT}"
-				[ ${?} != 0 ] && error_exit "Encrypted storage setup" 1
+				encfs --extpass=/run/encfs/encfs_passphrase_return.sh /run/encfsd/encrypted "${ENCRYPTED_STORAGE_MOUNTPOINT}" || error_exit "Encrypted storage setup" 1
 			fi
 			exit 0
 		else
@@ -44,9 +43,11 @@ start() {
 		fi
 	else
 		BOOTSTRAP_FILES_LOCATION=$(cat /run/encrypted_storage_bootstrap_files_location 2>/dev/null)
+		BOOTSTRAP_ARCHIVE_LOCATION=$(cat /run/encrypted_storage_bootstrap_archive_location 2>/dev/null)
 		BOOTSTRAP_PASSPHRASE=$(cat /run/encrypted_storage_bootstrap_passphrase 2>/dev/null)
 		MEMTOTAL=$(grep "MemTotal" /proc/meminfo | awk '{ print $2 }')
 		[ ! -e "${BOOTSTRAP_FILES_LOCATION}" ] && error_exit "Bootstrap files location not found" 127
+		[ ! -e "${BOOTSTRAP_ARCHIVE_LOCATION}" ] && BOOTSTRAP_ARCHIVE_LOCATION="${BOOTSTRAP_FILES_LOCATION}/data.encfs"
 		BOOTSTRAP_FILES_LOCATION_FOLDER_SIZE=$(du -s "${BOOTSTRAP_FILES_LOCATION}" | awk '{ print $1 }')
 		if [ -z "${BOOTSTRAP_FILES_LOCATION}" ] || [ -z "${BOOTSTRAP_PASSPHRASE}" ]; then
 			error_exit "Arguments parsing" 127
@@ -67,7 +68,13 @@ start() {
 
 		# Writing script which returns passphrase to encfs program
 		printf "#!/bin/sh\nprintf '${BOOTSTRAP_PASSPHRASE}\p${BOOTSTRAP_PASSPHRASE}\p'\nreturn 0\n" | sed 's/\\p/\\n/g' > /run/encfs/encfs_bootstrap_return.sh && chmod +x /run/encfs/encfs_bootstrap_return.sh
-		[ ${?} != 0 ] && error_exit "Encrypted storage setup" 2
-		encfs --paranoia --extpass=/run/encfs/encfs_bootstrap_return.sh "${BOOTSTRAP_ROOT_ENCRYPTED}" "${BOOTSTRAP_ROOT_VISIBLE}"
+		encfs --paranoia --extpass=/run/encfs/encfs_bootstrap_return.sh "${BOOTSTRAP_ROOT_ENCRYPTED}" "${BOOTSTRAP_ROOT_VISIBLE}" || error_exit "Encrypted storage setup" 2
+		rm -rf /run/encfs
+		find "${BOOTSTRAP_FILES_LOCATION}" -type f -exec cp {} "${BOOTSTRAP_ROOT_VISIBLE}" \; || error_exit "Files copy" 1
+		mksquashfs "${BOOTSTRAP_ROOT_ENCRYPTED}" "${BOOTSTRAP_ARCHIVE_LOCATION}" -b 1048576 -comp xz -Xdict-size 100% -always-use-fragments || error_exit "Failure in compressing encrypted archive" 1
+		sync
+		umount -l -f "${BOOTSTRAP_ROOT_VISIBLE}"
+		rm -rf /run/encfsd /data/storage/encfsd
+		sync
 	fi
 }
