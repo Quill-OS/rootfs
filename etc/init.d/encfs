@@ -17,17 +17,16 @@ calculate() {
 }
 
 start() {
-	BOOTSTRAP_CREATE=$(cat /run/encrypted_storage_create 2>/dev/null)
+	BOOTSTRAP_CREATE=$(cat /run/encfs/encrypted_storage_create 2>/dev/null)
 	if ! echo "${BOOTSTRAP_CREATE}" | grep -q "true"; then
 		ENCRYPTED_STORAGE_CONFIG=$(cat /opt/config/18-encrypted_storage/status 2>/dev/null)
 		STORAGE_LIST=$(cat /opt/config/18-encrypted_storage/storage_list 2>/dev/null)
 		if ! echo "${ENCRYPTED_STORAGE_CONFIG}" | grep -q "true"; then echo "Storage encryption disabled. Exiting."; exit 0; fi
-		ENCRYPTED_STORAGE_ARCHIVE=$(cat /run/encrypted_storage_archive 2>/dev/null)
-		ENCRYPTED_STORAGE_MOUNTPOINT=$(cat /run/encrypted_storage_mountpoint 2>/dev/null)
-		ENCRYPTED_STORAGE_PASSPHRASE=$(cat /run/encrypted_storage_passphrase 2>/dev/null)
+		ENCRYPTED_STORAGE_ARCHIVE=$(cat /run/encfs/encrypted_storage_archive 2>/dev/null)
+		ENCRYPTED_STORAGE_MOUNTPOINT=$(cat /run/encfs/encrypted_storage_mountpoint 2>/dev/null)
+		ENCRYPTED_STORAGE_PASSPHRASE=$(cat /run/encfs/encrypted_storage_passphrase 2>/dev/null)
 		if [ ! -z "${ENCRYPTED_STORAGE_ARCHIVE}" ] && [ ! -z "${ENCRYPTED_STORAGE_MOUNTPOINT}" ] && [ ! -z "${ENCRYPTED_STORAGE_PASSPHRASE}" ]; then
 			# Encrypted storage archive is a SquashFS file, mounting it
-			mkdir -p /run/encfs
 			mkdir -p /run/encfsd/encrypted
 			squashfuse "${ENCRYPTED_STORAGE_ARCHIVE}" /run/encfs/encrypted
 			if ! echo "${STORAGE_LIST}" | grep -q "${ENCRYPTED_STORAGE_MOUNTPOINT}"; then
@@ -42,9 +41,9 @@ start() {
 			error_exit "Arguments parsing" 2
 		fi
 	else
-		BOOTSTRAP_FILES_LOCATION=$(cat /run/encrypted_storage_bootstrap_files_location 2>/dev/null)
-		BOOTSTRAP_ARCHIVE_LOCATION=$(cat /run/encrypted_storage_bootstrap_archive_location 2>/dev/null)
-		BOOTSTRAP_PASSPHRASE=$(cat /run/encrypted_storage_bootstrap_passphrase 2>/dev/null)
+		BOOTSTRAP_FILES_LOCATION=$(cat /run/encfs/encrypted_storage_bootstrap_files_location 2>/dev/null)
+		BOOTSTRAP_ARCHIVE_LOCATION=$(cat /run/encfs/encrypted_storage_bootstrap_archive_location 2>/dev/null)
+		BOOTSTRAP_PASSPHRASE=$(cat /run/encfs/encrypted_storage_bootstrap_passphrase 2>/dev/null)
 		MEMTOTAL=$(grep "MemTotal" /proc/meminfo | awk '{ print $2 }')
 		[ ! -e "${BOOTSTRAP_FILES_LOCATION}" ] && error_exit "Bootstrap files location not found" 127
 		[ ! -e "${BOOTSTRAP_ARCHIVE_LOCATION}" ] && BOOTSTRAP_ARCHIVE_LOCATION="${BOOTSTRAP_FILES_LOCATION}/data.encfs"
@@ -62,7 +61,6 @@ start() {
 			BOOTSTRAP_ROOT_ENCRYPTED="/run/encfsd/bootstrap_root_encrypted"
 			BOOTSTRAP_ROOT_VISIBLE="/run/encfsd/bootstrap_root_visible"
 		fi
-		mkdir -p /run/encfs
 		mkdir -p "${BOOTSTRAP_ROOT_ENCRYPTED}"
 		mkdir -p "${BOOTSTRAP_ROOT_VISIBLE}"
 
