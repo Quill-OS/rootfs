@@ -28,12 +28,12 @@ start() {
 		if [ ! -z "${ENCRYPTED_STORAGE_ARCHIVE}" ] && [ ! -z "${ENCRYPTED_STORAGE_MOUNTPOINT}" ] && [ ! -z "${ENCRYPTED_STORAGE_PASSPHRASE}" ]; then
 			# Encrypted storage archive is a SquashFS file, mounting it
 			mkdir -p /run/encfsd/encrypted
-			squashfuse "${ENCRYPTED_STORAGE_ARCHIVE}" /run/encfs/encrypted
+			squashfuse "${ENCRYPTED_STORAGE_ARCHIVE}" /run/encfsd/encrypted
 			if ! echo "${STORAGE_LIST}" | grep -q "${ENCRYPTED_STORAGE_MOUNTPOINT}"; then
 				error_exit "Mountpoint is not in trusted storage list" 2
 			else
 				# Writing script which returns passphrase to encfs program
-				printf "#!/bin/sh\nprintf '${ENCRYPTED_STORAGE_PASSPHRASE}\p'\nreturn 0\n" | sed 's/\\p/\\n/g' > /run/encfs/encfs_passphrase_return.sh && chmod +x /run/encfs/encfs_passphrase_return.sh
+				printf "#!/bin/sh\nprintf '${ENCRYPTED_STORAGE_PASSPHRASE}\p'\nexit 0\n" | sed 's/\\p/\\n/g' > /run/encfs/encfs_passphrase_return.sh && chmod +x /run/encfs/encfs_passphrase_return.sh
 				encfs --extpass=/run/encfs/encfs_passphrase_return.sh /run/encfsd/encrypted "${ENCRYPTED_STORAGE_MOUNTPOINT}" || error_exit "Encrypted storage setup" 1
 			fi
 			exit 0
@@ -46,7 +46,7 @@ start() {
 		BOOTSTRAP_PASSPHRASE=$(cat /run/encfs/encrypted_storage_bootstrap_passphrase 2>/dev/null)
 		MEMTOTAL=$(grep "MemTotal" /proc/meminfo | awk '{ print $2 }')
 		[ ! -e "${BOOTSTRAP_FILES_LOCATION}" ] && error_exit "Bootstrap files location not found" 127
-		[ ! -e "${BOOTSTRAP_ARCHIVE_LOCATION}" ] && BOOTSTRAP_ARCHIVE_LOCATION="${BOOTSTRAP_FILES_LOCATION}/data.encfs"
+		[ -z "${BOOTSTRAP_ARCHIVE_LOCATION}" ] && BOOTSTRAP_ARCHIVE_LOCATION="${BOOTSTRAP_FILES_LOCATION}/data.encfs"
 		BOOTSTRAP_FILES_LOCATION_FOLDER_SIZE=$(du -s "${BOOTSTRAP_FILES_LOCATION}" | awk '{ print $1 }')
 		if [ -z "${BOOTSTRAP_FILES_LOCATION}" ] || [ -z "${BOOTSTRAP_PASSPHRASE}" ]; then
 			error_exit "Arguments parsing" 127
@@ -65,7 +65,7 @@ start() {
 		mkdir -p "${BOOTSTRAP_ROOT_VISIBLE}"
 
 		# Writing script which returns passphrase to encfs program
-		printf "#!/bin/sh\nprintf '${BOOTSTRAP_PASSPHRASE}\p${BOOTSTRAP_PASSPHRASE}\p'\nreturn 0\n" | sed 's/\\p/\\n/g' > /run/encfs/encfs_bootstrap_return.sh && chmod +x /run/encfs/encfs_bootstrap_return.sh
+		printf "#!/bin/sh\nprintf '${BOOTSTRAP_PASSPHRASE}\p${BOOTSTRAP_PASSPHRASE}\p'\nexit 0\n" | sed 's/\\p/\\n/g' > /run/encfs/encfs_bootstrap_return.sh && chmod +x /run/encfs/encfs_bootstrap_return.sh
 		encfs --paranoia --extpass=/run/encfs/encfs_bootstrap_return.sh "${BOOTSTRAP_ROOT_ENCRYPTED}" "${BOOTSTRAP_ROOT_VISIBLE}" || error_exit "Encrypted storage setup" 2
 		rm -rf /run/encfs
 		find "${BOOTSTRAP_FILES_LOCATION}" -type f -exec cp -r {} "${BOOTSTRAP_ROOT_VISIBLE}" \; || error_exit "Files copy" 1
