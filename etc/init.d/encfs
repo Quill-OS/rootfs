@@ -65,7 +65,7 @@ start() {
 		mkdir -p "${BOOTSTRAP_ROOT_VISIBLE}"
 
 		# Writing script which returns passphrase to encfs program
-		printf "#!/bin/sh\nprintf '${BOOTSTRAP_PASSPHRASE}\p${BOOTSTRAP_PASSPHRASE}\p'\nexit 0\n" | sed 's/\\p/\\n/g' > /run/encfs/encfs_bootstrap_return.sh && chmod +x /run/encfs/encfs_bootstrap_return.sh
+		printf "#!/bin/sh\nprintf '${BOOTSTRAP_PASSPHRASE}\p'\nexit 0\n" | sed 's/\\p/\\n/g' > /run/encfs/encfs_bootstrap_return.sh && chmod +x /run/encfs/encfs_bootstrap_return.sh
 		encfs --paranoia --extpass=/run/encfs/encfs_bootstrap_return.sh "${BOOTSTRAP_ROOT_ENCRYPTED}" "${BOOTSTRAP_ROOT_VISIBLE}" || error_exit "Encrypted storage setup" 2
 		rm -rf /run/encfs
 		find "${BOOTSTRAP_FILES_LOCATION}" -type f -exec cp -r {} "${BOOTSTRAP_ROOT_VISIBLE}" \; || error_exit "Files copy" 1
