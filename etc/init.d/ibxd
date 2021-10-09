@@ -121,6 +121,8 @@ start() {
 			elif [[ "$line" == "netsurf_launch" ]]; then
 				su -s /bin/sh -c "env DISPLAY=:0 chroot /xorg /bin/netsurf-gtk2"
 				echo "stop" > /xorg/tmp/netsurf-fifo
+			elif [[ "$line" == "encfs_restart" ]]; then
+				rc-service encfs restart
 			fi
 		fi
 	done &
