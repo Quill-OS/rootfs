@@ -35,6 +35,7 @@ start() {
 				# Writing script which returns passphrase to encfs program
 				printf "#!/bin/sh\nprintf '${ENCRYPTED_STORAGE_PASSPHRASE}\p'\nexit 0\n" | sed 's/\\p/\\n/g' > /run/encfs/encfs_passphrase_return.sh && chmod +x /run/encfs/encfs_passphrase_return.sh
 				encfs --extpass=/run/encfs/encfs_passphrase_return.sh /run/encfsd/encrypted "${ENCRYPTED_STORAGE_MOUNTPOINT}" || error_exit "Encrypted storage setup" 1
+				echo "true" > /run/encrypted_storage_setup
 			fi
 			exit 0
 		else
@@ -74,5 +75,6 @@ start() {
 		umount -l -f "${BOOTSTRAP_ROOT_VISIBLE}"
 		rm -rf /run/encfsd /data/storage/encfsd
 		sync
+		echo "true" > /run/encrypted_storage_bootstrap_setup
 	fi
 }
