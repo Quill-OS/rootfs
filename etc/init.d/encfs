@@ -83,3 +83,12 @@ start() {
 		echo "true" > /run/encrypted_storage_bootstrap_setup
 	fi
 }
+
+stop() {
+	# Most common mountpoints
+	sync
+	umount -l -f /kobo/mnt/onboard/onboard/encfs-decrypted
+	umount -l -f /data/onboard/encfs-decrypted
+	umount -l -f /run/encfsd/encrypted
+	rm -rf /run/encfs /run/encfsd /data/storage/encfsd
+}
