@@ -9,6 +9,7 @@ depend() {
 error_exit() {
 	echo "Error: ${1}. Exiting."
 	[ -z "${2}" ] && exit 1
+	[ "${3}" == 1 ] && echo "false" > /run/encfs_mounted
 	exit "${2}"
 }
 
@@ -35,7 +36,7 @@ start() {
 			else
 				# Writing script which returns passphrase to encfs program
 				printf "#!/bin/sh\nprintf '${ENCRYPTED_STORAGE_PASSPHRASE}\p'\nexit 0\n" | sed 's/\\p/\\n/g' > /run/encfs/encfs_passphrase_return.sh && chmod +x /run/encfs/encfs_passphrase_return.sh
-				encfs --extpass=/run/encfs/encfs_passphrase_return.sh /run/encfsd/encrypted "${ENCRYPTED_STORAGE_MOUNTPOINT}" || error_exit "Encrypted storage setup" 1
+				encfs --extpass=/run/encfs/encfs_passphrase_return.sh /run/encfsd/encrypted "${ENCRYPTED_STORAGE_MOUNTPOINT}" || error_exit "Encrypted storage setup" 1 1
 				[ ! -z "${ENCRYPTED_STORAGE_BINDMOUNT}" ] && mount --bind "${ENCRYPTED_STORAGE_MOUNTPOINT}" "${ENCRYPTED_STORAGE_BINDMOUNT}"
 				rm -rf /run/encfs
 				echo "true" > /run/encfs_mounted
