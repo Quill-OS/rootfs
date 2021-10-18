@@ -92,5 +92,5 @@ stop() {
 	umount -l -f /kobo/mnt/onboard/onboard/encfs-decrypted 2>/dev/null
 	umount -l -f /data/onboard/encfs-decrypted 2>/dev/null
 	umount -l -f /run/encfsd/encrypted 2>/dev/null
-	rm -rf /run/encfs /run/encfsd /data/storage/encfsd
+	rm -rf /run/encfs /run/encfsd /data/storage/encfsd /run/encfs_mounted
 }
