@@ -4,7 +4,7 @@ DEVICE=$(cat /opt/inkbox_device)
 BRIGHTNESS_SYSFS_FILE="/sys/class/backlight/mxc_msp430.0/brightness"
 /opt/bin/wall "The system is going down for power off NOW!"
 
-if [ "$1" != "no_splash" ]; then
+if [ "${1}" != "no_splash" ]; then
 	sleep 2
 	/opt/bin/fbink/fbink -k -f -q
 	/opt/bin/fbink/fbink -k -f -h -q
