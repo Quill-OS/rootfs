@@ -2,6 +2,7 @@
 
 sync
 rc-service onboard_mount stop 2>/dev/null
+rc-service encfs stop 2>/dev/null
 rc-service mass_storage stop 2>/dev/null
 rc-service inkbox_gui stop 2>/dev/null
 rc-service xorg stop 2>/dev/null
@@ -38,15 +39,15 @@ mount -o remount,ro /opt/storage 2>/dev/null
 umount -l -f /opt/storage
 sync
 
-if [ "$1" == "poweroff" ]; then
+if [ "${1}" == "poweroff" ]; then
 	echo "poweroff" > /run/initrd-fifo
-elif [ "$1" == "reboot" ]; then
-	if [ "$2" == "reset_kobox" ]; then
+elif [ "${1}" == "reboot" ]; then
+	if [ "${2}" == "reset_kobox" ]; then
 		echo "reboot_reset_kobox" > /run/initrd-fifo
 	else
 		echo "reboot" > /run/initrd-fifo
 	fi
-elif [ "$1" == "update_rootfs" ]; then
+elif [ "${1}" == "update_rootfs" ]; then
 	echo "update_rootfs" > /run/initrd-fifo
 else
 	echo "Invalid argument."
