@@ -92,5 +92,8 @@ stop() {
 	umount -l -f /kobo/mnt/onboard/onboard/encfs-decrypted 2>/dev/null
 	umount -l -f /data/onboard/encfs-decrypted 2>/dev/null
 	umount -l -f /run/encfsd/encrypted 2>/dev/null
-	[ "${1}" == "cleanup" ] && rm -rf /run/encfs /run/encfsd /data/storage/encfsd /run/encfs_mounted
+	STOP_CLEANUP=$(cat /run/encfs_stop_cleanup 2>/dev/null)
+	if [ "${STOP_CLEANUP}" == "true" ] || [ "${1}" == "cleanup" ]; then
+		rm -rf /run/encfs_stop_cleanup /run/encfs /run/encfsd /data/storage/encfsd /run/encfs_mounted
+	fi
 }
