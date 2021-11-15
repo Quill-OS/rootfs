@@ -74,9 +74,10 @@ start() {
 					mkdir -p "${REPACK_ROOT_ENCRYPTED}"
 					mkdir -p "${REPACK_ROOT_VISIBLE}"
 
-					printf "#!/bin/sh\nprintf '${BOOTSTRAP_PASSPHRASE}\p'\nexit 0\n" | sed 's/\\p/\\n/g' > /run/encfs/encfs_repack_return.sh && chmod +x /run/encfs/encfs_repack_return.sh
+					printf "#!/bin/sh\nprintf '${REPACK_PASSPHRASE}\p'\nexit 0\n" | sed 's/\\p/\\n/g' > /run/encfs/encfs_repack_return.sh && chmod +x /run/encfs/encfs_repack_return.sh
 					encfs --paranoia --extpass=/run/encfs/encfs_repack_return.sh "${REPACK_ROOT_ENCRYPTED}" "${REPACK_ROOT_VISIBLE}" || error_exit "Encrypted storage repack setup" 2
 					rm -rf /run/encfs
+					find "/data/onboard/encfs-decrypted" -type f -exec cp -r {} "${REPACK_ROOT_VISIBLE}" \; || error_exit "Files copy" 1
 					find "/data/onboard/encfs-dropbox" -type f -exec cp -r {} "${REPACK_ROOT_VISIBLE}" \; || error_exit "Files copy" 1
 					sync
 					stop
