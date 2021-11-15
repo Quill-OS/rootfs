@@ -20,31 +20,77 @@ calculate() {
 
 start() {
 	BOOTSTRAP_CREATE=$(cat /run/encfs/encrypted_storage_create 2>/dev/null)
+	ENCFS_REPACK=$(cat /run/encfs_repack 2>/dev/null)
 	if ! echo "${BOOTSTRAP_CREATE}" | grep -q "true"; then
-		ENCRYPTED_STORAGE_CONFIG=$(cat /opt/config/18-encrypted_storage/status 2>/dev/null)
-		STORAGE_LIST=$(cat /opt/config/18-encrypted_storage/storage_list 2>/dev/null)
-		if ! echo "${ENCRYPTED_STORAGE_CONFIG}" | grep -q "true"; then echo "Storage encryption disabled. Exiting."; exit 0; fi
-		ENCRYPTED_STORAGE_ARCHIVE=$(cat /run/encfs/encrypted_storage_archive 2>/dev/null)
-		ENCRYPTED_STORAGE_MOUNTPOINT=$(cat /run/encfs/encrypted_storage_mountpoint 2>/dev/null)
-		ENCRYPTED_STORAGE_BINDMOUNT=$(cat /run/encfs/encrypted_storage_bindmount 2>/dev/null)
-		ENCRYPTED_STORAGE_PASSPHRASE=$(cat /run/encfs/encrypted_storage_passphrase 2>/dev/null)
-		if [ ! -z "${ENCRYPTED_STORAGE_ARCHIVE}" ] && [ ! -z "${ENCRYPTED_STORAGE_MOUNTPOINT}" ] && [ ! -z "${ENCRYPTED_STORAGE_PASSPHRASE}" ]; then
-			# Encrypted storage archive is a SquashFS file, mounting it
-			mkdir -p /run/encfsd/encrypted
-			squashfuse "${ENCRYPTED_STORAGE_ARCHIVE}" /run/encfsd/encrypted
-			if ! echo "${STORAGE_LIST}" | grep -q "${ENCRYPTED_STORAGE_MOUNTPOINT}"; then
-				error_exit "Mountpoint is not in trusted storage list" 2
+		if ! echo "${ENCFS_REPACK}" | grep -q "true"; then
+			ENCRYPTED_STORAGE_CONFIG=$(cat /opt/config/18-encrypted_storage/status 2>/dev/null)
+			STORAGE_LIST=$(cat /opt/config/18-encrypted_storage/storage_list 2>/dev/null)
+			if ! echo "${ENCRYPTED_STORAGE_CONFIG}" | grep -q "true"; then echo "Storage encryption disabled. Exiting."; exit 0; fi
+			ENCRYPTED_STORAGE_ARCHIVE=$(cat /run/encfs/encrypted_storage_archive 2>/dev/null)
+			ENCRYPTED_STORAGE_MOUNTPOINT=$(cat /run/encfs/encrypted_storage_mountpoint 2>/dev/null)
+			ENCRYPTED_STORAGE_BINDMOUNT=$(cat /run/encfs/encrypted_storage_bindmount 2>/dev/null)
+			ENCRYPTED_STORAGE_PASSPHRASE=$(cat /run/encfs/encrypted_storage_passphrase 2>/dev/null)
+			if [ ! -z "${ENCRYPTED_STORAGE_ARCHIVE}" ] && [ ! -z "${ENCRYPTED_STORAGE_MOUNTPOINT}" ] && [ ! -z "${ENCRYPTED_STORAGE_PASSPHRASE}" ]; then
+				# Encrypted storage archive is a SquashFS file, mounting it
+				mkdir -p /run/encfsd/encrypted
+				squashfuse "${ENCRYPTED_STORAGE_ARCHIVE}" /run/encfsd/encrypted
+				if ! echo "${STORAGE_LIST}" | grep -q "${ENCRYPTED_STORAGE_MOUNTPOINT}"; then
+					error_exit "Mountpoint is not in trusted storage list" 2
+				else
+					# Writing script which returns passphrase to encfs program
+					printf "#!/bin/sh\nprintf '${ENCRYPTED_STORAGE_PASSPHRASE}\p'\nexit 0\n" | sed 's/\\p/\\n/g' > /run/encfs/encfs_passphrase_return.sh && chmod +x /run/encfs/encfs_passphrase_return.sh
+					encfs --extpass=/run/encfs/encfs_passphrase_return.sh /run/encfsd/encrypted "${ENCRYPTED_STORAGE_MOUNTPOINT}" || error_exit "Encrypted storage setup" 1 1
+					[ ! -z "${ENCRYPTED_STORAGE_BINDMOUNT}" ] && mount --bind "${ENCRYPTED_STORAGE_MOUNTPOINT}" "${ENCRYPTED_STORAGE_BINDMOUNT}"
+					rm -rf /run/encfs
+					echo "true" > /run/encfs_mounted
+				fi
+				exit 0
 			else
-				# Writing script which returns passphrase to encfs program
-				printf "#!/bin/sh\nprintf '${ENCRYPTED_STORAGE_PASSPHRASE}\p'\nexit 0\n" | sed 's/\\p/\\n/g' > /run/encfs/encfs_passphrase_return.sh && chmod +x /run/encfs/encfs_passphrase_return.sh
-				encfs --extpass=/run/encfs/encfs_passphrase_return.sh /run/encfsd/encrypted "${ENCRYPTED_STORAGE_MOUNTPOINT}" || error_exit "Encrypted storage setup" 1 1
-				[ ! -z "${ENCRYPTED_STORAGE_BINDMOUNT}" ] && mount --bind "${ENCRYPTED_STORAGE_MOUNTPOINT}" "${ENCRYPTED_STORAGE_BINDMOUNT}"
-				rm -rf /run/encfs
-				echo "true" > /run/encfs_mounted
+				error_exit "Arguments parsing" 2
 			fi
-			exit 0
 		else
-			error_exit "Arguments parsing" 2
+			# Storage must be mounted to continue
+			# WARNING: This function tightly follows InkBox's GUI handling of EncFS setup. See https://github.com/Kobo-InkBox/inkbox/blob/master/encryptionmanager.cpp if you want to implement repacking in a script.
+			REPACK_PASSPHRASE=$(cat /run/encfs/encrypted_storage_repack_passphrase 2>/dev/null)
+			[ -z "${REPACK_PASSPHRASE}" ] && error_exit "No passphrase provided, cannot continue" 1
+			if ! grep -q "true" /run/encfs_mounted 2>/dev/null; then
+				echo "false" > /run/encfs_repack_status
+				error_exit "EncFS repack needs existing encrypted archive to be already mounted" 127
+			else
+				# Checking if dropbox is empty
+				if ! find -- "/data/onboard/encfs-dropbox" -prune -type d -empty | grep -q '^'; then
+					MEMTOTAL=$(grep "MemTotal" /proc/meminfo | awk '{ print $2 }')
+					AVAILABLE_RAM=$(calculate ${MEMTOTAL}/4)
+					CURRENT_FOLDER_SIZE=$(du -s "/data/onboard/encfs-decrypted" | awk '{ print $1 }')
+					DROPBOX_FOLDER_SIZE=$(du -s "/data/onboard/encfs-dropbox" | awk '{ print $1 }')
+					TOTAL_SIZE=$(( ${CURRENT_FOLDER_SIZE} + ${DROPBOX_FOLDER_SIZE} ))
+					if [ ${TOTAL_SIZE} -gt ${AVAILABLE_RAM} ]; then
+						REPACK_ROOT_ENCRYPTED="/data/storage/encfsd/repack_root_encrypted"
+						REPACK_ROOT_VISIBLE="/data/storage/encfsd/repack_root_visible"
+					else
+						REPACK_ROOT_ENCRYPTED="/run/encfsd/repack_root_encrypted"
+						REPACK_ROOT_VISIBLE="/run/encfsd/repack_root_visible"
+					fi
+					mkdir -p "${REPACK_ROOT_ENCRYPTED}"
+					mkdir -p "${REPACK_ROOT_VISIBLE}"
+
+					printf "#!/bin/sh\nprintf '${BOOTSTRAP_PASSPHRASE}\p'\nexit 0\n" | sed 's/\\p/\\n/g' > /run/encfs/encfs_repack_return.sh && chmod +x /run/encfs/encfs_repack_return.sh
+					encfs --paranoia --extpass=/run/encfs/encfs_repack_return.sh "${REPACK_ROOT_ENCRYPTED}" "${REPACK_ROOT_VISIBLE}" || error_exit "Encrypted storage repack setup" 2
+					rm -rf /run/encfs
+					find "/data/onboard/encfs-dropbox" -type f -exec cp -r {} "${REPACK_ROOT_VISIBLE}" \; || error_exit "Files copy" 1
+					sync
+					stop
+					rm -rf "/data/onboard/encfs-dropbox" && mkdir -p "/data/onboard/encfs-dropbox"
+					rm -f "/data/onboard/data.encfs"
+					mksquashfs "${REPACK_ROOT_ENCRYPTED}" "/data/onboard/data.encfs" -b 1048576 -comp xz -Xdict-size 100% -always-use-fragments || error_exit "Failure in compressing encrypted archive" 1
+					sync
+					umount -l -f "${REPACK_ROOT_VISIBLE}"
+					rm -rf /run/encfsd /data/storage/encfsd
+					echo "true" > /run/encfs_repack_status
+				else
+					error_exit "No books found in dropbox, cannot continue" 127
+				fi
+			fi
 		fi
 	else
 		BOOTSTRAP_FILES_LOCATION=$(cat /run/encfs/encrypted_storage_bootstrap_files_location 2>/dev/null)
@@ -75,6 +121,7 @@ start() {
 		encfs --paranoia --extpass=/run/encfs/encfs_bootstrap_return.sh "${BOOTSTRAP_ROOT_ENCRYPTED}" "${BOOTSTRAP_ROOT_VISIBLE}" || error_exit "Encrypted storage setup" 2
 		rm -rf /run/encfs
 		find "${BOOTSTRAP_FILES_LOCATION}" -type f -exec cp -r {} "${BOOTSTRAP_ROOT_VISIBLE}" \; || error_exit "Files copy" 1
+		sync
 		rm -rf "${BOOTSTRAP_FILES_LOCATION}" && mkdir -p "${BOOTSTRAP_FILES_LOCATION}"
 		rm -f "${BOOTSTRAP_ARCHIVE_LOCATION}"
 		mksquashfs "${BOOTSTRAP_ROOT_ENCRYPTED}" "${BOOTSTRAP_ARCHIVE_LOCATION}" -b 1048576 -comp xz -Xdict-size 100% -always-use-fragments || error_exit "Failure in compressing encrypted archive" 1
