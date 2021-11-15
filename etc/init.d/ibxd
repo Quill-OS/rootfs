@@ -125,10 +125,6 @@ start() {
 				rc-service encfs restart
 			elif [[ "$line" == "encfs_stop" ]]; then
 				rc-service encfs stop
-			elif [[ "$line" == "encfs_repack" ]]; then
-				echo "true" > /run/encfs_repack
-				echo "true" > /run/encfs_stop_cleanup
-				rc-service encfs restart
 			fi
 		fi
 	done &
