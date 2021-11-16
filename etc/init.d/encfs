@@ -81,12 +81,13 @@ start() {
 					find "/data/onboard/encfs-dropbox" -type f -exec cp -r {} "${REPACK_ROOT_VISIBLE}" \; || error_exit "Files copy" 1
 					sync
 					stop
+					rm -f /run/encfs_mounted
 					rm -rf "/data/onboard/encfs-dropbox" && mkdir -p "/data/onboard/encfs-dropbox"
 					rm -f "/data/onboard/data.encfs"
 					mksquashfs "${REPACK_ROOT_ENCRYPTED}" "/data/onboard/data.encfs" -b 1048576 -comp xz -Xdict-size 100% -always-use-fragments || error_exit "Failure in compressing encrypted archive" 1
 					sync
 					umount -l -f "${REPACK_ROOT_VISIBLE}"
-					rm -rf /run/encfsd /data/storage/encfsd
+					rm -rf /run/encfsd /data/storage/encfsd /run/encfs_repack
 					echo "true" > /run/encfs_repack_status
 				else
 					error_exit "No books found in dropbox, cannot continue" 127
