@@ -136,13 +136,19 @@ start() {
 }
 
 stop() {
-	# Most common mountpoints
-	sync
-	umount -l -f /kobo/mnt/onboard/onboard/encfs-decrypted 2>/dev/null
-	umount -l -f /data/onboard/encfs-decrypted 2>/dev/null
-	umount -l -f /run/encfsd/encrypted 2>/dev/null
-	STOP_CLEANUP=$(cat /run/encfs_stop_cleanup 2>/dev/null)
-	if [ "${STOP_CLEANUP}" == "true" ] || [ "${1}" == "cleanup" ]; then
-		rm -rf /run/encfs_stop_cleanup /run/encfs /run/encfsd /data/storage/encfsd /run/encfs_mounted
+	DRY_STOP=$(cat /run/encfs_dry_stop 2>/dev/null)
+	if [ "${DRY_STOP}" != "true" ]; then
+		# Most common mountpoints
+		sync
+		umount -l -f /kobo/mnt/onboard/onboard/encfs-decrypted 2>/dev/null
+		umount -l -f /data/onboard/encfs-decrypted 2>/dev/null
+		umount -l -f /run/encfsd/encrypted 2>/dev/null
+		STOP_CLEANUP=$(cat /run/encfs_stop_cleanup 2>/dev/null)
+		if [ "${STOP_CLEANUP}" == "true" ] || [ "${1}" == "cleanup" ]; then
+			rm -rf /run/encfs_stop_cleanup /run/encfs /run/encfsd /data/storage/encfsd /run/encfs_mounted
+		fi
+	else
+		rm -f /run/encfs_dry_stop
+		echo "encfs: Dry stop"
 	fi
 }
