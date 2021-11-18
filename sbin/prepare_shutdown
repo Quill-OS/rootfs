@@ -1,8 +1,8 @@
 #!/bin/sh
 
 sync
-rc-service onboard_mount stop 2>/dev/null
 rc-service encfs stop 2>/dev/null
+rc-service onboard_mount stop 2>/dev/null
 rc-service mass_storage stop 2>/dev/null
 rc-service inkbox_gui stop 2>/dev/null
 rc-service xorg stop 2>/dev/null
