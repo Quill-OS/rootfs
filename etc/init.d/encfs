@@ -19,6 +19,7 @@ calculate() {
 }
 
 start() {
+	ebegin "Setting up encrypted storage"
 	BOOTSTRAP_CREATE=$(cat /run/encfs/encrypted_storage_create 2>/dev/null)
 	ENCFS_REPACK=$(cat /run/encfs_repack 2>/dev/null)
 	if ! echo "${BOOTSTRAP_CREATE}" | grep -q "true"; then
@@ -138,6 +139,7 @@ start() {
 stop() {
 	DRY_STOP=$(cat /run/encfs_dry_stop 2>/dev/null)
 	if [ "${DRY_STOP}" != "true" ]; then
+		ebegin "Unmounting encrypted storage and cleaning up"
 		# Most common mountpoints
 		sync
 		umount -l -f /kobo/mnt/onboard/onboard/encfs-decrypted 2>/dev/null
