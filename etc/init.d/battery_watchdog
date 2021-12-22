@@ -1,6 +1,6 @@
 #!/sbin/openrc-run
 
-description="Checks battery status/level every 5 mins. and if it is at a critical state, displays a splash and turns off the device."
+description="Checks battery status/level every 30 secs. and if it is at a critical state, displays a splash and turns off the device."
 
 depend() {
 	keyword -prefix -lxc
@@ -34,17 +34,22 @@ battery_check() {
 
 start() {
 	ebegin "Starting battery watchdog"
-	while true; do
-		if grep -q "true" "/kobo/tmp/inkbox_running" &>/dev/null; then
-			if grep -q "true" "/tmp/sleep_mode" &>/dev/null; then
-				battery_check
+	DEVICE=$(cat /opt/inkbox_device)
+	if [ "${DEVICE}" != "emu" ]; then
+		while true; do
+			if grep -q "true" "/kobo/tmp/inkbox_running" &>/dev/null; then
+				if grep -q "true" "/tmp/sleep_mode" &>/dev/null; then
+					battery_check
+				else
+					:
+				fi
 			else
-				:
+				battery_check
 			fi
-		else
-			battery_check
-		fi
-		sleep 30
-	done &
+			sleep 30
+		done &
+	else
+		einfo "Not starting battery watchdog since InkBox is running in an emulator."
+	fi
 	eend $?
 }
