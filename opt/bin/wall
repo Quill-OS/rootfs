@@ -30,5 +30,13 @@ else
 			echo_message "$1"
 		fi
 	done
+
+	for f in /dev/ttyAMA* ; do
+		if [ "$f" == "/dev/ttyAMA*" ]; then
+			continue
+		else
+			echo_message "$1"
+		fi
+	done
 fi
 
