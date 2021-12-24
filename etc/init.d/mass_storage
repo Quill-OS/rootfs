@@ -9,15 +9,20 @@ depend() {
 start() {
 	ebegin "Exporting onboard storage over USB..."
 	FILE=$(cat /run/mass_storage_export)
+	DEVICE=$(cat /opt/inkbox_device)
 	if [ -z "${FILE}" ]; then
 		FILE="/opt/storage/onboard"
 	fi
 	rc-service usbnet stop
-	insmod /modules/g_mass_storage.ko file="${FILE}" removable=y stall=0
+	if [ "${DEVICE}" != "emu" ]; then
+		insmod /modules/g_mass_storage.ko file="${FILE}" removable=y stall=0
+	fi
 	eend $?
 }
 stop() {
 	ebegin "Exiting USBMS session..."
-	rmmod /modules/g_mass_storage.ko
+	if [ "${DEVICE}" != "emu" ]; then
+		rmmod /modules/g_mass_storage.ko
+	fi
 	eend $?
 }

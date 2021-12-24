@@ -26,6 +26,8 @@ start() {
 				insmod "/modules/drivers/usb/gadget/function/usb_f_ecm_subset.ko"
 				insmod "/modules/drivers/usb/gadget/function/usb_f_rndis.ko"
 				insmod "/modules/drivers/usb/gadget/legacy/g_ether.ko"
+			elif [ "${DEVICE}" == "emu" ]; then
+				:
 			else
 				insmod "/modules/g_ether.ko"
 			fi
@@ -42,6 +44,8 @@ start() {
 }
 stop() {
 	ebegin "Stopping USBNet"
-	rmmod /modules/g_ether.ko
+	if [ "${DEVICE}" != "emu" ]; then
+		rmmod /modules/g_ether.ko
+	fi
 	eend $?
 }
