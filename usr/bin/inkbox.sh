@@ -26,7 +26,12 @@ else
 	echo 0 > /sys/class/leds/pmic_ledsb/brightness
 fi
 echo ${FB_UR} > /sys/class/graphics/fb0/rotate
-chroot /kobo /mnt/onboard/.adds/inkbox/inkbox.sh &
+
+if [ "$DEVICE" != "emu" ]; then
+	env QT_QPA_PLATFORM=kobo:touchscreen_rotate=90:touchscreen_invert_x=auto:touchscreen_invert_y=auto:logicaldpitarget=0 chroot /kobo /mnt/onboard/.adds/inkbox/inkbox.sh &
+else
+	env QT_QPA_PLATFORM=vnc:size=1072x1448 chroot /kobo /mnt/onboard/.adds/inkbox/inkbox.sh &
+fi
 
 if [ "$ROOTED" == "true" ]; then
 	rc-service sshd start &
