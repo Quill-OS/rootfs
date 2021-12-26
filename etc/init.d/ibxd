@@ -125,6 +125,10 @@ start() {
 				rc-service encfs restart
 			elif [[ "$line" == "encfs_stop" ]]; then
 				rc-service encfs stop
+			elif [[ "$line" == "gutenberg_sync" ]]; then
+				/usr/local/bin/gutenberg/fetch_catalogue.sh
+				/usr/local/bin/gutenberg/get_four_latest_books.sh
+				echo "true" > /kobo/inkbox/gutenbergSyncDone
 			fi
 		fi
 	done &
