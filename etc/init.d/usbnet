@@ -9,7 +9,7 @@ depend() {
 start() {
 	ebegin "Starting USBNet"
 	ROOTED=$(cat /opt/root/rooted)
-	FLAG=$(cat /boot/flags/USBNET_ENABLE)
+	FLAG=$(cat /boot/flags/USBNET_ENABLE 2>/dev/null)
 	DEVICE=$(cat /opt/inkbox_device)
 
 	if [ "${ROOTED}" == "true" ]; then
