@@ -4,8 +4,8 @@ mkdir -p /data/onboard/.inkbox/gutenberg-data && cd /data/onboard/.inkbox/gutenb
 rm -rf /data/onboard/.inkbox/gutenberg-data/latest-books
 
 # Get the 4 latest books IDs
-ID_LIST=$(tac /data/storage/gutenberg/catalog.csv | grep "Text" | cut -d ',' -f '1' | head -n 5 | tac | sed '$ d')
-TITLE_LIST=$(tac /data/storage/gutenberg/catalog.csv | grep "Text" | cut -d ',' -f '4' | head -n 5 | tac | sed '$ d')
+ID_LIST=$(tac /data/storage/gutenberg/catalog.csv | grep "Text" | cut -d ',' -f '1' | head -n 9 | tac | sed '$ d')
+TITLE_LIST=$(tac /data/storage/gutenberg/catalog.csv | grep "Text" | cut -d ',' -f '4' | head -n 9 | tac | sed '$ d')
 
 book_number=1
 while read id; do
