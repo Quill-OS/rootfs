@@ -19,6 +19,11 @@ while read title; do
 	if [ "${title:0:1}" == '"' ]; then
 		title=$(echo "${title}" | cut -c 2-)
 	fi
+
+	if [ "${#title}" -gt 25 ]; then
+		title="${title:0:25} …"
+	fi
+
 	echo "${title}" > latest-books/${book_number}/title
 	book_number=$((book_number+1))
 done <<< "${TITLE_LIST}"
