@@ -18,8 +18,10 @@ done <<< "${ID_LIST}"
 book_number=1
 while read title; do
 	if [ "${title:0:1}" == '"' ]; then
-		title_full="${title}"
 		title=$(echo "${title}" | cut -c 2-)
+		title_full="${title}"
+	else
+		title_full="${title}"
 	fi
 
 	if [ "${#title}" -gt 25 ]; then
