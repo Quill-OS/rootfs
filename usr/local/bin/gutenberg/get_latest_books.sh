@@ -21,7 +21,7 @@ while read title; do
 	fi
 
 	if [ "${#title}" -gt 25 ]; then
-		title="${title:0:25} …"
+		title="${title:0:25} ..."
 	fi
 
 	echo "${title}" > latest-books/${book_number}/title
