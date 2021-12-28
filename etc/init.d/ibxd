@@ -129,6 +129,9 @@ start() {
 				/usr/local/bin/gutenberg/fetch_catalog.sh
 				/usr/local/bin/gutenberg/get_latest_books.sh
 				echo "true" > /kobo/inkbox/gutenbergSyncDone
+			elif [[ "$line" == "gutenberg_search" ]]; then
+				SEARCH_TERM=$(cat /kobo/inkbox/gutenberg_search_request)
+				/usr/local/bin/gutenberg/search_books.sh "${SEARCH_TERM}"
 			fi
 		fi
 	done &
