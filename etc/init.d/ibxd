@@ -131,7 +131,7 @@ start() {
 				echo "true" > /kobo/inkbox/gutenbergSyncDone
 			elif [[ "$line" == "gutenberg_search" ]]; then
 				SEARCH_TERM=$(cat /kobo/inkbox/gutenberg_search_request)
-				/usr/local/bin/gutenberg/search_books.sh "${SEARCH_TERM}"
+				/usr/local/bin/gutenberg/search_catalog.sh "${SEARCH_TERM}"
 			fi
 		fi
 	done &
