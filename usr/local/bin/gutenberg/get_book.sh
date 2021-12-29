@@ -8,5 +8,5 @@ if [ "${2}" != "cover" ]; then
 else
 	mkdir -p /kobo/inkbox/gutenberg
 	wget -O "/kobo/inkbox/gutenberg/book_cover.jpg" "http://gutenberg.org/files/${ID}/${ID}-h/images/cover.jpg"
-	[ ${?} != 0 ] && rm -f "/kobo/inkbox/gutenberg/book_cover.jpg"
+	[ ${?} != 0 ] && rm -f "/kobo/inkbox/gutenberg/book_cover.jpg" && exit 1
 fi
