@@ -135,7 +135,11 @@ start() {
 			elif [[ "$line" == "gutenberg_get_book" ]]; then
 				BOOK_ID=$(cat /kobo/inkbox/gutenberg/bookid)
 				/usr/local/bin/gutenberg/get_book.sh "${BOOK_ID}"
-				echo "true" > /kobo/inkbox/gutenberg/getBookDone
+				if [ ${?} == 0 ]; then
+					echo "true" > /kobo/inkbox/gutenberg/getBookDone
+				else
+					echo "false" > /kobo/inkbox/gutenberg/getBookDone
+				fi
 			elif [[ "$line" == "gutenberg_get_cover" ]]; then
 				BOOK_ID=$(cat /kobo/inkbox/gutenberg/bookid)
 				/usr/local/bin/gutenberg/get_book.sh "${BOOK_ID}" cover
