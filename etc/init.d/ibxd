@@ -127,8 +127,16 @@ start() {
 				rc-service encfs stop
 			elif [[ "$line" == "gutenberg_sync" ]]; then
 				/usr/local/bin/gutenberg/fetch_catalog.sh
-				/usr/local/bin/gutenberg/get_latest_books.sh
-				echo "true" > /kobo/inkbox/gutenbergSyncDone
+				if [ ${?} == 0 ]; then
+					/usr/local/bin/gutenberg/get_latest_books.sh
+					if [ ${?} == 0 ]; then
+						echo "true" > /kobo/inkbox/gutenbergSyncDone
+					else
+						echo "false" > /kobo/inkbox/gutenbergSyncDone
+					fi
+				else
+					echo "false" > /kobo/inkbox/gutenbergSyncDone
+				fi
 			elif [[ "$line" == "gutenberg_search" ]]; then
 				SEARCH_TERM=$(cat /kobo/inkbox/gutenberg_search_request)
 				/usr/local/bin/gutenberg/search_catalog.sh "${SEARCH_TERM}"
