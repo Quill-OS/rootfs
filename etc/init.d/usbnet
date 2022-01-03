@@ -17,7 +17,7 @@ start() {
 			rc-service mass_storage stop &>/dev/null
 			if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
 				insmod "/modules/g_ether.ko"
-			elif [ "${DEVICE}" == "n873" ]; then
+			elif [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "bpi" ]; then
 				insmod "/modules/fs/configfs/configfs.ko"
 				insmod "/modules/drivers/usb/gadget/libcomposite.ko"
 				insmod "/modules/drivers/usb/gadget/function/u_ether.ko"
