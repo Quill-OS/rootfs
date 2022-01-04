@@ -22,7 +22,7 @@ start() {
 				insmod "/modules/drivers/usb/gadget/libcomposite.ko"
 				insmod "/modules/drivers/usb/gadget/function/u_ether.ko"
 				insmod "/modules/drivers/usb/gadget/function/usb_f_ecm.ko"
-				[ -e "/modules/drivers/usb/gadget/function/usb_f_eem.ko" ]; && insmod "/modules/drivers/usb/gadget/function/usb_f_eem.ko"
+				[ -e "/modules/drivers/usb/gadget/function/usb_f_eem.ko" ] && insmod "/modules/drivers/usb/gadget/function/usb_f_eem.ko"
 				insmod "/modules/drivers/usb/gadget/function/usb_f_ecm_subset.ko"
 				insmod "/modules/drivers/usb/gadget/function/usb_f_rndis.ko"
 				insmod "/modules/drivers/usb/gadget/legacy/g_ether.ko"
