@@ -13,14 +13,17 @@ fi
 
 if [ "$DEVICE" == "n705" ] || [ "$DEVICE" == "n905b" ] || [ "$DEVICE" == "n905c" ] || [ "$DEVICE" == "n613" ]; then
 	FB_UR=3
-	echo 0 > /sys/class/leds/pmic_ledsb/brightness
+	echo 0 > "/sys/class/leds/pmic_ledsb/brightness"
 elif [ "$DEVICE" == "n873" ]; then
 	FB_UR=0
-	echo 1 > /sys/class/leds/GLED/brightness ; echo 0 > /sys/class/leds/GLED/brightness
+	echo 1 > "/sys/class/leds/GLED/brightness" ; echo 0 > "/sys/class/leds/GLED/brightness"
 elif [ "$DEVICE" == "emu" ]; then
 	FB_UR=0
 	ifconfig eth0 up
 	udhcpc -i eth0
+elif [ "$DEVICE" == "bpi" ]; then
+	FB_UR=0
+	echo 0 > "/sys/devices/platform/leds/leds/bpi:red:pwr/brightness"
 else
 	FB_UR=0
 	echo 0 > /sys/class/leds/pmic_ledsb/brightness
