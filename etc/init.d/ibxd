@@ -156,6 +156,14 @@ start() {
 				else
 					echo "false" > /kobo/inkbox/gutenberg/getCoverDone
 				fi
+			elif [[ "$line" == "inkbox_convert_image" ]]; then
+				IMAGE_PATH=$(cat /kobo/tmp/inkboxImagePath)
+				magick "/kobo${IMAGE_PATH}" /kobo/run/image.png
+				if [ ${?} == 0 ]; then
+					echo true > /kobo/inkbox/convertImageDone
+				else
+					echo false > /kobo/inkbox/convertImageDone
+				fi
 			fi
 		fi
 	done &
