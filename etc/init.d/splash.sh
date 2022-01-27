@@ -2,7 +2,7 @@
 
 UPDATE_SPLASH=$(cat /opt/update/will_update 2>/dev/null)
 DEVICE=$(cat /opt/inkbox_device)
-if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
+if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n236" ]; then
 	FB_UR=3
 elif [ "${DEVICE}" == "n873" ]; then
 	FB_UR=0
