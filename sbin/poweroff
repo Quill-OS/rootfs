@@ -1,7 +1,11 @@
 #!/bin/sh
 
 DEVICE=$(cat /opt/inkbox_device)
-BRIGHTNESS_SYSFS_FILE="/sys/class/backlight/mxc_msp430.0/brightness"
+if [ "${DEVICE}" != "n236" ]; then
+	BRIGHTNESS_SYSFS_FILE="/sys/class/backlight/mxc_msp430.0/brightness"
+else
+	BRIGHTNESS_SYSFS_FILE="/sys/class/backlight/mxc_msp430_fl.0/brightness"
+fi
 /opt/bin/wall "The system is going down for power off NOW!"
 
 if [ "${1}" != "no_splash" ]; then
