@@ -1,7 +1,7 @@
 #!/bin/sh
 
 DEVICE=$(cat /opt/inkbox_device)
-if [ "${DEVICE}" == "n873" ]; then
+if [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n236" ]; then
 	WIFI_MODULE="/modules/wifi/8189fs.ko"
 	SDIO_WIFI_PWR_MODULE="/modules/drivers/mmc/card/sdio_wifi_pwr.ko"
 	WIFI_DEV="eth0"
