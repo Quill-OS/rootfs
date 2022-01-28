@@ -61,7 +61,7 @@ if [ ${?} != 0 ]; then
 	exit 1
 fi
 
-if [ "${DEVICE}" == "n905b" ]; then
+if [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n236" ]; then
 	busybox udhcpc
 else
 	dhcpcd eth0
