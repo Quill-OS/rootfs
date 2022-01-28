@@ -11,7 +11,7 @@ else
 	echo "false" > /kobo/tmp/first_launch_since_boot
 fi
 
-if [ "$DEVICE" == "n705" ] || [ "$DEVICE" == "n905b" ] || [ "$DEVICE" == "n905c" ] || [ "$DEVICE" == "n613" ] || [ "$DEVICE" == "n236" ]; then
+if [ "$DEVICE" == "n705" ] || [ "$DEVICE" == "n905b" ] || [ "$DEVICE" == "n905c" ] || [ "$DEVICE" == "n613" ]; then
 	FB_UR=3
 	echo 0 > "/sys/class/leds/pmic_ledsb/brightness"
 elif [ "$DEVICE" == "n873" ]; then
@@ -24,6 +24,9 @@ elif [ "$DEVICE" == "emu" ]; then
 elif [ "$DEVICE" == "bpi" ]; then
 	FB_UR=0
 	echo 0 > "/sys/devices/platform/leds/leds/bpi:red:pwr/brightness"
+elif [ "$DEVICE" == "n236" ]; then
+	FB_UR=3
+	/opt/bin/shutdown_led
 else
 	FB_UR=0
 	echo 0 > /sys/class/leds/pmic_ledsb/brightness
