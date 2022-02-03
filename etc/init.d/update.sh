@@ -43,6 +43,8 @@ else
 fi
 KERNEL="${BASEPATH}/uImage-${KERNEL_TYPE}-${DEVICE}"
 KERNEL_DGST="${KERNEL}.dgst"
+DIAGS_KERNEL="${BASEPATH}/uImage-diags-${DEVICE}"
+DIAGS_KERNEL_DGST="${DIAGS_KERNEL}.dgst"
 
 REBOOT_FLAG=0
 
@@ -157,6 +159,24 @@ update_kernel() {
 	fi
 }
 
+update_diags_kernel() {
+	openssl dgst -sha256 -verify /opt/key/public.pem -signature "${DIAGS_KERNEL_DGST}" "${DIAGS_KERNEL}"
+	if [ ${?} != 0 ]; then
+		SUB_VERIFIED="${DIAGS_KERNEL}"
+		error_msg
+		write_alert signature
+		exit 1
+	else
+		dd if="${DIAGS_KERNEL}" of=/dev/mmcblk0 bs=512 seek=19456
+		rm /opt/update/will_update
+		echo "true" > "${UPDATE_DIR}/inkbox_updated"
+		echo "false" > /boot/flags/WILL_UPDATE
+		echo "false" > /opt/update/will_update
+		sync
+		return 0
+	fi
+}
+
 update_recoveryfs() {
 	openssl dgst -sha256 -verify /opt/key/public.pem -signature "${RECOVERYFS_DGST}" "${RECOVERYFS}"
 	if [ ${?} != 0 ]; then
@@ -237,8 +257,12 @@ if [ ${CAN_UPDATE} == 1 ]; then
 					update_u_boot
 				fi
 				if [ -e "${KERNEL}" ]; then
-					echo "Updating Linux kernel ..."
+					echo "Updating 'Main' Linux kernel ..."
 					update_kernel
+				fi
+				if [ -e "${DIAGS_KERNEL}" ]; then
+					echo "Updating 'Basic Diagnostics' Linux kernel ..."
+					update_diags_kernel
 				fi
 				if [ -e "${RECOVERYFS}" ]; then
 					echo "Updating recovery filesystem ..."
