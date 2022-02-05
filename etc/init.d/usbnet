@@ -34,11 +34,11 @@ start() {
 			ifconfig usb0 up
 			ifconfig usb0 192.168.2.2
 		else
-			echo "USB networking is disabled. Please set the USBNET_ENABLE flag and try again."
+			ewarn "USB networking is disabled. Please set the USBNET_ENABLE flag and try again."
 		fi
 	else
 		# Device is not rooted; enforcing security policy.
-		echo "Permission denied; USB networking is disabled."
+		eerror "Permission denied; USB networking is disabled."
 	fi
 	eend $?
 }
