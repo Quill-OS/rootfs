@@ -80,7 +80,7 @@ start() {
 		# Currently, Mini, Touch N905C and Glo don't have Wi-Fi (c.f. https://github.com/kobolabs/Kobo-Reader/issues/105)
 		if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
 			echo "false" > /kobo/run/wifi_able
-		elif [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n236" ]; then
+		elif [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
 			echo "true" > /kobo/run/wifi_able
 		else
 			echo "false" > /kobo/run/wifi_able

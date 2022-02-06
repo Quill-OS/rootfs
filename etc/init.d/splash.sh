@@ -3,7 +3,7 @@
 DISPLAY_DEBUG=$(cat /boot/flags/DISPLAY_DEBUG 2>/dev/null)
 UPDATE_SPLASH=$(cat /opt/update/will_update 2>/dev/null)
 DEVICE=$(cat /opt/inkbox_device)
-if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n236" ]; then
+if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
 	FB_UR=3
 elif [ "${DEVICE}" == "n873" ]; then
 	FB_UR=0

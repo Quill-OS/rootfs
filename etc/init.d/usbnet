@@ -15,7 +15,7 @@ start() {
 	if [ "${ROOTED}" == "true" ]; then
 		if [ "${FLAG}" == "true" ]; then
 			rc-service mass_storage stop &>/dev/null
-			if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n236" ]; then
+			if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
 				insmod "/modules/g_ether.ko"
 			elif [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "bpi" ]; then
 				insmod "/modules/fs/configfs/configfs.ko"

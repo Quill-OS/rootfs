@@ -9,7 +9,7 @@ depend() {
 
 start() {
 	DEVICE=$(cat /opt/inkbox_device)
-	if [ "${DEVICE}" != "n873" ] && [ "${DEVICE}" != "n236" ] && [ "${DEVICE}" != "emu" ] && [ "${DEVICE}" != "bpi" ]; then
+	if [ "${DEVICE}" != "n873" ] && [ "${DEVICE}" != "n236" ] && [ "${DEVICE}" != "n437" ] || [ "${DEVICE}" != "emu" ] && [ "${DEVICE}" != "bpi" ]; then
 		insmod /modules/arcotg_udc.ko
 	fi
 	eend $?
