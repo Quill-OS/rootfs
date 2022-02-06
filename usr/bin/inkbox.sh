@@ -24,7 +24,7 @@ elif [ "$DEVICE" == "emu" ]; then
 elif [ "$DEVICE" == "bpi" ]; then
 	FB_UR=0
 	echo 0 > "/sys/devices/platform/leds/leds/bpi:red:pwr/brightness"
-elif [ "$DEVICE" == "n236" ]; then
+elif [ "$DEVICE" == "n236" ] || [ "$DEVICE" == "n437" ]; then
 	FB_UR=3
 	/opt/bin/shutdown_led
 else

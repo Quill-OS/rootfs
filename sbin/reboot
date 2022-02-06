@@ -1,7 +1,7 @@
 #!/bin/sh
 
 DEVICE=$(cat /opt/inkbox_device)
-if [ "${DEVICE}" != "n236" ]; then
+if [ "${DEVICE}" != "n236" ] && [ "${DEVICE}" != "n437" ]; then
 	BRIGHTNESS_SYSFS_FILE="/sys/class/backlight/mxc_msp430.0/brightness"
 else
 	BRIGHTNESS_SYSFS_FILE="/sys/class/backlight/mxc_msp430_fl.0/brightness"

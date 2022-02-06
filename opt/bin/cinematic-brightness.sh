@@ -5,7 +5,7 @@ DEVICE=$(cat /opt/inkbox_device)
 get_brightness() {
 	if [ "${DEVICE}" == "n613" ]; then
 		BRIGHTNESS=$(cat /opt/config/03-brightness/config)
-	elif [ "${DEVICE}" == "n236" ]; then
+	elif [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
 		BRIGHTNESS=$(cat /sys/class/backlight/mxc_msp430_fl.0/brightness)
 	else
 		BRIGHTNESS=$(cat /sys/class/backlight/mxc_msp430.0/brightness)
@@ -15,7 +15,7 @@ get_brightness() {
 set_brightness() {
 	if [ "${DEVICE}" == "n613" ]; then
 		/opt/bin/frontlight ${1}
-	elif [ "${DEVICE}" == "n236" ]; then
+	elif [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
 		echo ${1} > "/sys/class/backlight/mxc_msp430_fl.0/brightness"
 	else
 		echo ${1} > "/sys/class/backlight/mxc_msp430.0/brightness"

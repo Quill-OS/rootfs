@@ -5,7 +5,7 @@ if [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n236" ]; then
 	WIFI_MODULE="/modules/wifi/8189fs.ko"
 	SDIO_WIFI_PWR_MODULE="/modules/drivers/mmc/card/sdio_wifi_pwr.ko"
 	WIFI_DEV="eth0"
-elif [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
+elif [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n437" ]; then
 	WIFI_MODULE="/modules/dhd.ko"
 	SDIO_WIFI_PWR_MODULE="/modules/sdio_wifi_pwr.ko"
 	WIFI_DEV="eth0"
@@ -17,7 +17,7 @@ fi
 
 cleanup() {
 	killall -q dhcpcd wpa_supplicant
-	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
+	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n437" ]; then
 		wlarm_le down
 	fi
 	ifconfig "${WIFI_DEV}" down
@@ -31,7 +31,7 @@ setup() {
 	# Race condition
 	sleep 1.5
 	ifconfig "${WIFI_DEV}" up
-	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
+	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n437" ]; then
 		wlarm_le up
 	fi
 }
