@@ -5,6 +5,8 @@ if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "
 	ROW=30
 elif [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n236" ]; then
 	ROW=37
+elif [ "${DEVICE}" == "n437" ]; then
+	ROW=35
 elif [ "${DEVICE}" == "n873" ]; then
 	#TODO
 	ROW=50

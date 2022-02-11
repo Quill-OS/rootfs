@@ -19,10 +19,14 @@ if [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n236" ]; then
 	WIFI_MODULE="/modules/wifi/8189fs.ko"
 	SDIO_WIFI_PWR_MODULE="/modules/drivers/mmc/card/sdio_wifi_pwr.ko"
 	WIFI_DEV="eth0"
-elif [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n437" ]; then
+elif [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
 	WIFI_MODULE="/modules/dhd.ko"
 	SDIO_WIFI_PWR_MODULE="/modules/sdio_wifi_pwr.ko"
 	WIFI_DEV="eth0"
+elif [ "${DEVICE}" == "n437" ]; then
+	WIFI_MODULE="/modules/wifi/bcmdhd.ko"
+	SDIO_WIFI_PWR_MODULE="/modules/drivers/mmc/card/sdio_wifi_pwr.ko"
+	WIFI_DEV="wlan0"
 else
 	WIFI_MODULE="/modules/dhd.ko"
 	SDIO_WIFI_PWR_MODULE="/modules/sdio_wifi_pwr.ko"
@@ -54,7 +58,7 @@ cleanup
 setup
 
 wpa_passphrase "${ESSID}" "${PASSPHRASE}" > /run/wpa_supplicant.conf
-wpa_supplicant -D wext -i eth0 -c /run/wpa_supplicant.conf -O /run/wpa_supplicant -B
+wpa_supplicant -D wext -i "${WIFI_DEV}" -c /run/wpa_supplicant.conf -O /run/wpa_supplicant -B
 if [ ${?} != 0 ]; then
 	echo "Failed to connect to network '${ESSID}'"
 	cleanup
@@ -62,9 +66,9 @@ if [ ${?} != 0 ]; then
 fi
 
 if [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
-	busybox udhcpc
+	udhcpc -i "${WIFI_DEV}"
 else
-	dhcpcd eth0
+	dhcpcd "${WIFI_DEV}"
 fi
 
 if [ ${?} != 0 ]; then
