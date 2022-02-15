@@ -44,6 +44,12 @@ start() {
 		mount --bind /opt/config /kobo/mnt/onboard/.adds/inkbox/.config
 		squashfuse /opt/isa/qt.isa /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo
 		squashfuse /opt/isa/python.isa /kobo/mnt/onboard/.adds/Python-3.9.2
+		# Touch input broken on some devices with newer Qt5 platform plugin
+		if [ "${DEVICE}" != "n236" ] && [ "${DEVICE}" != "n437" ] && [ "${DEVICE}" != "n873" ]; then
+			mount --bind /lib/qt5-plugins/libkobo.so.1 /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo/plugins/platforms/libkobo.so
+		else
+			mount --bind /lib/qt5-plugins/libkobo.so.2 /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo/plugins/platforms/libkobo.so
+		fi
 
 	        mount -t sysfs sysfs /kobo/sys
 	        mount -t proc proc /kobo/proc
