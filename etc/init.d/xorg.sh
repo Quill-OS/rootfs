@@ -36,7 +36,12 @@ fi
 
 # Launch touch input handler
 echo $FB_UR > /sys/class/graphics/fb0/rotate
-chroot /opt/X11/vnc-touch /bin/bash -c 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/qt5/lib QT_QPA_PLATFORM=kobo /root/vnc/vnc-nographic vnc://localhost' &
+# fbink_xdamage on the Glo HD displays things very strangely
+if [ "${DEVICE}" == "n437" ]; then
+	chroot /opt/X11/vnc-touch /bin/bash -c 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/qt5/lib QT_QPA_PLATFORM=kobo /root/vnc/vnc vnc://localhost 1' &
+else
+	chroot /opt/X11/vnc-touch /bin/bash -c 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/qt5/lib QT_QPA_PLATFORM=kobo /root/vnc/vnc-nographic vnc://localhost' &
+fi
 
 # Rebuilding caches; here, the FUSE version of OverlayFS does not allow renaming/moving files (probably due to an old 2.6.35.3 kernel version), so we have to circumvent that sometimes by mounting a tmpfs where the files have to be moved.
 # GSchemas (Onboard keyboard needs them to be recompiled)
