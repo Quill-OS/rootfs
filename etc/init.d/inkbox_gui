@@ -44,11 +44,10 @@ start() {
 		mount --bind /opt/config /kobo/mnt/onboard/.adds/inkbox/.config
 		squashfuse /opt/isa/qt.isa /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo
 		squashfuse /opt/isa/python.isa /kobo/mnt/onboard/.adds/Python-3.9.2
-		# Touch input broken on some devices with newer Qt5 platform plugin
-		if [ "${DEVICE}" != "n236" ] && [ "${DEVICE}" != "n437" ] && [ "${DEVICE}" != "n873" ]; then
-			mount --bind /lib/qt5-plugins/libkobo.so.1 /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo/plugins/platforms/libkobo.so
-		else
+		if [ "${DEVICE}" == "n437" ]; then
 			mount --bind /lib/qt5-plugins/libkobo.so.2 /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo/plugins/platforms/libkobo.so
+		else
+			mount --bind /lib/qt5-plugins/libkobo.so.1 /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo/plugins/platforms/libkobo.so
 		fi
 
 	        mount -t sysfs sysfs /kobo/sys
@@ -68,9 +67,10 @@ start() {
 		mount --bind /opt/root /kobo/external_root/opt/root
 		mount --bind /opt/update /kobo/external_root/opt/update
 		mount --bind /opt/storage /kobo/external_root/opt/storage
-		touch /opt/version 2>/dev/null
-		touch /kobo/opt/version 2>/dev/null
+		[ ! -e "/kobo/opt/version" ] && touch /kobo/opt/version
+		[ ! -e "/kobo/bin/kobo_config.sh" ] && touch /kobo/bin/kobo_config.sh
 		mount --bind /opt/version /kobo/opt/version
+		mount --bind /bin/kobo_config.sh /kobo/bin/kobo_config.sh
 		mount --bind /opt/inkbox_device /kobo/external_root/opt/inkbox_device
 		mount --bind /opt/X11/extensions_folders_list /kobo/external_root/opt/X11/extensions_folders_list
 		mount --bind /opt/X11/extensions_list /kobo/external_root/opt/X11/extensions_list
