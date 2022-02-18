@@ -1,5 +1,13 @@
 #!/bin/bash
 
+calculate() {
+	result=$(awk "BEGIN { print "$*" }")
+	printf "%.0f\n" ${result}
+}
+
+eval $(fbink -e)
+coverSize="$(calculate ${viewWidth}/4)x$(calculate ${viewHeight}/4)"
+
 mkdir -p /data/onboard/.inkbox/gutenberg-data && cd /data/onboard/.inkbox/gutenberg-data
 rm -rf /data/onboard/.inkbox/gutenberg-data/latest-books
 
@@ -12,6 +20,9 @@ while read id; do
 	mkdir -p latest-books/${book_number}
 	echo "${id}" > latest-books/${book_number}/id
 	wget -O latest-books/${book_number}/cover.jpg "http://gutenberg.org/files/${id}/${id}-h/images/cover.jpg"
+
+	convert latest-books/${book_number}/cover.jpg -resize "${coverSize}" latest-books/${book_number}/cover.jpg
+
 	book_number=$((book_number+1))
 done <<< "${ID_LIST}"
 
