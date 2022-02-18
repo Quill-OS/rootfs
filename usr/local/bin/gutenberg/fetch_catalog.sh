@@ -11,3 +11,4 @@ wget -O catalog.csv http://www.gutenberg.org/cache/epub/feeds/pg_catalog.csv || 
 
 cd -
 sync
+exit 0

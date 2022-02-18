@@ -20,7 +20,6 @@ while read id; do
 	mkdir -p latest-books/${book_number}
 	echo "${id}" > latest-books/${book_number}/id
 	wget -O latest-books/${book_number}/cover.jpg "http://gutenberg.org/files/${id}/${id}-h/images/cover.jpg"
-
 	convert latest-books/${book_number}/cover.jpg -resize "${coverSize}" latest-books/${book_number}/cover.jpg
 
 	book_number=$((book_number+1))
@@ -44,3 +43,6 @@ while read title; do
 	echo "${title}" > latest-books/${book_number}/title
 	book_number=$((book_number+1))
 done <<< "${TITLE_LIST}"
+
+sync
+exit 0
