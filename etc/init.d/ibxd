@@ -142,7 +142,8 @@ start() {
 				/usr/local/bin/gutenberg/search_catalog.sh "${SEARCH_TERM}"
 			elif [[ "$line" == "gutenberg_get_book" ]]; then
 				BOOK_ID=$(cat /kobo/inkbox/gutenberg/bookid)
-				/usr/local/bin/gutenberg/get_book.sh "${BOOK_ID}"
+				BOOK_TITLE=$(cat /kobo/inkbox/gutenberg/booktitle)
+				/usr/local/bin/gutenberg/get_book.sh "${BOOK_ID}" no_cover "${BOOK_TITLE}"
 				if [ ${?} == 0 ]; then
 					echo "true" > /kobo/inkbox/gutenberg/getBookDone
 				else
