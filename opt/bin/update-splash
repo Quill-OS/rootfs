@@ -3,7 +3,7 @@
 DEVICE=$(cat /opt/inkbox_device)
 if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ]; then
 	ROW=30
-elif [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n236" ]; then
+elif [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n306" ]; then
 	ROW=37
 elif [ "${DEVICE}" == "n437" ]; then
 	ROW=35
