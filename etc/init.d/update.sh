@@ -41,9 +41,16 @@ if grep -q "true" /opt/root/rooted &>/dev/null; then
 else
 	KERNEL_TYPE="std"
 fi
-KERNEL="${BASEPATH}/uImage-${KERNEL_TYPE}-${DEVICE}"
+
+if [ "${DEVICE}" != "n306" ] && [ "${DEVICE}" != "n873" ]; then
+	KERNEL_IMAGE_TYPE="uImage"
+else
+	KERNEL_IMAGE_TYPE="zImage"
+fi
+
+KERNEL="${BASEPATH}/${KERNEL_IMAGE_TYPE}-${KERNEL_TYPE}-${DEVICE}"
 KERNEL_DGST="${KERNEL}.dgst"
-DIAGS_KERNEL="${BASEPATH}/uImage-diags-${DEVICE}"
+DIAGS_KERNEL="${BASEPATH}/${KERNEL_IMAGE_TYPE}-diags-${DEVICE}"
 DIAGS_KERNEL_DGST="${DIAGS_KERNEL}.dgst"
 
 REBOOT_FLAG=0
