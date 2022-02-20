@@ -12,7 +12,7 @@ start() {
 	DEVICE=$(cat /opt/inkbox_device)
 	EXIT_SIGN_FAILURE=0
 
-	rc-service xorg stop
+	rc-service xorg stop 2>/dev/null
 
 	umount -l -f /kobo 2>/dev/null
 	fuse-overlayfs -o lowerdir=/opt/gui_rootfs/read,upperdir=/opt/gui_rootfs/write,workdir=/opt/gui_rootfs/work /kobo
