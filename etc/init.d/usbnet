@@ -10,6 +10,7 @@ start() {
 	ebegin "Starting USBNet"
 	ROOTED=$(cat /opt/root/rooted)
 	FLAG=$(cat /boot/flags/USBNET_ENABLE 2>/dev/null)
+	IP=$(cat /boot/flags/USBNET_IP 2>/dev/null)
 	DEVICE=$(cat /opt/inkbox_device)
 
 	if [ "${ROOTED}" == "true" ]; then
@@ -32,7 +33,14 @@ start() {
 				insmod "/modules/g_ether.ko"
 			fi
 			ifconfig usb0 up
-			ifconfig usb0 192.168.2.2
+			if [ ! -z "${IP}" ]; then
+				ifconfig usb0 "${IP}"
+				if [ ${?} != 0 ]; then
+					ifconfig usb0 192.168.2.2
+				fi
+			else
+				ifconfig usb0 192.168.2.2
+			fi
 		else
 			ewarn "USB networking is disabled. Please set the USBNET_ENABLE flag and try again."
 		fi
