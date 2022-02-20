@@ -1,1 +1,3 @@
-../usr/bin/coreutils
+#!/bin/sh
+
+/opt/bin/coreutils/mv -g "${@}"
