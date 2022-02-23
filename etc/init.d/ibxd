@@ -165,6 +165,13 @@ start() {
 				else
 					echo false > /kobo/inkbox/convertImageDone
 				fi
+			elif [[ "$line" == "generate_system_report" ]]; then
+				/usr/local/bin/generate_system_report.sh
+				if [ ${?} == 0 ]; then
+					echo "true" > /kobo/inkbox/systemReportDone
+				else
+					echo "false" > /kobo/inkbox/systemReportDone
+				fi
 			fi
 		fi
 	done &

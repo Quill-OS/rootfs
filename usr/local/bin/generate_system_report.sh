@@ -89,4 +89,5 @@ echo "<b>Loaded modules: <pre><b>$(lsmod)</b></pre></b>" >> "${SF}"
 echo "<br>" >> "${SF}"
 
 mv "${SF}" "/tmp/sysreport.html"
-htmldoc -f sysreport.pdf sysreport.html --no-toc --no-title --left 30
+htmldoc -f "/data/onboard/sysreport-$(date '+%F_%H.%M.%S').pdf" "/tmp/sysreport.html" --no-toc --no-title --left 30
+rm -f "/tmp/sysreport.html"
