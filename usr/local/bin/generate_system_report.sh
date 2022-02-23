@@ -21,6 +21,8 @@ echo "<li><b>Kernel: <code>$(echo 'get_kernel_commit' > /run/initrd-fifo; sleep 
 echo "</ul>" >> "${SF}"
 echo "<b>Device: <code>$(cat /opt/inkbox_device)</code></b>" >> "${SF}"
 echo "<br>" >> "${SF}"
+echo "<b>Device UID: <pre><b>$(dd if=/dev/mmcblk0 bs=256 skip=2 count=1 status=none | fold -w 64)</b></pre></b>" >> "${SF}"
+echo "<br>" >> "${SF}"
 echo "<b>Kernel type: <code>$(if grep -q "true" /opt/root/rooted 2>/dev/null; then echo "Root"; else echo "Standard"; fi)</code></b>" >> "${SF}"
 echo "<br>" >> "${SF}"
 echo "<b>Kernel build ID: <code>$(echo 'get_kernel_build_id' > /run/initrd-fifo; sleep 0.1; cat /run/kernel_build_id)</code></b>" >> "${SF}"
@@ -54,5 +56,37 @@ echo "<br>" >> "${SF}"
 echo "<b>Running: <code>$(if grep -q "true" /boot/flags/X11_STARTED 2>/dev/null; then echo "Yes"; else echo "No"; fi)</code></b>" >> "${SF}"
 echo "<br>" >> "${SF}"
 
+# Networking
+echo "<h2>Networking</h2>" >> "${SF}"
+echo "<h3>Wi-Fi</h3>" >> "${SF}"
+echo "<b>Wi-Fi support: <code>$(if grep -q "true" /run/wifi_able 2>/dev/null; then echo "Yes"; else echo "No"; fi)</code></b>" >> "${SF}"
+echo "<br>" >> "${SF}"
+if grep -q "true" /run/wifi_able 2>/dev/null; then
+	echo "<b>Wi-Fi enabled: <code>$(if grep -q "dhd" /proc/modules 2>/dev/null || grep -q "8189fs" /proc/modules 2>/dev/null; then echo "Yes"; else echo "No"; fi)</code></b>" >> "${SF}"
+	echo "<br>" >> "${SF}"
+	echo "<b>Wi-Fi connected: <code>$(if timeout 15s ping -c 1 1.1.1.1 &>/dev/null; then echo "Yes"; else echo "No"; fi)</code></b>" >> "${SF}"
+	echo "<br>" >> "${SF}"
+	echo "<b>SSID: <code>$(cat /data/config/17-wifi_connection_information/essid)</code></b>" >> "${SF}"
+	echo "<br>" >> "${SF}"
+	echo "<b>IP: <code>$( (/sbin/ifconfig eth0 || /sbin/ifconfig wlan0) 2>/dev/null | grep 'inet addr' | cut -d: -f2 | awk '{print $1}')</code></b>" >> "${SF}"
+	echo "<br>" >> "${SF}"
+fi
+if grep -q "true" /opt/root/rooted 2>/dev/null; then
+	echo "<h3>USBNet</h3>" >> "${SF}"
+	echo "<b>USBNet enabled: <code>$(if grep -q "g_ether" /proc/modules 2>/dev/null; then echo "Yes"; else echo "No"; fi)</code></b>" >> "${SF}"
+	echo "<br>" >> "${SF}"
+	if grep -q "g_ether" /proc/modules 2>/dev/null; then
+		echo "<b>USBNet IP: <code>$(/sbin/ifconfig usb0 | grep 'inet addr' | cut -d: -f2 | awk '{print $1}')</code></b>" >> "${SF}"
+		echo "<br>" >> "${SF}"
+	fi
+fi
+
+# Kernel
+echo "<h2>Kernel</h2>" >> "${SF}"
+echo "<b>Ring buffer: <pre><b>$(dmesg | fold -w 90)</b></pre></b>" >> "${SF}"
+echo "<br>" >> "${SF}"
+echo "<b>Loaded modules: <pre><b>$(lsmod)</b></pre></b>" >> "${SF}"
+echo "<br>" >> "${SF}"
+
 mv "${SF}" "/tmp/sysreport.html"
-htmldoc -f sysreport.pdf sysreport.html --no-toc --no-title --fontsize 15 --fontspacing 1.5
+htmldoc -f sysreport.pdf sysreport.html --no-toc --no-title --left 30
