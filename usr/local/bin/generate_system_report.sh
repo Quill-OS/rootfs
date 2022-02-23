@@ -64,12 +64,16 @@ echo "<br>" >> "${SF}"
 if grep -q "true" /run/wifi_able 2>/dev/null; then
 	echo "<b>Wi-Fi enabled: <code>$(if grep -q "dhd" /proc/modules 2>/dev/null || grep -q "8189fs" /proc/modules 2>/dev/null; then echo "Yes"; else echo "No"; fi)</code></b>" >> "${SF}"
 	echo "<br>" >> "${SF}"
-	echo "<b>Wi-Fi connected: <code>$(if timeout 15s ping -c 1 1.1.1.1 &>/dev/null; then echo "Yes"; else echo "No"; fi)</code></b>" >> "${SF}"
-	echo "<br>" >> "${SF}"
-	echo "<b>SSID: <code>$(cat /data/config/17-wifi_connection_information/essid)</code></b>" >> "${SF}"
-	echo "<br>" >> "${SF}"
-	echo "<b>IP: <code>$( (/sbin/ifconfig eth0 || /sbin/ifconfig wlan0) 2>/dev/null | grep 'inet addr' | cut -d: -f2 | awk '{print $1}')</code></b>" >> "${SF}"
-	echo "<br>" >> "${SF}"
+	if grep -q "dhd" /proc/modules 2>/dev/null || grep -q "8189fs" /proc/modules 2>/dev/null; then
+		echo "<b>Wi-Fi connected: <code>$(if timeout 15s ping -c 1 1.1.1.1 &>/dev/null; then echo "Yes"; else echo "No"; fi)</code></b>" >> "${SF}"
+		echo "<br>" >> "${SF}"
+		if timeout 15s ping -c 1 1.1.1.1 &>/dev/null; then
+			echo "<b>SSID: <code>$(cat /data/config/17-wifi_connection_information/essid)</code></b>" >> "${SF}"
+			echo "<br>" >> "${SF}"
+			echo "<b>IP: <code>$( (/sbin/ifconfig eth0 || /sbin/ifconfig wlan0) 2>/dev/null | grep 'inet addr' | cut -d: -f2 | awk '{print $1}')</code></b>" >> "${SF}"
+			echo "<br>" >> "${SF}"
+		fi
+	fi
 fi
 if grep -q "true" /opt/root/rooted 2>/dev/null; then
 	echo "<h3>USBNet</h3>" >> "${SF}"
