@@ -52,8 +52,8 @@ start() {
 
 	        mount -t sysfs sysfs /kobo/sys
 	        mount -t proc proc /kobo/proc
-	        mount -t tmpfs tmpfs /kobo/tmp
-	        mount -t tmpfs tmpfs /kobo/var/run
+	        mount -t tmpfs tmpfs -o size=128M /kobo/tmp
+	        mount -t tmpfs tmpfs -o size=128M /kobo/var/run
 	        mount --bind /dev /kobo/dev
 	        mount --bind /dev/pts /kobo/dev/pts
 
