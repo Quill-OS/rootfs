@@ -14,8 +14,10 @@ start() {
 	if [ "${DEVMODE}" == "true" ]; then
 		echo "developer_fake-openssl_mount" > /run/initrd-fifo
 	fi
+	mount -o remount,size=50% /tmp
 	/etc/init.d/update.sh
-	EXITCODE=$?
+	EXITCODE=${?}
+	mount -o remount,size=16M /tmp
 	if [ "${DEVMODE}" == "true" ]; then
 		echo "developer_fake-openssl_unmount" > /run/initrd-fifo
 	fi
