@@ -1,0 +1,7 @@
+#compdef run-help
+local d expl
+local HELPDIR=${HELPDIR:-/usr/local/share/zsh/5.8.1/help}
+[[ -d $HELPDIR ]] && {
+	d=($HELPDIR/*(:t))
+	(($#d)) && d+=('.' ':') && _wanted commands expl 'command' compadd -a d
+} || _man
