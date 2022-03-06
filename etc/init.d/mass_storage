@@ -14,6 +14,9 @@ start() {
 		FILE="/opt/storage/onboard"
 	fi
 	rc-service usbnet stop
+	if [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "n873" ]; then
+		insmod /modules/drivers/usb/gadget/function/usb_f_mass_storage.ko
+	fi
 	if [ "${DEVICE}" != "emu" ]; then
 		insmod /modules/g_mass_storage.ko file="${FILE}" removable=y stall=0
 	fi
@@ -21,6 +24,9 @@ start() {
 }
 stop() {
 	ebegin "Exiting USBMS session..."
+	if [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "n873" ]; then
+		rmmod /modules/drivers/usb/gadget/function/usb_f_mass_storage.ko
+	fi
 	if [ "${DEVICE}" != "emu" ]; then
 		rmmod /modules/g_mass_storage.ko
 	fi
