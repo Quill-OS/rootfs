@@ -15,6 +15,8 @@ start() {
 	fi
 	rc-service usbnet stop
 	if [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "n873" ]; then
+		insmod /modules/fs/configfs/configfs.ko
+		insmod /modules/drivers/usb/gadget/libcomposite.ko
 		insmod /modules/drivers/usb/gadget/function/usb_f_mass_storage.ko
 	fi
 	if [ "${DEVICE}" != "emu" ]; then
@@ -26,6 +28,8 @@ stop() {
 	ebegin "Exiting USBMS session..."
 	if [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "n873" ]; then
 		rmmod /modules/drivers/usb/gadget/function/usb_f_mass_storage.ko
+		rmmod /modules/drivers/usb/gadget/libcomposite.ko
+		rmmod /modules/fs/configfs/configfs.ko
 	fi
 	if [ "${DEVICE}" != "emu" ]; then
 		rmmod /modules/g_mass_storage.ko
