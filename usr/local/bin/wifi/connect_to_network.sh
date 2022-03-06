@@ -65,7 +65,7 @@ if [ ${?} != 0 ]; then
 	exit 1
 fi
 
-if [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
+if [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ]; then
 	udhcpc -i "${WIFI_DEV}"
 else
 	dhcpcd "${WIFI_DEV}"
