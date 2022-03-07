@@ -136,7 +136,11 @@ update_u_boot() {
 		write_alert signature
 		exit 1
 	else
-		dd if="${U_BOOT}" of=/dev/mmcblk0 bs=1K seek=1 skip=1
+		if [ "${DEVICE}" != "n306" ]; then
+			dd if="${U_BOOT}" of=/dev/mmcblk0 bs=1K seek=1 skip=1
+		else
+			dd if="${U_BOOT}" of=/dev/mmcblk0 bs=1K seek=1
+		fi
 		rm /opt/update/will_update
 		echo "true" > "${UPDATE_DIR}/inkbox_updated"
 		echo "false" > /boot/flags/WILL_UPDATE
