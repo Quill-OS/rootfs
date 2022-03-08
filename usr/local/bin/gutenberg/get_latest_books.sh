@@ -20,7 +20,11 @@ while read id; do
 	mkdir -p latest-books/${book_number}
 	echo "${id}" > latest-books/${book_number}/id
 	wget -O latest-books/${book_number}/cover.jpg "http://gutenberg.org/files/${id}/${id}-h/images/cover.jpg"
-	convert latest-books/${book_number}/cover.jpg -resize "${coverSize}" latest-books/${book_number}/cover.jpg
+	if [ ${?} != 0 ]; then
+		convert /etc/images/cover_unavailable.png -resize "${coverSize}" latest-books/${book_number}/cover.jpg
+	else
+		convert latest-books/${book_number}/cover.jpg -resize "${coverSize}" latest-books/${book_number}/cover.jpg
+	fi
 
 	book_number=$((book_number+1))
 done <<< "${ID_LIST}"
