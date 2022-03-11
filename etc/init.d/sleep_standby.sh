@@ -8,7 +8,7 @@ rc-service wake_standby stop
 
 while true; do
 	inotifywait -e modify /tmp/power
-	if grep -q "KEY_POWER" /tmp/power; then
+	if grep -q "KEY_POWER" /tmp/power || grep -q "KEY_F1" /tmp/power; then
 		> /tmp/power
 		break
 	else
