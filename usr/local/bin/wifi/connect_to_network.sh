@@ -76,3 +76,7 @@ if [ ${?} != 0 ]; then
 	cleanup
 	exit 1
 fi
+
+# Sync time
+ntpd -n -q
+hwclock --systohc
