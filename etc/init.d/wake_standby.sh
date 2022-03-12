@@ -76,6 +76,9 @@ if grep -q "true" /run/was_connected_to_wifi; then
 	PASSPHRASE=$(cat /data/config/17-wifi_connection_information/passphrase)
 	/usr/local/bin/wifi/connect_to_network.sh "${ESSID}" "${PASSPHRASE}"
 	rm -f /run/was_connected_to_wifi
+elif [ "${DEVICE}" == "n306" ]; then
+	insmod "${WIFI_MODULE}"
+	insmod "${SDIO_WIFI_PWR_MODULE}"
 fi
 
 sleep 1
