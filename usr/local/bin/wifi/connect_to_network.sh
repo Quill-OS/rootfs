@@ -1,16 +1,23 @@
 #!/bin/sh
 
 DEVICE=$(cat /opt/inkbox_device)
+[ -e "/run/connect_to_network.sh.pid" ] && EXISTING_PID=$(cat /run/connect_to_network.sh.pid) && echo "Please terminate other instance(s) of \`connect_to_network.sh' before starting a new one. Process(es) ${EXISTING_PID} still running!" && exit 255
+echo ${$} > "/run/connect_to_network.sh.pid"
+
+quit() {
+	rm -f "/run/connect_to_network.sh.pid"
+	exit ${1}
+}
 
 if [ -z "${1}" ]; then
 	echo "You must provide the 'ESSID' argument."
-	exit 1
+	quit 1
 else
 	ESSID="${1}"
 fi
 if [ -z "${2}" ]; then
 	echo "You must provide the 'passphrase' argument."
-	exit 1
+	quit 1
 else
 	PASSPHRASE="${2}"
 fi
@@ -62,7 +69,7 @@ wpa_supplicant -D wext -i "${WIFI_DEV}" -c /run/wpa_supplicant.conf -O /run/wpa_
 if [ ${?} != 0 ]; then
 	echo "Failed to connect to network '${ESSID}'"
 	cleanup
-	exit 1
+	quit 1
 fi
 
 if [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ]; then
@@ -74,9 +81,9 @@ fi
 if [ ${?} != 0 ]; then
 	echo "DHCP request failed."
 	cleanup
-	exit 1
+	quit 1
 fi
 
 # Sync time
-ntpd -n -q
-hwclock --systohc
+/usr/local/bin/timesync.sh
+quit 0

@@ -45,25 +45,25 @@ else
 	fi
 fi
 
-if [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n306" ]; then
-	WIFI_MODULE="/modules/wifi/8189fs.ko"
-	SDIO_WIFI_PWR_MODULE="/modules/drivers/mmc/card/sdio_wifi_pwr.ko"
-	WIFI_DEV="eth0"
-elif [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
-	WIFI_MODULE="/modules/dhd.ko"
-	SDIO_WIFI_PWR_MODULE="/modules/sdio_wifi_pwr.ko"
-	WIFI_DEV="eth0"
-elif [ "${DEVICE}" == "n437" ]; then
-	WIFI_MODULE="/modules/wifi/bcmdhd.ko"
-	SDIO_WIFI_PWR_MODULE="/modules/drivers/mmc/card/sdio_wifi_pwr.ko"
-	WIFI_DEV="wlan0"
-else
-	WIFI_MODULE="/modules/dhd.ko"
-	SDIO_WIFI_PWR_MODULE="/modules/sdio_wifi_pwr.ko"
-	WIFI_DEV="eth0"
-fi
-
 if grep -q "true" /run/was_connected_to_wifi; then
+	if [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n306" ]; then
+		WIFI_MODULE="/modules/wifi/8189fs.ko"
+		SDIO_WIFI_PWR_MODULE="/modules/drivers/mmc/card/sdio_wifi_pwr.ko"
+		WIFI_DEV="eth0"
+	elif [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
+		WIFI_MODULE="/modules/dhd.ko"
+		SDIO_WIFI_PWR_MODULE="/modules/sdio_wifi_pwr.ko"
+		WIFI_DEV="eth0"
+	elif [ "${DEVICE}" == "n437" ]; then
+		WIFI_MODULE="/modules/wifi/bcmdhd.ko"
+		SDIO_WIFI_PWR_MODULE="/modules/drivers/mmc/card/sdio_wifi_pwr.ko"
+		WIFI_DEV="wlan0"
+	else
+		WIFI_MODULE="/modules/dhd.ko"
+		SDIO_WIFI_PWR_MODULE="/modules/sdio_wifi_pwr.ko"
+		WIFI_DEV="eth0"
+	fi
+
 	insmod "${SDIO_WIFI_PWR_MODULE}"
 	insmod "${WIFI_MODULE}"
 	# Race condition
