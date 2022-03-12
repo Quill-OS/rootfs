@@ -71,6 +71,8 @@ start() {
 		[ ! -e "/kobo/bin/kobo_config.sh" ] && touch /kobo/bin/kobo_config.sh
 		[ ! -e "/kobo/usr/share/zoneinfo" ] && mkdir -p /kobo/usr/share/zoneinfo
 		[ ! -e "/kobo/etc/localtime" ] && touch /kobo/etc/localtime
+		[ ! -e "/data/config/19-timezone" ] && mkdir -p /data/config/19-timezone
+		[ ! -e "/data/config/19-timezone/config" ] && touch /data/config/19-timezone/config
 		mount --bind /usr/share/zoneinfo /kobo/usr/share/zoneinfo
 		mount --bind /data/config/19-timezone/config /kobo/etc/localtime
 		mount --bind /opt/version /kobo/opt/version

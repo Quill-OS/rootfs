@@ -75,6 +75,11 @@ start() {
 				else
 					echo "true" > /kobo/run/wifi_connected_successfully
 				fi
+			elif [[ "$line" == "stop_wifi_reconnection" ]]; then
+				CONNECT_TO_NETWORK_PID=$(cat /run/connect_to_network.sh.pid)
+				kill -9 ${CONNECT_TO_NETWORK_PID}
+				rm -f /run/connect_to_network.sh.pid
+				echo "true" > /kobo/run/stop_wifi_reconnection_done
 			elif [[ "$line" == "toggle_wifi_off" ]]; then
 				/usr/local/bin/wifi/toggle.sh off
 			elif [[ "$line" == "toggle_wifi_on" ]]; then
