@@ -3,6 +3,7 @@
 LOCKSCREEN=$(cat /opt/config/12-lockscreen/config 2>/dev/null)
 DEVICE=$(cat /opt/inkbox_device)
 
+echo "true" > /tmp/sleep_standby
 rc-service wake_standby stop
 > /tmp/power
 
@@ -22,9 +23,9 @@ while true; do
 	fi
 done
 
+echo "true" > /tmp/sleep_mode
 sleep 1
 chroot /kobo /usr/bin/fbgrab "/external_root/tmp/dump.png"
-echo "true" > /tmp/sleep_mode
 
 if [ "${LOCKSCREEN}" == "true" ]; then
 	killall -q inkbox-bin
@@ -34,12 +35,12 @@ if [ "${LOCKSCREEN}" == "true" ]; then
 	killall -q scribble
 	killall -q lightmaps
 else
-	kill -STOP $(pidof inkbox-bin 2>/dev/null)
-	kill -STOP $(pidof oobe-inkbox-bin 2>/dev/null)
-	kill -9 $(pidof lockscreen-bin 2>/dev/null)
-	kill -STOP $(pidof calculator-bin 2>/dev/null)
-	kill -STOP $(pidof scribble 2>/dev/null)
-	kill -STOP $(pidof lightmaps 2>/dev/null)
+	kill -STOP $(pidof inkbox-bin 2>/dev/null) 2>/dev/null
+	kill -STOP $(pidof oobe-inkbox-bin 2>/dev/null) 2>/dev/null
+	kill -9 $(pidof lockscreen-bin 2>/dev/null) 2>/dev/null
+	kill -STOP $(pidof calculator-bin 2>/dev/null) 2>/dev/null
+	kill -STOP $(pidof scribble 2>/dev/null) 2>/dev/null
+	kill -STOP $(pidof lightmaps 2>/dev/null) 2>/dev/null
 fi
 
 /opt/bin/fbink/fbink -k -f -q
@@ -76,7 +77,7 @@ if [ -d "/sys/class/net/${WIFI_DEV}" ]; then
 	fi
 
 	# Checking if we have a fully configured Wi-Fi interface
-	if [ "$(cat /sys/class/net/${WIFI_DEV}/operstate)" == "up" ]; then
+	if grep -q "up" "/sys/class/net/${WIFI_DEV}/operstate"; then
 		echo "true" > /run/was_connected_to_wifi
 	fi
 
