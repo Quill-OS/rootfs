@@ -7,6 +7,7 @@ DEVICE=$(cat /opt/inkbox_device)
 rc-service sleep_standby stop
 
 # Race condition; going to sleep
+echo "false" > /tmp/sleep_standby
 sleep 10
 echo "1" > /sys/power/state-extended
 echo "mem" > /sys/power/state
@@ -23,18 +24,22 @@ cinematic_brightness() {
 power_button_watchdog() {
 	> /tmp/power
 	while true; do
-		inotifywait -e modify /tmp/power
-	        if grep -q "KEY_POWER" /tmp/power || grep -q "KEY_F1" /tmp/power; then
-			> /tmp/power
-			echo "true" > /tmp/wake_watchdog_termination
-			kill -9 $(cat /run/connect_to_network.sh.pid 2>/dev/null)
-			rm -f /run/connect_to_network.sh.pid
-			rm -f /run/was_connected_to_wifi
-			echo "true" > /tmp/sleep_now
-			break
+		if ! grep -q "true" /tmp/sleep_standby; then
+			inotifywait -e modify /tmp/power
+		        if grep -q "KEY_POWER" /tmp/power || grep -q "KEY_F1" /tmp/power; then
+				> /tmp/power
+				echo "true" > /tmp/wake_watchdog_termination
+				kill -9 $(cat /run/connect_to_network.sh.pid 2>/dev/null)
+				rm -f /run/connect_to_network.sh.pid
+				rm -f /run/was_connected_to_wifi
+				echo "true" > /tmp/sleep_now
+				break
+			else
+				> /tmp/power
+				continue
+			fi
 		else
-			> /tmp/power
-			continue
+			break
 		fi
 	done
 }
@@ -45,11 +50,11 @@ if [ "${DARK_MODE}" == "true" ]; then
 	else
 		/opt/bin/fbink/fbink -k -f -h
 		/opt/bin/fbink/fbink -g file=/tmp/dump.png -h
-		kill -CONT $(pidof inkbox-bin 2>/dev/null)
-		kill -CONT $(pidof oobe-inkbox-bin 2>/dev/null)
-		kill -CONT $(pidof calculator-bin 2>/dev/null)
-		kill -CONT $(pidof scribble 2>/dev/null)
-		kill -CONT $(pidof lightmaps 2>/dev/null)
+		kill -CONT $(pidof inkbox-bin 2>/dev/null) 2>/dev/null
+		kill -CONT $(pidof oobe-inkbox-bin 2>/dev/null) 2>/dev/null
+		kill -CONT $(pidof calculator-bin 2>/dev/null) 2>/dev/null
+		kill -CONT $(pidof scribble 2>/dev/null) 2>/dev/null
+		kill -CONT $(pidof lightmaps 2>/dev/null) 2>/dev/null
 		cinematic_brightness
 	fi
 else
@@ -58,11 +63,11 @@ else
         else
 		/opt/bin/fbink/fbink -k -f
 		/opt/bin/fbink/fbink -g file=/tmp/dump.png
-		kill -CONT $(pidof inkbox-bin 2>/dev/null)
-		kill -CONT $(pidof oobe-inkbox-bin 2>/dev/null)
-		kill -CONT $(pidof calculator-bin 2>/dev/null)
-		kill -CONT $(pidof scribble 2>/dev/null)
-		kill -CONT $(pidof lightmaps 2>/dev/null)
+		kill -CONT $(pidof inkbox-bin 2>/dev/null) 2>/dev/null
+		kill -CONT $(pidof oobe-inkbox-bin 2>/dev/null) 2>/dev/null
+		kill -CONT $(pidof calculator-bin 2>/dev/null) 2>/dev/null
+		kill -CONT $(pidof scribble 2>/dev/null) 2>/dev/null
+		kill -CONT $(pidof lightmaps 2>/dev/null) 2>/dev/null
 		cinematic_brightness
 	fi
 fi
@@ -101,7 +106,7 @@ if grep -q "true" /run/was_connected_to_wifi 2>/dev/null; then
 		POWER_BUTTON_WATCHDOG_PID=${!}
 		disown
 		/usr/local/bin/wifi/connect_to_network.sh "${ESSID}" "${PASSPHRASE}"
-		if [ $(cat /tmp/wake_watchdog_termination 2>/dev/null) != "true" ]; then
+		if ! grep -q "true" /tmp/wake_watchdog_termination 2>/dev/null; then
 			kill -9 ${POWER_BUTTON_WATCHDOG_PID}
 		fi
 		rm -f /tmp/wake_watchdog_termination
