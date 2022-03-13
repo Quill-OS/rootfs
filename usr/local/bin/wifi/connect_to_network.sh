@@ -1,7 +1,7 @@
 #!/bin/sh
 
 DEVICE=$(cat /opt/inkbox_device)
-[ -e "/run/connect_to_network.sh.pid" ] && EXISTING_PID=$(cat /run/connect_to_network.sh.pid) && echo "Please terminate other instance(s) of \`connect_to_network.sh' before starting a new one. Process(es) ${EXISTING_PID} still running!" && exit 255
+[ -e "/run/connect_to_network.sh.pid" ] && EXISTING_PID=$(cat /run/connect_to_network.sh.pid) && if [ -d "/proc/${EXISTING_PID}" ]; then echo "Please terminate other instance(s) of \`connect_to_network.sh' before starting a new one. Process(es) ${EXISTING_PID} still running!" && exit 255; else rm /run/connect_to_network.sh.pid; fi
 echo ${$} > "/run/connect_to_network.sh.pid"
 
 quit() {

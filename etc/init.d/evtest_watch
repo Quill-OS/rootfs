@@ -1,6 +1,6 @@
 #!/sbin/openrc-run
 
-description="Waits for a power button event and SIGSTOPs InkBox"
+description="Redirects evtest input events list to files in a tmpfs"
 
 depend() {
 	before sleep_standby
@@ -12,5 +12,11 @@ start() {
 	ebegin "Starting evtest watch"
 	evtest --grab /dev/input/event0 > /tmp/power &
 	evtest /dev/input/event1 > /tmp/touch_event &
-	eend $?
+	eend ${?}
+}
+
+stop() {
+	ebegin "Stopping evtest watch"
+	killall -q evtest
+	eend ${?}
 }
