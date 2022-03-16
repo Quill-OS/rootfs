@@ -99,7 +99,6 @@ if grep -q "true" /run/was_connected_to_wifi 2>/dev/null; then
 	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n437" ]; then
 		wlarm_le up
 	fi
-<<<<<<< HEAD
 	ESSID=$(cat /data/config/17-wifi_connection_information/essid 2>/dev/null)
 	PASSPHRASE=$(cat /data/config/17-wifi_connection_information/passphrase 2>/dev/null)
 	if [ ! -z "${ESSID}" ] && [ ! -z "${PASSPHRASE}" ]; then
@@ -115,15 +114,6 @@ if grep -q "true" /run/was_connected_to_wifi 2>/dev/null; then
 	else
 		rm -f /run/was_connected_to_wifi
 	fi
-=======
-	ESSID=$(cat /data/config/17-wifi_connection_information/essid)
-	PASSPHRASE=$(cat /data/config/17-wifi_connection_information/passphrase)
-	/usr/local/bin/wifi/connect_to_network.sh "${ESSID}" "${PASSPHRASE}"
-	rm -f /run/was_connected_to_wifi
-elif [ "${DEVICE}" == "n306" ]; then
-	insmod "${WIFI_MODULE}"
-	insmod "${SDIO_WIFI_PWR_MODULE}"
->>>>>>> 43e32d7 (fix sometimes appearing sleeping issues on the kobo nia)
 fi
 
 sleep 1
