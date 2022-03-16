@@ -1,0 +1,13 @@
+#!/sbin/openrc-run
+
+description="Waits for a power button event and SIGCONTs InkBox"
+
+depend() {
+	keyword -prefix -lxc
+}
+
+start() {
+	ebegin "Waiting for a power button event to wake up the device"
+	/etc/init.d/wake_standby.sh &
+	eend $?
+}
