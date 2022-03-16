@@ -1,5 +1,7 @@
 #!/bin/sh
 
+rc-service sleep_standby stop 2>/dev/null
+rc-service wake_standby stop 2>/dev/null
 DEVICE=$(cat /opt/inkbox_device)
 if [ "${DEVICE}" != "n236" ] && [ "${DEVICE}" != "n437" ]; then
 	BRIGHTNESS_SYSFS_FILE="/sys/class/backlight/mxc_msp430.0/brightness"
