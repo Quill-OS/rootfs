@@ -88,9 +88,6 @@ if [ -d "/sys/class/net/${WIFI_DEV}" ]; then
 	fi
 	rmmod "${WIFI_MODULE}" 2> /dev/null
 	rmmod "${SDIO_WIFI_PWR_MODULE}" 2> /dev/null
-elif [ "${DEVICE}" == "n306" ]; then
-	rmmod "${WIFI_MODULE}" 2> /dev/null
-	rmmod "${SDIO_WIFI_PWR_MODULE}" 2> /dev/null
 fi
 
 echo "false" > /kobo/inkbox/remount
