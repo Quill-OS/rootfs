@@ -6,8 +6,6 @@ rc-service onboard_mount stop 2>/dev/null
 rc-service mass_storage stop 2>/dev/null
 rc-service inkbox_gui stop 2>/dev/null
 rc-service xorg stop 2>/dev/null
-rc-service sleep_standby stop 2>/dev/null
-rc-service wake_standby stop 2>/dev/null
 killall -q X vnc vnc-nographic
 rc-service sshd stop 2>/dev/null
 sync
