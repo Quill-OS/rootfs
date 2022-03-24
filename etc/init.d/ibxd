@@ -9,11 +9,19 @@ depend() {
 bookconfig_mount() {
 	mount --bind "${BOOK_CSUM_DIR}" /kobo/mnt/onboard/.adds/inkbox/.config
 	# Exceptions
+	mkdir -p /kobo/mnt/onboard/.adds/inkbox/.config/07-words_number
+	mkdir -p /kobo/mnt/onboard/.adds/inkbox/.config/08-recent_books
+	mkdir -p /kobo/mnt/onboard/.adds/inkbox/.config/11-menubar
+	mkdir -p /kobo/mnt/onboard/.adds/inkbox/.config/13-epub_page_size
+	mkdir -p /kobo/mnt/onboard/.adds/inkbox/.config/14-reader_scrollbar
+	mkdir -p /kobo/mnt/onboard/.adds/inkbox/.config/19-timezone
+
 	mount --bind /opt/config/07-words_number /kobo/mnt/onboard/.adds/inkbox/.config/07-words_number
 	mount --bind /opt/config/08-recent_books /kobo/mnt/onboard/.adds/inkbox/.config/08-recent_books
 	mount --bind /opt/config/11-menubar /kobo/mnt/onboard/.adds/inkbox/.config/11-menubar
 	mount --bind /opt/config/13-epub_page_size /kobo/mnt/onboard/.adds/inkbox/.config/13-epub_page_size
 	mount --bind /opt/config/14-reader_scrollbar /kobo/mnt/onboard/.adds/inkbox/.config/14-reader_scrollbar
+	mount --bind /opt/config/19-timezone /kobo/mnt/onboard/.adds/inkbox/.config/19-timezone
 	echo "true" > /kobo/inkbox/bookConfigSetUp
 }
 
