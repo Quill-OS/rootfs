@@ -8,8 +8,8 @@ else
 fi
 /opt/bin/wall "The system is going down for power off NOW!"
 
-killall sleep_standby.sh
-killall wake_standby.sh
+killall -q sleep_standby.sh
+killall -q wake_standby.sh
 rc-service sleep_standby stop 2>/dev/null
 rc-service wake_standby stop 2>/dev/null
 
