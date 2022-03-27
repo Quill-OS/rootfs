@@ -119,7 +119,7 @@ start() {
 }
 stop() {
 	ebegin "Stopping InkBox GUI"
-	killall -q inkbox inkbox-bin oobe-inkbox oobe-inkbox-bin lockscreen lockscreen-bin inkbox.sh scribble lightmaps calculator calculator-bin qreversi qreversi-bin
+	killall -q inkbox inkbox-bin oobe-inkbox oobe-inkbox-bin lockscreen lockscreen-bin inkbox.sh scribble lightmaps calculator calculator-bin qreversi qreversi-bin 2048 2048-bin
 
 	umount -l -f /kobo 2>/dev/null
 	umount -l -f /opt/isa 2>/dev/null
