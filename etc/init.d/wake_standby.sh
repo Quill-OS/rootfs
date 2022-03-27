@@ -55,6 +55,7 @@ if [ "${DARK_MODE}" == "true" ]; then
 		kill -CONT $(pidof calculator-bin 2>/dev/null) 2>/dev/null
 		kill -CONT $(pidof scribble 2>/dev/null) 2>/dev/null
 		kill -CONT $(pidof lightmaps 2>/dev/null) 2>/dev/null
+		kill -CONT $(pidof qreversi-bin 2>/dev/null) 2>/dev/null
 		cinematic_brightness
 	fi
 else
@@ -68,6 +69,7 @@ else
 		kill -CONT $(pidof calculator-bin 2>/dev/null) 2>/dev/null
 		kill -CONT $(pidof scribble 2>/dev/null) 2>/dev/null
 		kill -CONT $(pidof lightmaps 2>/dev/null) 2>/dev/null
+		kill -CONT $(pidof qreversi-bin 2>/dev/null) 2>/dev/null
 		cinematic_brightness
 	fi
 fi
