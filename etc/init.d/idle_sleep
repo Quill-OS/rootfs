@@ -42,7 +42,7 @@ start() {
 							:
 						else
 							# Check if a ssh session is active
-							if ss | grep -q -o ssh -m 1; then
+							if ! ss | grep -q -o ssh -m 1; then
 								SLEEPING=0
 								echo "KEY_POWER" > /tmp/power
 								sleep 10
