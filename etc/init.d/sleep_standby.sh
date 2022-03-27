@@ -32,6 +32,7 @@ if [ "${LOCKSCREEN}" == "true" ]; then
 	killall -q oobe-inkbox-bin
 	killall -q lockscreen-bin
 	killall -q calculator-bin
+	killall -q qreversi-bin
 	killall -q scribble
 	killall -q lightmaps
 else
@@ -41,6 +42,7 @@ else
 	kill -STOP $(pidof calculator-bin 2>/dev/null) 2>/dev/null
 	kill -STOP $(pidof scribble 2>/dev/null) 2>/dev/null
 	kill -STOP $(pidof lightmaps 2>/dev/null) 2>/dev/null
+	kill -STOP $(pidof qreversi-bin 2>/dev/null) 2>/dev/null
 fi
 
 /opt/bin/fbink/fbink -k -f -q
