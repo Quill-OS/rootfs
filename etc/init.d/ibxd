@@ -90,8 +90,10 @@ start() {
 				echo "true" > /kobo/run/stop_wifi_reconnection_done
 			elif [[ "$line" == "toggle_wifi_off" ]]; then
 				/usr/local/bin/wifi/toggle.sh off
+				echo "true" > /kobo/run/toggle_wifi_off_done
 			elif [[ "$line" == "toggle_wifi_on" ]]; then
 				/usr/local/bin/wifi/toggle.sh on
+				echo "true" > /kobo/run/toggle_wifi_on_done
 			elif [[ "$line" == "ota_update_check" ]]; then
 				/usr/local/bin/ota_update.sh
 			elif [[ "$line" == "ota_update_download" ]]; then
