@@ -37,6 +37,7 @@ if [ ! -z "${SEARCH_IDS_LINES}" ] && [ ! -z "${SEARCH_TITLES}" ]; then
 	exit 0
 else
 	echo "No matching results found."
+	mkdir -p /kobo/inkbox/gutenberg-search/
 	echo "false" > /kobo/inkbox/gutenberg-search/search_done
 	exit 1
 fi

@@ -43,8 +43,8 @@ while read title; do
 		title="${title:0:25} ..."
 	fi
 
-	echo "${title_full}" > latest-books/${book_number}/title_full
-	echo "${title}" > latest-books/${book_number}/title
+	echo "${title_full}" | sed 's/:/ -/g' > latest-books/${book_number}/title_full
+	echo "${title}" | sed 's/:/ -/g' > latest-books/${book_number}/title
 	book_number=$((book_number+1))
 done <<< "${TITLE_LIST}"
 

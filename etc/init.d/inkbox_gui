@@ -49,6 +49,17 @@ start() {
 		else
 			mount --bind /lib/qt5-plugins/libkobo.so.1 /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo/plugins/platforms/libkobo.so
 		fi
+		if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ]; then
+			mount --bind /usr/local/share/inkbox/stylesheets/eink-600x800.qss /kobo/mnt/onboard/.adds/inkbox/eink.qss
+		elif [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "emu" ]; then
+			mount --bind /usr/local/share/inkbox/stylesheets/eink-768x1024.qss /kobo/mnt/onboard/.adds/inkbox/eink.qss
+		elif [ "${DEVICE}" == "n437" ]; then
+			mount --bind /usr/local/share/inkbox/stylesheets/eink-1072x1448.qss /kobo/mnt/onboard/.adds/inkbox/eink.qss
+		elif [ "${DEVICE}" == "n873" ]; then
+			mount --bind /usr/local/share/inkbox/stylesheets/eink-1264x1680.qss /kobo/mnt/onboard/.adds/inkbox/eink.qss
+		else
+			mount --bind /usr/local/share/inkbox/stylesheets/eink-600x800.qss /kobo /mnt/onboard/.adds/inkbox/eink.qss
+		fi
 
 	        mount -t sysfs sysfs /kobo/sys
 	        mount -t proc proc /kobo/proc
