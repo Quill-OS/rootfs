@@ -10,6 +10,7 @@ rc-service sleep_standby stop
 echo "false" > /tmp/sleep_standby
 sleep 10
 echo "1" > /sys/power/state-extended
+sleep 2
 echo "mem" > /sys/power/state
 
 # Waking up
