@@ -326,16 +326,14 @@ QToolButton:pressed {
 
 QSlider::groove:horizontal {
      border: 1.5px solid black;
-     border-radius: 10px;
-     height: 15px;
+     height: 21px;
      background: white;
      margin: 0px 0;
 }
 QSlider::handle:horizontal {
      background: black;
      border: 1.5px solid black;
-     border-radius: 10px;
-     height: 15px;
+     height: 21px;
      width: 25px;
      margin: 0px 0;
 }
