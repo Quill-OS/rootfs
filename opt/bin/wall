@@ -8,18 +8,19 @@ else
 	DATE=$(date +%H:%M:%S)
 
 	echo_message() {
-		echo > "$f"
-		echo "Broadcast message from ${USER}@${HOSTNAME}" > "$f"
-		echo -e "\t(${TTY}) at ${DATE} ..." > "$f"
-		echo > "$f"
-		echo -e "$1" > "$f"
+		[ -z "${USER}" ] && USER="root"
+		echo > "${f}"
+		echo "Broadcast message from ${USER}@${HOSTNAME}" > "${f}"
+		echo -e "\t(${TTY}) at ${DATE} ..." > "${f}"
+		echo > "${f}"
+		echo -e "${1}" > "${f}"
 	}
 
 	for f in /dev/pts/* ; do
 		if [ "$f" == "/dev/pts/*" ]; then
 			continue
 		else
-			echo_message "$1"
+			echo_message "${1}"
 		fi
 	done
 
@@ -27,7 +28,7 @@ else
 		if [ "$f" == "/dev/ttymxc*" ]; then
 			continue
 		else
-			echo_message "$1"
+			echo_message "${1}"
 		fi
 	done
 
@@ -35,7 +36,7 @@ else
 		if [ "$f" == "/dev/ttyAMA*" ]; then
 			continue
 		else
-			echo_message "$1"
+			echo_message "${1}"
 		fi
 	done
 fi
