@@ -39,58 +39,58 @@ display_help() {
 	echo
 }
 
-if [ -z "$1" ]; then
+if [ -z "${1}" ]; then
 	display_help
 	echo $NEEDS_COMMAND
 	exit 1
 fi
 
-if [ "$1" == "mnt" ]; then
-	if [ -z "$2" ]; then
-		echo $NEEDS_ARGUMENT
+if [ "${1}" == "mnt" ]; then
+	if [ -z "${2}" ]; then
+		echo "${NEEDS_ARGUMENT}"
 		exit 1
 	else
-		if [ "$2" == "rootfs" ]; then
-			if [ -z "$3" ]; then
-				echo $NEEDS_ARGUMENT
+		if [ "${2}" == "rootfs" ]; then
+			if [ -z "${3}" ]; then
+				echo "${NEEDS_ARGUMENT}"
 				exit 1
 			else
-				if [ "$3" == "rw" ]; then
-					echo "**** Mounting root filesystem read-write ****"
+				if [ "${3}" == "rw" ]; then
+					echo -e " \033[1;32m*\033[0m Mounting root filesystem read-write ..."
 					sync
 					mount -o remount,rw /
-				elif [ "$3" == "ro" ]; then
-					echo "**** Mounting root filesystem read-only ****"
+				elif [ "${3}" == "ro" ]; then
+					echo -e " \033[1;32m*\033[0m Mounting root filesystem read-only ..."
 					sync
 					mount -o remount,ro /
-				elif [ "$3" == "stat" ]; then
+				elif [ "${3}" == "stat" ]; then
 					if findmnt -n -o OPTIONS / | egrep "^ro,|,ro,|,ro$" &>/dev/null; then
 						echo "Root filesystem is mounted read-only."
 					else
 						echo "Root filesystem is mounted read-write."
 					fi
 				else
-					echo $MUST_SPECIFY_ARGUMENT
+					echo "${MUST_SPECIFY_ARGUMENT}"
 					exit 1
 				fi
 			fi
 		else
-			echo $MUST_SPECIFY_ARGUMENT
+			echo "${MUST_SPECIFY_ARGUMENT}"
 			exit 1
 		fi	
 	fi
-elif [ "$1" == "chkmnt" ]; then
-	if [ -z "$2" ]; then
-		echo $MUST_SPECIFY_FOLDER
+elif [ "${1}" == "chkmnt" ]; then
+	if [ -z "${2}" ]; then
+		echo "${MUST_SPECIFY_FOLDER}"
 	else
-		mountpoint $2
+		mountpoint "${2}"
 	fi
-elif [ "$1" == "tree" ]; then
+elif [ "${1}" == "tree" ]; then
 	findmnt
-elif [ "$1" == "help" ]; then
+elif [ "${1}" == "help" ]; then
 	display_help
 	exit 0
 else
-	echo $NEEDS_VALID_COMMAND
+	echo "${NEEDS_VALID_COMMAND}"
 	exit 1
 fi
