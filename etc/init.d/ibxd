@@ -187,6 +187,9 @@ start() {
 				else
 					echo "false" > /kobo/inkbox/systemReportDone
 				fi
+			elif [[ "$line" == "gui_remount_localtime" ]]; then
+				umount /kobo/etc/localtime
+				mount --bind /data/config/19-timezone/config /kobo/etc/localtime
 			fi
 		fi
 	done &
