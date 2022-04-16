@@ -190,6 +190,16 @@ start() {
 			elif [[ "$line" == "gui_remount_localtime" ]]; then
 				umount /kobo/etc/localtime
 				mount --bind /data/config/19-timezone/config /kobo/etc/localtime
+			elif [[ "$line" == "get_pdf_orientation" ]]; then
+				PDF_FILE="/kobo/$(cat /kobo/inkbox/pdf_orientation_file_request)"
+				rm -f "/kobo/inkbox/pdf_orientation_file_request"
+				PDF_WIDTH="$(pdfinfo "${PDF_FILE}" | grep "Page.* size:" | sed 's/Page size:      //g' | sed 's/(.*//g' | sed 's/pts//g' | tr -d " " | sed 's/.*x//g')"
+				PDF_HEIGHT="$(pdfinfo "${PDF_FILE}" | grep "Page.* size:" | sed 's/Page size:      //g' | sed 's/(.*//g' | sed 's/pts//g' | tr -d " " | sed 's/x.*//g')"
+				if [ "$(echo "${PDF_HEIGHT}/1" | bc)" -gt "$(echo "${PDF_WIDTH}/1" | bc)" ]; then
+					echo "Landscape" > /kobo/inkbox/pdf_orientation_result
+				else
+					echo "Portrait" > /kobo/inkbox/pdf_orientation_result
+				fi
 			fi
 		fi
 	done &
