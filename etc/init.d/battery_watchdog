@@ -23,6 +23,8 @@ battery_check() {
 			"${FBINK}" -k -f -q
 			sleep 0.5
 			"${FBINK}" -q -g file="${IMAGES_PATH}/${DEVICE}-battery_critical.png"
+			sleep 0.5
+			"${FBINK}" -q -s -f
 			# Prevent other processes from printing over what we just showed on the screen
 			rm -f /dev/fb0
 			/sbin/poweroff no_splash
