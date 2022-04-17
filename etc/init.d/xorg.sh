@@ -15,6 +15,9 @@ PROGRAM=`cat /tmp/X_program 2>/dev/null`
 DEVICE=`cat /opt/inkbox_device`
 DISPLAY=:0
 
+[ ! -e "/xorg/opt/device" ] && touch /xorg/opt/device
+mount --bind /opt/inkbox_device /xorg/opt/device
+
 if [ "$DEVICE" == "n705" ] || [ "$DEVICE" == "n905b" ] || [ "$DEVICE" == "n905c" ] || [ "$DEVICE" == "n613" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ]; then
 	FB_UR=3
 elif [ "$DEVICE" == "n873" ]; then
