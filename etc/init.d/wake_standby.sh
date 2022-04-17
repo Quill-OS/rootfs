@@ -51,6 +51,7 @@ if [ "${DARK_MODE}" == "true" ]; then
 	else
 		/opt/bin/fbink/fbink -k -f -h
 		/opt/bin/fbink/fbink -g file=/tmp/dump.png -h
+		/opt/bin/fbink/fbink -s -f
 		kill -CONT $(pidof inkbox-bin 2>/dev/null) 2>/dev/null
 		kill -CONT $(pidof oobe-inkbox-bin 2>/dev/null) 2>/dev/null
 		kill -CONT $(pidof calculator-bin 2>/dev/null) 2>/dev/null
@@ -66,6 +67,7 @@ else
         else
 		/opt/bin/fbink/fbink -k -f
 		/opt/bin/fbink/fbink -g file=/tmp/dump.png
+		/opt/bin/fbink/fbink -s -f
 		kill -CONT $(pidof inkbox-bin 2>/dev/null) 2>/dev/null
 		kill -CONT $(pidof oobe-inkbox-bin 2>/dev/null) 2>/dev/null
 		kill -CONT $(pidof calculator-bin 2>/dev/null) 2>/dev/null

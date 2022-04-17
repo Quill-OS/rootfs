@@ -74,6 +74,7 @@ start() {
 		mount --bind /proc /kobo/external_root/proc
 		mount --bind /tmp /kobo/external_root/tmp
 		mount --bind /run /kobo/external_root/run
+		mount --rbind /var /kobo/external_root/var
 		mount --bind /opt/isa /kobo/external_root/opt/isa
 		mount --bind /opt/root /kobo/external_root/opt/root
 		mount --bind /opt/update /kobo/external_root/opt/update

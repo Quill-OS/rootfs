@@ -9,6 +9,7 @@ depend() {
 bookconfig_mount() {
 	mount --bind "${BOOK_CSUM_DIR}" /kobo/mnt/onboard/.adds/inkbox/.config
 	# Exceptions
+	mkdir -p /kobo/mnt/onboard/.adds/inkbox/.config/06-saved_words
 	mkdir -p /kobo/mnt/onboard/.adds/inkbox/.config/07-words_number
 	mkdir -p /kobo/mnt/onboard/.adds/inkbox/.config/08-recent_books
 	mkdir -p /kobo/mnt/onboard/.adds/inkbox/.config/11-menubar
@@ -16,6 +17,7 @@ bookconfig_mount() {
 	mkdir -p /kobo/mnt/onboard/.adds/inkbox/.config/14-reader_scrollbar
 	mkdir -p /kobo/mnt/onboard/.adds/inkbox/.config/19-timezone
 
+	mount --bind /opt/config/06-saved_words /kobo/mnt/onboard/.adds/inkbox/.config/06-saved_words
 	mount --bind /opt/config/07-words_number /kobo/mnt/onboard/.adds/inkbox/.config/07-words_number
 	mount --bind /opt/config/08-recent_books /kobo/mnt/onboard/.adds/inkbox/.config/08-recent_books
 	mount --bind /opt/config/11-menubar /kobo/mnt/onboard/.adds/inkbox/.config/11-menubar
