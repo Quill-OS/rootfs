@@ -15,6 +15,7 @@ echo "mem" > /sys/power/state
 
 # Waking up
 echo "false" > /tmp/sleep_mode
+hwclock --hctosys
 
 cinematic_brightness() {
 	sleep 0.5
