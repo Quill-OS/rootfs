@@ -1,4 +1,4 @@
 #!/bin/sh
 
 ntpd -n -q
-hwclock --systohc
+hwclock --systohc -u
