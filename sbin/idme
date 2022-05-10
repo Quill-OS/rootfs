@@ -1,0 +1,95 @@
+#!/bin/sh
+
+#    idme: Set NVRAM variables
+#    Copyright (C) 2022 Nicolas Mailloux <nicolecrivain@gmail.com>
+#    SPDX-License-Identifier: GPL-3.0-only
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+print_help() {
+	printf "idme: Set NVRAM variables. Copyright (C) 2022 Nicolas Mailloux <nicolecrivain@gmail.com>.\nLicensed under the GNU Public License version 3.\nUsage: %s <var> <value>\nAvailable variables:\n\tpcbsn - Board ID\n\tserial - Serial number\n\tmac - MAC address\n\tbootmode - Boot mode\n\nWARNING: NEVER run this program without knowing what you are doing. Misuse of this tool can brick your device permanently.\n" "${0}"
+}
+
+write_update_magic() {
+	printf "abcdefghhgfedcba" | dd of=/dev/mmcblk0 seek=258544 count=16 bs=1
+}
+
+write_variable() {
+	if [ "${1}" == "pcbsn" ]; then
+		printf "%s" "${2}" | dd of=/dev/mmcblk0 bs=1 seek=258144
+	elif [ "${1}" == "serial" ]; then
+		printf "%s" "${2}" | dd of=/dev/mmcblk0 bs=1 seek=258048
+	elif [ "${1}" == "mac" ]; then
+		printf "%s" "${2}" | dd of=/dev/mmcblk0 bs=1 seek=258096
+	elif [ "${1}" == "bootmode" ]; then
+		if [ "${2}" == "main" ]; then
+			printf "bWFpbgAAAAAAAAAAAAAAAG5vcm1hbAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" | base64 -d | dd of=/dev/mmcblk0 bs=512 seek=512
+		elif [ "${2}" == "diags" ]; then
+			printf "ZGlhZ3MAAAAAAAAAAAAAAG5vcm1hbAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" | base64 -d | dd of=/dev/mmcblk0 bs=512 seek=512
+		fi
+	fi
+}
+
+write_update_variables() {
+	if [ "${1}" != "pcbsn" ]; then
+		PCBSN="$(cat /proc/board_id)"
+		write_variable pcbsn "${PCBSN}"
+	fi
+	if [ "${1}" != "serial" ]; then
+		SERIAL="$(cat /proc/usid)"
+		write_variable serial "${SERIAL}"
+	fi
+	if [ "${1}" != "mac" ]; then
+		MAC="$(cat /proc/mac_addr)"
+		write_variable mac "${MAC}"
+	fi
+	if [ "${1}" != "bootmode" ]; then
+		BOOTMODE="$(cat /proc/bootmode)"
+		write_variable bootmode "${BOOTMODE}"
+	fi
+}
+
+DEVICE="$(cat /opt/inkbox_device)"
+if [ "${DEVICE}" != "kt" ]; then
+	printf "Your device is not supported by this script! Exiting ...\n"
+	exit 1
+fi
+
+if [ -z "${1}" ]; then
+	print_help
+	exit 1
+fi
+if [ "${1}" != "pcbsn" ] && [ "${1}" != "serial" ] && [ "${1}" != "mac" ] && [ "${1}" != "bootmode" ]; then
+	print_help
+	printf "\nYou must provide a valid variable! Exiting ...\n"
+	exit 1
+fi
+if [ -z "${2}" ]; then
+	printf "You must provide a value! Exiting ...\n"
+	exit 1
+fi
+if [ "${1}" == "bootmode" ] && [ "${2}" != "main" ] && [ "${2}" != "diags" ]; then
+	printf "You must provide a valid bootmode! Valid options are: main, diags. Exiting ...\n"
+	exit 1
+fi
+
+printf "Writing idme update magic ...\n"
+write_update_magic &>/dev/null
+if [ ${IDME_NO_FAILSAFE} != 1 ]; then
+	printf "Writing other variables ...\n"
+	write_update_variables "${1}" &>/dev/null
+fi
+printf "Writing variable '%s' with value '%s' ...\n" "${1}" "${2}"
+write_variable "${1}" "${2}" &>/dev/null
+
+sync && sync
+printf "Flash successful. Please reboot for those changes to take effect.\n"
