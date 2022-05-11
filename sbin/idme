@@ -84,7 +84,7 @@ fi
 
 printf "Writing idme update magic ...\n"
 write_update_magic &>/dev/null
-if [ ${IDME_NO_FAILSAFE} != 1 ]; then
+if [ "${IDME_NO_FAILSAFE}" != 1 ]; then
 	printf "Writing other variables ...\n"
 	write_update_variables "${1}" &>/dev/null
 fi
