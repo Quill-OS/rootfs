@@ -19,13 +19,13 @@ if [ "${1}" != "no_splash" ]; then
 	/opt/bin/fbink/fbink -k -f -q
 	/opt/bin/fbink/fbink -t regular=/etc/init.d/splash.d/fonts/resources/inter-b.ttf,size=20 "Rebooting" -m -M -q
 	sleep 1
-	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ]; then
+	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "kt" ]; then
 		:
 	else
 		/opt/bin/cinematic-brightness.sh 0 1
 	fi
 else
-	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ]; then
+	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "kt" ]; then
 		:
 	else
 		if [ "${DEVICE}" == "n613" ]; then

@@ -30,6 +30,8 @@ elif [ "${DEVICE}" == "bpi" ]; then
 elif [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
 	FB_UR=3
 	/opt/bin/shutdown_led
+elif [ "${DEVICE}" == "kt" ]; then
+	FB_UR=1
 else
 	FB_UR=0
 	echo 0 > /sys/class/leds/pmic_ledsb/brightness

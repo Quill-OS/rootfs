@@ -13,6 +13,9 @@ elif [ "${DEVICE}" == "n437" ]; then
 	WIFI_MODULE="/modules/wifi/bcmdhd.ko"
 	SDIO_WIFI_PWR_MODULE="/modules/drivers/mmc/card/sdio_wifi_pwr.ko"
 	WIFI_DEV="wlan0"
+elif [ "${DEVICE}" == "kt" ]; then
+	WIFI_MODULE="ar6003"
+	WIFI_DEV="wlan0"
 else
 	WIFI_MODULE="/modules/dhd.ko"
 	SDIO_WIFI_PWR_MODULE="/modules/sdio_wifi_pwr.ko"
@@ -24,14 +27,25 @@ cleanup() {
 	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n437" ]; then
 		wlarm_le down
 	fi
+	
 	ifconfig "${WIFI_DEV}" down
-	rmmod "${WIFI_MODULE}"
-	rmmod "${SDIO_WIFI_PWR_MODULE}"
+	
+	if [ "${DEVICE}" != "kt" ]; then
+		rmmod "${WIFI_MODULE}"
+		rmmod "${SDIO_WIFI_PWR_MODULE}"
+	else
+		modprobe -r "${WIFI_MODULE}"
+	fi
 }
 
 setup() {
-	insmod "${SDIO_WIFI_PWR_MODULE}"
-	insmod "${WIFI_MODULE}"
+	if [ "${DEVICE}" != "kt" ]; then
+		insmod "${SDIO_WIFI_PWR_MODULE}"
+		insmod "${WIFI_MODULE}"
+	else
+		modprobe -r "${WIFI_MODULE}"
+	fi
+
 	# Race condition
 	sleep 1.5
 	ifconfig "${WIFI_DEV}" up
