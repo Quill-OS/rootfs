@@ -15,7 +15,11 @@ start() {
 	rc-service xorg stop 2>/dev/null
 
 	umount -l -f /kobo 2>/dev/null
-	fuse-overlayfs -o lowerdir=/opt/gui_rootfs/read,upperdir=/opt/gui_rootfs/write,workdir=/opt/gui_rootfs/work /kobo
+	if [ "${DEVICE}" != "kt" ]; then
+		fuse-overlayfs -o lowerdir=/opt/gui_rootfs/read,upperdir=/opt/gui_rootfs/write,workdir=/opt/gui_rootfs/work /kobo
+	else
+		unionfs -o cow,nonempty /opt/gui_rootfs/write=RW:/opt/gui_rootfs/read=RO /kobo
+	fi
 	mount --bind /data/onboard /kobo/mnt/onboard/onboard
 
 	rc-service ibxd restart
@@ -46,10 +50,12 @@ start() {
 		squashfuse /opt/isa/python.isa /kobo/mnt/onboard/.adds/Python-3.9.2
 		if [ "${DEVICE}" == "n437" ]; then
 			mount --bind /lib/qt5-plugins/libkobo.so.2 /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo/plugins/platforms/libkobo.so
+		elif [ "${DEVICE}" == "kt" ]; then
+			mount --bind /lib/qt5-plugins/libkobo.so.3 /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo/plugins/platforms/libkobo.so
 		else
 			mount --bind /lib/qt5-plugins/libkobo.so.1 /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo/plugins/platforms/libkobo.so
 		fi
-		if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ]; then
+		if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "kt" ]; then
 			mount --bind /usr/local/share/inkbox/stylesheets/eink-600x800.qss /kobo/mnt/onboard/.adds/inkbox/eink.qss
 		elif [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "emu" ]; then
 			mount --bind /usr/local/share/inkbox/stylesheets/eink-768x1024.qss /kobo/mnt/onboard/.adds/inkbox/eink.qss
@@ -58,7 +64,7 @@ start() {
 		elif [ "${DEVICE}" == "n873" ]; then
 			mount --bind /usr/local/share/inkbox/stylesheets/eink-1264x1680.qss /kobo/mnt/onboard/.adds/inkbox/eink.qss
 		else
-			mount --bind /usr/local/share/inkbox/stylesheets/eink-600x800.qss /kobo /mnt/onboard/.adds/inkbox/eink.qss
+			mount --bind /usr/local/share/inkbox/stylesheets/eink-600x800.qss /kobo/mnt/onboard/.adds/inkbox/eink.qss
 		fi
 
 	        mount -t sysfs sysfs /kobo/sys
@@ -111,7 +117,7 @@ start() {
 		if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
 			echo "false" > /kobo/run/wifi_able
 			echo "false" > /run/wifi_able
-		elif [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ]; then
+		elif [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "kt" ]; then
 			echo "true" > /kobo/run/wifi_able
 			echo "true" > /run/wifi_able
 		else

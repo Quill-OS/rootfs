@@ -93,14 +93,21 @@ if grep -q "true" /run/was_connected_to_wifi 2>/dev/null; then
 		WIFI_MODULE="/modules/wifi/bcmdhd.ko"
 		SDIO_WIFI_PWR_MODULE="/modules/drivers/mmc/card/sdio_wifi_pwr.ko"
 		WIFI_DEV="wlan0"
+	elif [ "${DEVICE}" == "kt" ]; then
+		WIFI_MODULE="ar6003"
+		WIFI_DEV="wlan0"
 	else
 		WIFI_MODULE="/modules/dhd.ko"
 		SDIO_WIFI_PWR_MODULE="/modules/sdio_wifi_pwr.ko"
 		WIFI_DEV="eth0"
 	fi
 
-	insmod "${SDIO_WIFI_PWR_MODULE}"
-	insmod "${WIFI_MODULE}"
+	if [ "${DEVICE}" != "kt" ]; then
+		insmod "${SDIO_WIFI_PWR_MODULE}"
+		insmod "${WIFI_MODULE}"
+	else
+		modprobe "${WIFI_MODULE}"
+	fi
 	# Race condition
 	sleep 1.5
 	ifconfig "${WIFI_DEV}" up
