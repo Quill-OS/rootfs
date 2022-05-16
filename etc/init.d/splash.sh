@@ -22,6 +22,6 @@ if [ "${DISPLAY_DEBUG}" != "true" ]; then
 		/opt/bin/fbink/fbink -t regular=/etc/init.d/splash.d/fonts/resources/inter-b.ttf,size=20 "Updating" -m -M -h -q
 		/opt/bin/update-splash &
 	else
-		cd /etc/init.d/splash.d/bin; ./init_show &>/dev/null
+		echo "inkbox_splash" > /run/initrd-fifo
 	fi
 fi
