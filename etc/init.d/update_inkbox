@@ -10,6 +10,16 @@ depend() {
 
 start() {
 	ebegin "Checking for available updates"
+
+	WRITEABLE_BASEPATH="/data/onboard/.inkbox"
+	ISA_PACKAGE=$(ls "${WRITEABLE_BASEPATH}/"*".upd.isa" 2>/dev/null)
+	HAS_UPDATED=$(cat /data/firmware/inkbox_updated 2>/dev/null)
+	if [ "${HAS_UPDATED}" == "true" ]; then
+		if [ -e "${ISA_PACKAGE}" ]; then
+			rm -f "${ISA_PACKAGE}"
+		fi
+	fi
+
 	DEVMODE=$(cat /opt/developer/key/valid-key 2>/dev/null)
 	if [ "${DEVMODE}" == "true" ]; then
 		echo "developer_fake-openssl_mount" > /run/initrd-fifo
@@ -21,8 +31,6 @@ start() {
 	if [ "${DEVMODE}" == "true" ]; then
 		echo "developer_fake-openssl_unmount" > /run/initrd-fifo
 	fi
-	WRITEABLE_BASEPATH="/kobo/mnt/onboard/onboard/.inkbox"
-	ISA_PACKAGE=$(ls "${WRITEABLE_BASEPATH}/"*".upd.isa" 2>/dev/null)
 	if [ -e "${ISA_PACKAGE}" ]; then
 		echo "true" > /data/onboard/.inkbox/can_update
 		echo "false" > /data/onboard/.inkbox/can_really_update
