@@ -39,6 +39,10 @@ else
 	sleep 20
 fi
 
+if [ "${DEVICE}" == "kt" ]; then
+	/opt/bin/fbink/fbdepth -d 8
+fi
+
 # Launch touch input handler
 echo $FB_UR > /sys/class/graphics/fb0/rotate
 # fbink_xdamage on the Glo HD displays things very strangely
