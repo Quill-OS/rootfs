@@ -12,5 +12,9 @@ start() {
 	if [ "${DEVICE}" != "n873" ] && [ "${DEVICE}" != "n236" ] && [ "${DEVICE}" != "n437" ] && [ "${DEVICE}" != "n306" ] && [ "${DEVICE}" != "emu" ] && [ "${DEVICE}" != "bpi" ]; then
 		insmod /modules/arcotg_udc.ko
 	fi
+
+	if [ "${DEVICE}" == "kt" ]; then
+		modprobe zforce
+	fi
 	eend $?
 }
