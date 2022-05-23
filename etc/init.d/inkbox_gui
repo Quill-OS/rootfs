@@ -108,7 +108,7 @@ start() {
 		mount --bind /opt/X11/nographic_extensions_list /kobo/external_root/opt/X11/nographic_extensions_list
 
 		mount --bind /boot /kobo/external_root/boot
-		mount --bind /modules /kobo/external_root/modules
+		mount --bind /lib/modules /kobo/external_root/lib/modules
 
 		touch /kobo/tmp/resolv.conf
 		mount --bind /etc/resolv.conf /kobo/tmp/resolv.conf

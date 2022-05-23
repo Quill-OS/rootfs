@@ -54,6 +54,7 @@ start() {
 }
 stop() {
 	ebegin "Stopping USBNet"
+	DEVICE=$(cat /opt/inkbox_device)
 	if [ "${DEVICE}" != "emu" ] && [ "${DEVICE}" != "kt" ]; then
 		rmmod /modules/g_ether.ko
 	elif [ "${DEVICE}" == "kt" ]; then

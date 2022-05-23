@@ -8,15 +8,25 @@ depend() {
 
 battery_check() {
 	DEVICE=$(cat /opt/inkbox_device)
-	SYSFS_PATH="/sys/devices/platform/pmic_battery.1/power_supply/mc13892_bat"
+
+	if [ "${DEVICE}" == "kt" ]; then
+		SYSFS_PATH_CAPACITY="/sys/devices/system/yoshi_battery/yoshi_battery0/battery_capacity"
+		SYSFS_PATH_STATUS="/sys/devices/system/yoshi_battery/yoshi_battery0/battery_status"
+		STATUS_CHARGING=1
+	else
+		SYSFS_PATH_CAPACITY="/sys/devices/platform/pmic_battery.1/power_supply/mc13892_bat/capacity"
+		SYSFS_PATH_STATUS="/sys/devices/platform/pmic_battery.1/power_supply/mc13892_bat/status"
+		STATUS_CHARGING="Charging"
+	fi
+
 	FBINK="/opt/bin/fbink/fbink"
 	IMAGES_PATH="/etc/images"
 
-	if grep -q "Charging" "${SYSFS_PATH}/status" &>/dev/null; then
+	if grep -q "${STATUS_CHARGING}" "${SYSFS_PATH_STATUS}" &>/dev/null; then
 		# Skip since the battery is charging
 			:
 	else
-		BT_LEVEL=$(cat "${SYSFS_PATH}/capacity")
+		BT_LEVEL=$(cat "${SYSFS_PATH_CAPACITY}")
 		if [ ${BT_LEVEL} -le 5 ]; then
 			"${FBINK}" -k -f -q
 			sleep 0.5
