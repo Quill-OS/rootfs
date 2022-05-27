@@ -13,8 +13,22 @@ echo "1" > /sys/power/state-extended
 sleep 2
 echo "mem" > /sys/power/state
 
-# Waking up
+## Waking up
 echo "false" > /tmp/sleep_mode
+# BPP fixup for the Glo HD when waking up from sleep
+if [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "kt" ]; then
+	if [ -f "/kobo/tmp/inkbox_running" ]; then
+		# InkBox GUI is running
+		fbdepth -d 8
+	else
+		# X11 is running, elsewise there is something wrong ...
+		if [ "${DEVICE}" == "kt" ]; then
+			fbdepth -d 32
+		else
+			fbdepth -d 16
+		fi
+	fi
+fi
 hwclock --hctosys -u
 
 cinematic_brightness() {
