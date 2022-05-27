@@ -86,8 +86,10 @@ if [ "$LAUNCH_OSK" == "true" ]; then
 fi
 
 echo $FB_UR > /sys/class/graphics/fb0/rotate
-if [ "${DEVICE}" == "kt" ] || [ "${DEVICE}" == "n437" ]; then
+if [ "${DEVICE}" == "kt" ]; then
 	/opt/bin/fbink/fbdepth -d 32
+elif [ "${DEVICE}" == "n437" ]; then
+	/opt/bin/fbink/fbdepth -d 16
 fi
 
 RUN_SCRIPT=`cat "/opt/X11/extension-storage-merged/${PROGRAM}/.${PROGRAM}_run_launch_script" 2>/dev/null`
