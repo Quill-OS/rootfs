@@ -159,7 +159,11 @@ update_kernel() {
 		write_alert signature
 		exit 1
 	else
-		dd if="${KERNEL}" of=/dev/mmcblk0 bs=512 seek=81920
+		if [ "${DEVICE}" == "kt" ]; then
+			dd if="${KERNEL}" of=/dev/mmcblk0 bs=512 seek=520
+		else
+			dd if="${KERNEL}" of=/dev/mmcblk0 bs=512 seek=81920
+		fi
 		rm /opt/update/will_update
 		echo "true" > "${UPDATE_DIR}/inkbox_updated"
 		echo "false" > /boot/flags/WILL_UPDATE
@@ -178,7 +182,11 @@ update_diags_kernel() {
 		write_alert signature
 		exit 1
 	else
-		dd if="${DIAGS_KERNEL}" of=/dev/mmcblk0 bs=512 seek=19456
+		if [ "${DEVICE}" == "kt" ]; then
+			dd if="${DIAGS_KERNEL}" of=/dev/mmcblk0 bs=512 seek=29192
+		else
+			dd if="${DIAGS_KERNEL}" of=/dev/mmcblk0 bs=512 seek=19456
+		fi
 		rm /opt/update/will_update
 		echo "true" > "${UPDATE_DIR}/inkbox_updated"
 		echo "false" > /boot/flags/WILL_UPDATE
