@@ -10,7 +10,6 @@ start() {
 	ebegin "Mounting onboard storage filesystem"
 	losetup /dev/loop0 /opt/storage/onboard
 	mount /dev/loop0 /data/onboard -o nosuid,noexec,nodev
-	mount --bind /data/onboard /kobo/mnt/onboard/onboard
 	eend $?
 }
 stop() {
