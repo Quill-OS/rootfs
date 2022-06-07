@@ -31,7 +31,7 @@ start() {
 			ewarn "GUI user application '${extension_archive}''s digital signature is invalid!"
 		fi
 	done
-	mount --rbind /data/onboard /kobo/mnt/onboard/onboard	
+	mount --rbind /data/onboard /kobo/mnt/onboard/onboard
 	eend $?
 }
 
