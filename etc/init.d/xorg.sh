@@ -86,10 +86,15 @@ if [ "$LAUNCH_OSK" == "true" ]; then
 fi
 
 echo $FB_UR > /sys/class/graphics/fb0/rotate
-if [ "${DEVICE}" == "kt" ]; then
+if [ "${DEVICE}" == "n437" ]; then
+	# Don't even try to understand this
+	if ! grep -q "true" /tmp/kobox_initial_launch_done; then
+		/opt/bin/fbink/fbdepth -d 16
+	else
+		/opt/bin/fbink/fbdepth -d 32
+	fi
+elif [ "${DEVICE}" == "kt" ]; then
 	/opt/bin/fbink/fbdepth -d 32
-elif [ "${DEVICE}" == "n437" ]; then
-	/opt/bin/fbink/fbdepth -d 16
 fi
 
 RUN_SCRIPT=`cat "/opt/X11/extension-storage-merged/${PROGRAM}/.${PROGRAM}_run_launch_script" 2>/dev/null`
@@ -102,6 +107,8 @@ fi
 if [ "${DEVICE}" == "kt" ] || [ "${DEVICE}" == "n437" ]; then
 	/opt/bin/fbink/fbdepth -d 8
 fi
+
+echo "true" > /tmp/kobox_initial_launch_done
 
 # The program will have terminated at this point
 rc-service xorg stop
