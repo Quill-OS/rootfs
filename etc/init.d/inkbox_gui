@@ -20,8 +20,8 @@ start() {
 	else
 		unionfs -o cow,nonempty /opt/gui_rootfs/write=RW:/opt/gui_rootfs/read=RO /kobo
 	fi
-	mount --bind /data/onboard /kobo/mnt/onboard/onboard
 
+	rc-service gui_apps restart
 	rc-service ibxd restart
 
 	squashfuse /opt/update/update.isa /opt/isa
@@ -139,6 +139,7 @@ stop() {
 	ebegin "Stopping InkBox GUI"
 	killall -q inkbox inkbox-bin oobe-inkbox oobe-inkbox-bin lockscreen lockscreen-bin inkbox.sh scribble lightmaps calculator calculator-bin qreversi qreversi-bin 2048 2048-bin
 
+	rc-service gui_apps stop
 	umount -l -f /kobo 2>/dev/null
 	umount -l -f /opt/isa 2>/dev/null
 

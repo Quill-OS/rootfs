@@ -10,32 +10,77 @@ depend() {
 start() {
 	einfo "Setting up GUI user applications"
 	[ ! -d "/data/onboard/.apps" ] && mkdir -p "/data/onboard/.apps"
+
+	# If developer mode is enabled, bypass OpenSSL digital signature verification
+	devmode="$(cat /opt/developer/key/valid-key 2>/dev/null)"
+	if [ "${devmode}" == "true" ]; then
+		echo "developer_fake-openssl_mount" > /run/initrd-fifo
+		sleep 0.5
+	fi
+
+	# Iterate through '[onboard-storage]/.apps' and detect '.isa' packages
 	for f in /data/onboard/.apps/*.isa; do
 		if openssl dgst -sha256 -verify /opt/key/applications-public.pem -signature "${f}.dgst" "${f}"; then
+			# Basics
 			extension_archive="${f}"
 			extension_name="$(basename -s '.isa' ""${extension_archive}"")"
 			extension_mountpoint="/data/onboard/.apps/${extension_name}"
 			extension_userdata_path="/data/onboard/.apps-data/${extension_name}"
 			[ ! -d "${extension_mountpoint}" ] && mkdir -p "${extension_mountpoint}"
-			squashfuse "${extension_archive}" "${extension_mountpoint}" || eerror "Failed to mount GUI user application archive '${extension_archive}' at '${extension_mountpoint}'"; eend 1
+			squashfuse "${extension_archive}" "${extension_mountpoint}" || die "Failed to mount GUI user application archive '${extension_archive}' at '${extension_mountpoint}'" 1
 
 			# chroot requirements
 			[ ! -d "/data/onboard/.apps-data" ] && mkdir -p "/data/onboard/.apps-data"
 			[ ! -d "${extension_userdata_path}" ] && mkdir -p "${extension_userdata_path}"
-			mount -t sysfs sysfs "${extension_mountpoint}/sys" || eerror "Failed to mount sys filesystem at '${extension_mountpoint}/sys'."; eend 1
-			mount -t tmpfs tmpfs -o size=1K "${extension_mountpoint}/dev" || eerror "Failed to mount temporary filesystem at '${extension_mountpoint}/dev'."; eend 1
-			mount -t proc proc "${extension_mountpoint}/proc" || eerror "Failed to mount proc filesystem at '${extension_mountpoint}/proc'."; eend 1
-			mknod "${extension_mountpoint}/dev/fb0" c 29 0 && chown user:user "${extension_mountpoint}/dev/fb0" || eerror "Failed to set up '${extension_mountpoint}/dev/fb0' device node."; eend 1
-			mount --bind "${extension_userdata_path}" "${extension_mountpoint}/app-data" || eerror "Failed to bind-mount user data directory '${extension_userdata_path}' at '${extension_mountpoint}/app-data'."; eend 1		
+			mount -t sysfs sysfs "${extension_mountpoint}/sys" || die "Failed to mount sys filesystem at '${extension_mountpoint}/sys'." 1
+			mount -t tmpfs tmpfs -o size=1K "${extension_mountpoint}/dev" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/dev'." 1
+			mount -t proc proc "${extension_mountpoint}/proc" || die "Failed to mount proc filesystem at '${extension_mountpoint}/proc'." 1
+			mount -t tmpfs tmpfs -o size=64K "${extension_mountpoint}/etc" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/etc'." 1
+			mount -t tmpfs tmpfs -o size=8M "${extension_mountpoint}/app-temp" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/app-temp'." 1
+			mount -t tmpfs tmpfs -o size=1K "${extension_mountpoint}/system-bin" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/system-bin'." 1
+			(touch "${extension_mountpoint}/system-bin/busybox" && mount --bind /bin/busybox "${extension_mountpoint}/system-bin/busybox" && chroot "${extension_mountpoint}" "/system-bin/busybox" "--install" "-s" "/system-bin") || die "Failed to bind-mount and/or set up temporary BusyBox binary at '${extension_mountpoint}/system-bin/busybox'." 1
+			(echo "user::1000:1000:user:/root:/system-bin/sh" > "${extension_mountpoint}/etc/passwd" && echo "user:x:1000:" > "${extension_mountpoint}/etc/group") || die "Failed to set up restricted authentication profile at '${extension_mountpoint}/etc'." 1
+			mknod "${extension_mountpoint}/dev/fb0" c 29 0 && chown user:user "${extension_mountpoint}/dev/fb0" || die "Failed to set up '${extension_mountpoint}/dev/fb0' device node." 1
+			mount --bind "${extension_userdata_path}" "${extension_mountpoint}/app-data" || die "Failed to bind-mount user data directory '${extension_userdata_path}' at '${extension_mountpoint}/app-data'." 1
 		else
 			ewarn "GUI user application '${extension_archive}''s digital signature is invalid!"
 		fi
 	done
+
+	if [ "${devmode}" == "true" ]; then
+		echo "developer_fake-openssl_unmount" > /run/initrd-fifo
+		sleep 0.5
+	fi
+
+	sleep 0.5
 	mount --rbind /data/onboard /kobo/mnt/onboard/onboard
 	eend $?
 }
 
+die() {
+	if [ -z "${1}" ]; then
+		error_message="Unknown error"
+	else
+		error_message="${1}"
+	fi
+	if [ -z "${2}" ]; then
+		error_code=1
+	else
+		error_code=${2}
+	fi
+
+	devmode="$(cat /opt/developer/key/valid-key 2>/dev/null)"
+	if [ "${devmode}" == "true" ]; then
+		echo "developer_fake-openssl_unmount" > /run/initrd-fifo
+	fi
+
+	eerror "${error_message}"
+	eend ${2}
+}
+
 stop() {
 	sync
-	umount -l -f /kobo/mnt/onboard/onboard
+	umount -l -f /kobo/mnt/onboard/onboard/.apps/* 2>/dev/null
+	umount -l -f /data/onboard/.apps/* 2>/dev/null
+	return 0
 }
