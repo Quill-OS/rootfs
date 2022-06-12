@@ -9,7 +9,7 @@ depend() {
 start() {
 	ebegin "Mounting onboard storage filesystem"
 	losetup /dev/loop0 /opt/storage/onboard
-	mount /dev/loop0 /data/onboard -o nosuid,noexec,nodev
+	mount /dev/loop0 /data/onboard -o nosuid,noexec,nodev,uid=1000,gid=1000
 	eend $?
 }
 stop() {
