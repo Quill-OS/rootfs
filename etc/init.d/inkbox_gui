@@ -21,7 +21,6 @@ start() {
 		unionfs -o cow,nonempty /opt/gui_rootfs/write=RW:/opt/gui_rootfs/read=RO /kobo
 	fi
 
-	rc-service gui_apps restart
 	rc-service ibxd restart
 
 	squashfuse /opt/update/update.isa /opt/isa
@@ -66,6 +65,7 @@ start() {
 		else
 			mount --bind /usr/local/share/inkbox/stylesheets/eink-600x800.qss /kobo/mnt/onboard/.adds/inkbox/eink.qss
 		fi
+		rc-service gui_apps restart
 
 	        mount -t sysfs sysfs /kobo/sys
 	        mount -t proc proc /kobo/proc
