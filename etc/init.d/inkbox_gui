@@ -16,9 +16,9 @@ start() {
 
 	umount -l -f /kobo 2>/dev/null
 	if [ "${DEVICE}" != "kt" ]; then
-		fuse-overlayfs -o lowerdir=/opt/gui_rootfs/read,upperdir=/opt/gui_rootfs/write,workdir=/opt/gui_rootfs/work /kobo
+		fuse-overlayfs -o lowerdir=/opt/gui_rootfs/read,upperdir=/opt/gui_rootfs/write,workdir=/opt/gui_rootfs/work,nosuid /kobo
 	else
-		unionfs -o cow,nonempty /opt/gui_rootfs/write=RW:/opt/gui_rootfs/read=RO /kobo
+		unionfs -o cow,nonempty,nosuid /opt/gui_rootfs/write=RW:/opt/gui_rootfs/read=RO /kobo
 	fi
 
 	rc-service ibxd restart
@@ -43,10 +43,10 @@ start() {
 	fi
 
 	if [ "${EXIT_SIGN_FAILURE}" == 0 ]; then
-		squashfuse /opt/isa/inkbox.isa /kobo/mnt/onboard/.adds/inkbox
+		squashfuse -o allow_other,nosuid /opt/isa/inkbox.isa /kobo/mnt/onboard/.adds/inkbox
 		mount --bind /opt/config /kobo/mnt/onboard/.adds/inkbox/.config
-		squashfuse /opt/isa/qt.isa /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo
-		squashfuse /opt/isa/python.isa /kobo/mnt/onboard/.adds/Python-3.9.2
+		squashfuse -o allow_other,nosuid /opt/isa/qt.isa /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo
+		squashfuse -o allow_other,nosuid /opt/isa/python.isa /kobo/mnt/onboard/.adds/Python-3.9.2
 		if [ "${DEVICE}" == "n437" ]; then
 			mount --bind /lib/qt5-plugins/libkobo.so.2 /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo/plugins/platforms/libkobo.so
 		elif [ "${DEVICE}" == "kt" ]; then
