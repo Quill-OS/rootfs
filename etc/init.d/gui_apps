@@ -27,7 +27,7 @@ start() {
 			extension_mountpoint="/data/onboard/.apps/${extension_name}"
 			extension_userdata_path="/data/onboard/.apps-data/${extension_name}"
 			[ ! -d "${extension_mountpoint}" ] && mkdir -p "${extension_mountpoint}"
-			squashfuse "${extension_archive}" "${extension_mountpoint}" || die "Failed to mount GUI user application archive '${extension_archive}' at '${extension_mountpoint}'" 1
+			squashfuse -o allow_other "${extension_archive}" "${extension_mountpoint}" || die "Failed to mount GUI user application archive '${extension_archive}' at '${extension_mountpoint}'" 1
 
 			# chroot requirements
 			[ ! -d "/data/onboard/.apps-data" ] && mkdir -p "/data/onboard/.apps-data"
