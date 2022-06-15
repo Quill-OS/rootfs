@@ -34,7 +34,6 @@ start() {
 			[ ! -d "${extension_userdata_path}" ] && mkdir -p "${extension_userdata_path}"
 			mount -t sysfs sysfs -o nosuid "${extension_mountpoint}/sys" || die "Failed to mount sys filesystem at '${extension_mountpoint}/sys'." 1
 			mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/dev" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/dev'." 1
-			mount -t proc proc -o nosuid "${extension_mountpoint}/proc" || die "Failed to mount proc filesystem at '${extension_mountpoint}/proc'." 1
 			mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/etc" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/etc'." 1
 			mount -t tmpfs tmpfs -o size=8M,nosuid "${extension_mountpoint}/app-temp" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/app-temp'." 1
 			mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/system-lib" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/system-lib'." 1
