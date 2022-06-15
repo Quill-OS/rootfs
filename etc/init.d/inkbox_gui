@@ -16,9 +16,9 @@ start() {
 
 	umount -l -f /kobo 2>/dev/null
 	if [ "${DEVICE}" != "kt" ]; then
-		fuse-overlayfs -o lowerdir=/opt/gui_rootfs/read,upperdir=/opt/gui_rootfs/write,workdir=/opt/gui_rootfs/work,nosuid /kobo
+		fuse-overlayfs -o allow_other,lowerdir=/opt/gui_rootfs/read,upperdir=/opt/gui_rootfs/write,workdir=/opt/gui_rootfs/work,nosuid /kobo
 	else
-		unionfs -o cow,nonempty,nosuid /opt/gui_rootfs/write=RW:/opt/gui_rootfs/read=RO /kobo
+		unionfs -o cow,nonempty,nosuid,allow_other /opt/gui_rootfs/write=RW:/opt/gui_rootfs/read=RO /kobo
 	fi
 
 	rc-service ibxd restart
