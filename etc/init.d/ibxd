@@ -202,6 +202,15 @@ start() {
 				else
 					echo "Portrait" > /kobo/inkbox/pdf_orientation_result
 				fi
+			elif [[ "$line" == "gui_apps_start" ]]; then
+				rc-service gui_apps start
+				if [ ${?} == 0 ]; then
+					echo true > /kobo/tmp/gui_apps_started
+				else
+					echo false > /kobo/tmp/gui_apps_started
+				fi
+			elif [[ "$line" == "gui_apps_stop" ]]; then
+				rc-service gui_apps stop
 			fi
 		fi
 	done &
