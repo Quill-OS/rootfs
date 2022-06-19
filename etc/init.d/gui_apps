@@ -39,12 +39,22 @@ start() {
 				# Basics
 				extension_archive="${f}"
 				extension_name="$(basename -s '.isa' ""${extension_archive}"")"
+				extension_json_file_descriptor="/data/onboard/.apps/${extension_name}/app.json"
 				extension_mountpoint="/data/onboard/.apps/${extension_name}/${extension_name}"
 				extension_userdata_path="/data/onboard/.apps-data/${extension_name}"
 				[ ! -d "${extension_mountpoint}" ] && mkdir -p "${extension_mountpoint}"
 				squashfuse -o allow_other,nosuid "${extension_archive}" "${extension_mountpoint}" || die "Failed to mount GUI user application archive '${extension_archive}' at '${extension_mountpoint}'" 1
 
-				# chroot requirements
+				#### chroot requirements
+				## Required features
+				required_features="$(jq -r '.[].RequiredFeatures |= join(" ")|.[].RequiredFeatures' ""${extension_json_file_descriptor}"")"
+				for feature in ${required_features}; do
+					if [ "${feature}" == "2" ]; then
+						# Needs '/dev/{pts/,ptmx}' (e.g. for terminal emulators)
+						pseudoterminal_support=1
+					fi
+				done
+
 				[ ! -d "/data/onboard/.apps-data" ] && mkdir -p "/data/onboard/.apps-data"
 				[ ! -d "${extension_userdata_path}" ] && mkdir -p "${extension_userdata_path}"
 				mount -t sysfs sysfs -o nosuid "${extension_mountpoint}/sys" || die "Failed to mount sys filesystem at '${extension_mountpoint}/sys'." 1
@@ -54,13 +64,27 @@ start() {
 				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/system-lib" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/system-lib'." 1
 				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/system-bin" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/system-bin'." 1
 				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/mnt" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/mnt'." 1
+
+				## lib
 				(mkdir -p "${extension_mountpoint}/system-lib/lib" && mount --bind "/kobo/lib" "${extension_mountpoint}/system-lib/lib" && mkdir -p "${extension_mountpoint}/system-lib/qt" && mount --rbind "/kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo/" "${extension_mountpoint}/system-lib/qt" && chmod 555 "${extension_mountpoint}/system-lib" "${extension_mountpoint}/system-lib/lib") || die "Failed to bind-mount system libraries at '${extension_mountpoint}/system-lib'." 1
+				## bin
 				(touch "${extension_mountpoint}/system-bin/busybox" && mount --bind "/bin/busybox" "${extension_mountpoint}/system-bin/busybox" && chroot "${extension_mountpoint}" "/system-bin/busybox" "--install" "-s" "/system-bin") || die "Failed to bind-mount and/or set up temporary BusyBox binary at '${extension_mountpoint}/system-bin/busybox'." 1
+				## etc
 				(echo "user::1000:1000:user:/:/system-bin/sh" > "${extension_mountpoint}/etc/passwd" && echo "user:x:1000:" > "${extension_mountpoint}/etc/group" && touch "${extension_mountpoint}/etc/eink.qss" && bind_mount_stylesheet && mount -o remount,ro "${extension_mountpoint}/etc") || die "Failed to set up restricted authentication profile at '${extension_mountpoint}/etc'." 1
+				## dev
+				# Framebuffer
 				(mknod "${extension_mountpoint}/dev/fb0" c 29 0 && chown user:user "${extension_mountpoint}/dev/fb0") || die "Failed to set up '${extension_mountpoint}/dev/fb0' device node." 1
+				# Input
 				mkdir -p "${extension_mountpoint}/dev/input" || die "Failed to create '${extension_mountpoint}/dev/input' directory." 1
-				(mknod "${extension_mountpoint}/dev/input/event0" c 13 64 && mknod "${extension_mountpoint}/dev/input/event1" c 13 65 && mknod "${extension_mountpoint}/dev/input/event2" c 13 66 && chown -R user:user "${extension_mountpoint}/dev/input/" && mount -o remount,ro "${extension_mountpoint}/dev") || die "Failed to set up device input nodes at '${extension_mountpoint}/dev/input'." 1
+				(mknod "${extension_mountpoint}/dev/input/event0" c 13 64 && mknod "${extension_mountpoint}/dev/input/event1" c 13 65 && mknod "${extension_mountpoint}/dev/input/event2" c 13 66 && chown -R user:user "${extension_mountpoint}/dev/input/") || die "Failed to set up device input nodes at '${extension_mountpoint}/dev/input'." 1
+				# ptmx/pts
+				if [ "${pseudoterminal_support}" == 1 ]; then
+					(mknod "${extension_mountpoint}/dev/ptmx" c 5 2 && chown user:user "${extension_mountpoint}/dev/ptmx" && mkdir -p "${extension_mountpoint}/dev/pts" && mount -t devpts devpts -o nosuid "${extension_mountpoint}/dev/pts") || die "Failed to set up pseudoterminal support at '${extension_mountpoint}/dev'." 1
+				fi
+				mount -o remount,ro "${extension_mountpoint}/dev" || die "Failed to remount '${extension_mountpoint}/dev' read-only." 1
+				## mnt
 				(mkdir -p "${extension_mountpoint}/mnt/onboard/.kobo" && echo "$(cat /opt/inkbox_device | tr [:lower:] [:upper:])" > "${extension_mountpoint}/mnt/onboard/.kobo/version" && mount -o remount,ro "${extension_mountpoint}/mnt") || die "Failed to set up fake onboard filesystem for FBInk." 1
+				## User data
 				(mount --bind "${extension_userdata_path}" "${extension_mountpoint}/app-data" && chown user:user "${extension_mountpoint}/app-data") || die "Failed to bind-mount user data directory '${extension_userdata_path}' at '${extension_mountpoint}/app-data'." 1
 				einfo "Successfully set up application '${extension_name}'"
 			else
