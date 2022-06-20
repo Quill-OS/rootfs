@@ -79,7 +79,7 @@ start() {
 				(mknod "${extension_mountpoint}/dev/input/event0" c 13 64 && mknod "${extension_mountpoint}/dev/input/event1" c 13 65 && mknod "${extension_mountpoint}/dev/input/event2" c 13 66 && chown -R user:user "${extension_mountpoint}/dev/input/") || die "Failed to set up device input nodes at '${extension_mountpoint}/dev/input'." 1
 				# ptmx/pts
 				if [ "${pseudoterminal_support}" == 1 ]; then
-					(mknod "${extension_mountpoint}/dev/ptmx" c 5 2 && chown user:user "${extension_mountpoint}/dev/ptmx" && mkdir -p "${extension_mountpoint}/dev/pts" && mount -t devpts devpts -o nosuid "${extension_mountpoint}/dev/pts") || die "Failed to set up pseudoterminal support at '${extension_mountpoint}/dev'." 1
+					(mknod "${extension_mountpoint}/dev/tty" c 5 0 && chown user:user "${extension_mountpoint}/dev/tty" && mknod "${extension_mountpoint}/dev/ptmx" c 5 2 && chown user:user "${extension_mountpoint}/dev/ptmx" && mknod "${extension_mountpoint}/dev/urandom" c 1 9 && chown user:user "${extension_mountpoint}/dev/urandom" && mkdir -p "${extension_mountpoint}/dev/pts" && mount -t devpts devpts -o nosuid,noexec "${extension_mountpoint}/dev/pts") || die "Failed to set up pseudoterminal support at '${extension_mountpoint}/dev'." 1
 				fi
 				mount -o remount,ro "${extension_mountpoint}/dev" || die "Failed to remount '${extension_mountpoint}/dev' read-only." 1
 				## mnt
