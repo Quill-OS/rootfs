@@ -35,7 +35,7 @@ start() {
 	# Iterate through '[onboard-storage]/.apps' and detect '.isa' packages
 	for f in /data/onboard/.apps/*/*.isa; do
 		if [ "${f}" != "/data/onboard/.apps/*/*.isa" ]; then
-			if openssl dgst -sha256 -verify /opt/key/applications-public.pem -signature "${f}.dgst" "${f}"; then
+			if openssl dgst -sha256 -verify /opt/key/applications-public.pem -signature "${f}.dgst" "${f}" &>/dev/null; then
 				# Basics
 				extension_archive="${f}"
 				extension_name="$(basename -s '.isa' ""${extension_archive}"")"
@@ -49,12 +49,19 @@ start() {
 				## Required features
 				required_features="$(jq -r '.[].RequiredFeatures |= join(" ")|.[].RequiredFeatures' ""${extension_json_file_descriptor}"")"
 				for feature in ${required_features}; do
-					if [ "${feature}" == "2" ]; then
+					if [ "${feature}" == "0" ]; then
+						# Needs Wi-Fi connection
+						reqf_wifi_connection=1
+					elif [ "${feature}" == "1" ]; then
+						# Needs rooted kernel
+						reqf_root_kernel=1
+					elif [ "${feature}" == "2" ]; then
 						# Needs '/dev/{pts/,ptmx}' (e.g. for terminal emulators)
-						pseudoterminal_support=1
+						reqf_pseudoterminal_support=1
 					fi
 				done
 
+				## Filesystems
 				[ ! -d "/data/onboard/.apps-data" ] && mkdir -p "/data/onboard/.apps-data"
 				[ ! -d "${extension_userdata_path}" ] && mkdir -p "${extension_userdata_path}"
 				mount -t sysfs sysfs -o nosuid "${extension_mountpoint}/sys" || die "Failed to mount sys filesystem at '${extension_mountpoint}/sys'." 1
@@ -70,7 +77,7 @@ start() {
 				## bin
 				(touch "${extension_mountpoint}/system-bin/busybox" && mount --bind "/bin/busybox" "${extension_mountpoint}/system-bin/busybox" && chroot "${extension_mountpoint}" "/system-bin/busybox" "--install" "-s" "/system-bin") || die "Failed to bind-mount and/or set up temporary BusyBox binary at '${extension_mountpoint}/system-bin/busybox'." 1
 				## etc
-				(echo "user::1000:1000:user:/:/system-bin/sh" > "${extension_mountpoint}/etc/passwd" && echo "user:x:1000:" > "${extension_mountpoint}/etc/group" && touch "${extension_mountpoint}/etc/eink.qss" && bind_mount_stylesheet && mount -o remount,ro "${extension_mountpoint}/etc") || die "Failed to set up restricted authentication profile at '${extension_mountpoint}/etc'." 1
+				(echo "user::1000:1000:user:/:/system-bin/sh" > "${extension_mountpoint}/etc/passwd" && echo "user:x:1000:" > "${extension_mountpoint}/etc/group" && touch "${extension_mountpoint}/etc/eink.qss" && bind_mount_stylesheet && touch "${extension_mountpoint}/etc/resolv.conf" && mount --bind "/etc/resolv.conf" "${extension_mountpoint}/etc/resolv.conf" && mount -o remount,ro "${extension_mountpoint}/etc") || die "Failed to set up restricted authentication profile at '${extension_mountpoint}/etc'." 1
 				## dev
 				# Framebuffer
 				(mknod "${extension_mountpoint}/dev/fb0" c 29 0 && chown user:user "${extension_mountpoint}/dev/fb0") || die "Failed to set up '${extension_mountpoint}/dev/fb0' device node." 1
@@ -78,7 +85,7 @@ start() {
 				mkdir -p "${extension_mountpoint}/dev/input" || die "Failed to create '${extension_mountpoint}/dev/input' directory." 1
 				(mknod "${extension_mountpoint}/dev/input/event0" c 13 64 && mknod "${extension_mountpoint}/dev/input/event1" c 13 65 && mknod "${extension_mountpoint}/dev/input/event2" c 13 66 && chown -R user:user "${extension_mountpoint}/dev/input/") || die "Failed to set up device input nodes at '${extension_mountpoint}/dev/input'." 1
 				# ptmx/pts
-				if [ "${pseudoterminal_support}" == 1 ]; then
+				if [ "${reqf_pseudoterminal_support}" == 1 ]; then
 					(mknod "${extension_mountpoint}/dev/tty" c 5 0 && chown user:user "${extension_mountpoint}/dev/tty" && mknod "${extension_mountpoint}/dev/ptmx" c 5 2 && chown user:user "${extension_mountpoint}/dev/ptmx" && mknod "${extension_mountpoint}/dev/urandom" c 1 9 && chown user:user "${extension_mountpoint}/dev/urandom" && mkdir -p "${extension_mountpoint}/dev/pts" && mount -t devpts devpts -o nosuid,noexec "${extension_mountpoint}/dev/pts") || die "Failed to set up pseudoterminal support at '${extension_mountpoint}/dev'." 1
 				fi
 				mount -o remount,ro "${extension_mountpoint}/dev" || die "Failed to remount '${extension_mountpoint}/dev' read-only." 1
