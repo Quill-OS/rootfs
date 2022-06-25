@@ -95,6 +95,7 @@ start() {
 		mount --bind /data/config/19-timezone/config /kobo/etc/localtime
 		mount --bind /opt/version /kobo/opt/version
 		mount --bind /bin/kobo_config.sh /kobo/bin/kobo_config.sh
+		mount --bind /opt/bin/fbink/fbink /kobo/external_root/opt/bin/fbink/fbink
 		if [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ]; then
 			echo "n905" > /tmp/inkbox_device
 			mount --bind /tmp/inkbox_device /kobo/opt/inkbox_device
