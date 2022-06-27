@@ -85,6 +85,7 @@ start() {
 		mount --bind /opt/root /kobo/external_root/opt/root
 		mount --bind /opt/update /kobo/external_root/opt/update
 		mount --bind /opt/storage /kobo/external_root/opt/storage
+		mount --bind /data/onboard /kobo/external_root/data/onboard
 		[ ! -e "/kobo/opt/version" ] && touch /kobo/opt/version
 		[ ! -e "/kobo/bin/kobo_config.sh" ] && touch /kobo/bin/kobo_config.sh
 		[ ! -e "/kobo/usr/share/zoneinfo" ] && mkdir -p /kobo/usr/share/zoneinfo
