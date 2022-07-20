@@ -4,7 +4,7 @@ description="Sets InkBox GUI user apps up"
 
 depend() {
 	keyword -prefix -lxc
-	after onboard_mount
+	after onboard_mount ipd
 }
 
 bind_mount_stylesheet() {
@@ -88,6 +88,8 @@ start() {
 				if [ "${reqf_pseudoterminal_support}" == 1 ]; then
 					(mknod "${extension_mountpoint}/dev/tty" c 5 0 && chown user:user "${extension_mountpoint}/dev/tty" && mknod "${extension_mountpoint}/dev/ptmx" c 5 2 && chown user:user "${extension_mountpoint}/dev/ptmx" && mknod "${extension_mountpoint}/dev/urandom" c 1 9 && chown user:user "${extension_mountpoint}/dev/urandom" && mkdir -p "${extension_mountpoint}/dev/pts" && mount -t devpts devpts -o nosuid,noexec "${extension_mountpoint}/dev/pts") || die "Failed to set up pseudoterminal support at '${extension_mountpoint}/dev'." 1
 				fi
+				# Power daemon
+				(touch "${extension_mountpoint}/dev/ipd" && mount --bind "/run/ipd/fifo" "${extension_mountpoint}/dev/ipd") || die "Failed to bind-mount InkBox Power Daemon (ipd) named pipe" 1
 				mount -o remount,ro "${extension_mountpoint}/dev" || die "Failed to remount '${extension_mountpoint}/dev' read-only." 1
 				## mnt
 				(mkdir -p "${extension_mountpoint}/mnt/onboard/.kobo" && echo "$(cat /opt/inkbox_device | tr [:lower:] [:upper:])" > "${extension_mountpoint}/mnt/onboard/.kobo/version" && mount -o remount,ro "${extension_mountpoint}/mnt") || die "Failed to set up fake onboard filesystem for FBInk." 1
