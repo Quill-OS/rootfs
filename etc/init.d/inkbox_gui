@@ -22,6 +22,7 @@ start() {
 	fi
 
 	rc-service ibxd restart
+	mkdir -p /kobo/run/ipd && touch /kobo/run/ipd/fifo && mount --bind /run/ipd/fifo /kobo/run/ipd/fifo
 
 	squashfuse /opt/update/update.isa /opt/isa
 

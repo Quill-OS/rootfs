@@ -1,0 +1,21 @@
+#!/sbin/openrc-run
+
+description="Launches InkBox Power Daemon (ipd)"
+
+depend() {
+	keyword -prefix -lxc
+	before inkbox_gui gui_apps
+	after modules_init usbnet splash onboard_mount
+}
+
+start() {
+	ebegin "Starting InkBox Power Daemon (ipd)"
+	DEBUG="$(cat /boot/flags/IPD_DEBUG 2>/dev/null)" /sbin/ipd &
+	eend ${?}
+}
+
+stop() {
+	ebegin "Stopping InkBox Power Daemon (ipd)"
+	killall -9 ipd
+	eend ${?}
+}
