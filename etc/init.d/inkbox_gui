@@ -22,8 +22,6 @@ start() {
 	fi
 
 	rc-service ibxd restart
-	mkdir -p /kobo/run/ipd && touch /kobo/run/ipd/fifo && mount --bind /run/ipd/fifo /kobo/run/ipd/fifo
-
 	squashfuse /opt/update/update.isa /opt/isa
 
 	DEVMODE=$(cat /opt/developer/key/valid-key 2>/dev/null)
@@ -72,8 +70,9 @@ start() {
 	        mount -t proc proc /kobo/proc
 	        mount -t tmpfs tmpfs -o size=128M /kobo/tmp
 	        mount -t tmpfs tmpfs -o size=128M /kobo/var/run
-	        mount --bind /dev /kobo/dev
+		mount --bind /dev /kobo/dev
 	        mount --bind /dev/pts /kobo/dev/pts
+		mkdir -p /kobo/dev/ipd && touch /kobo/dev/ipd/fifo && mount --bind /run/ipd/fifo /kobo/dev/ipd/fifo
 
 		mount --bind / /kobo/external_root
 		mount --bind /dev /kobo/external_root/dev
