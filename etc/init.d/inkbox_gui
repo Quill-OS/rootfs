@@ -72,7 +72,7 @@ start() {
 	        mount -t tmpfs tmpfs -o size=128M /kobo/var/run
 		mount --bind /dev /kobo/dev
 	        mount --bind /dev/pts /kobo/dev/pts
-		mkdir -p /kobo/dev/ipd && touch /kobo/dev/ipd/fifo && mount --bind /run/ipd/fifo /kobo/dev/ipd/fifo
+		mkdir -p /kobo/dev/ipd && mount --bind /run/ipd /kobo/dev/ipd
 
 		mount --bind / /kobo/external_root
 		mount --bind /dev /kobo/external_root/dev

@@ -8,11 +8,6 @@ else
 fi
 /opt/bin/wall "The system is going down for reboot NOW!"
 
-killall -q sleep_standby.sh
-killall -q wake_standby.sh
-rc-service sleep_standby stop 2>/dev/null
-rc-service wake_standby stop 2>/dev/null
-
 if [ "${1}" != "no_splash" ]; then
 	sleep 2
 	/opt/bin/fbink/fbink -k -f -h -q
