@@ -10,6 +10,7 @@ depend() {
 
 start() {
 	ebegin "Starting InkBox Power Daemon (ipd)"
+	killall -q -9 evtest
 	DEBUG="$(cat /boot/flags/IPD_DEBUG 2>/dev/null)" /sbin/ipd &
 	eend ${?}
 }
