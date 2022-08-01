@@ -1,0 +1,64 @@
+#!/bin/sh
+
+calculate() {
+    result=$(awk "BEGIN { print "$*" }")
+    printf "%.0f\n" ${result}
+}
+
+[ -z "${1}" ] && printf "Please provide the 'message' argument.\n" && exit 1
+message="${1}"
+DEVICE="$(cat /opt/inkbox_device)"
+
+eval $(fbink -e)
+
+if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "kt" ]; then
+    info_yf=33.5
+    info_xf=26
+    info_wf=14
+    info_hf=19
+    text_tf=30.5
+    text_lf=8.2
+    notification_canvas_file="/etc/images/notification_canvas-600x800.png"
+elif [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n306" ]; then
+    info_yf=34.5
+    info_xf=26
+    info_wf=14
+    info_hf=19
+    text_tf=29.5
+    text_lf=8.5
+    notification_canvas_file="/etc/images/notification_canvas-768x1024.png"
+elif [ "${DEVICE}" == "n437" ]; then
+    info_yf=37
+    info_xf=26
+    info_wf=14
+    info_hf=19
+    text_tf=29.5
+    text_lf=7.9
+    notification_canvas_file="/etc/images/notification_canvas-1072x1448.png"
+elif [ "${DEVICE}" == "n873" ]; then
+    info_yf=37
+    info_xf=26
+    info_wf=14
+    info_hf=19
+    text_tf=29.5
+    text_lf=7.9
+    notification_canvas_file="/etc/images/notification_canvas-1264x1680.png"
+else
+    info_yf=33.5
+    info_xf=26
+    info_wf=14
+    info_hf=19
+    text_tf=30.5
+    text_lf=8.2
+    notification_canvas_file="/etc/images/notification_canvas-600x800.png"
+fi
+
+# Canvas
+fbink -q -w -g file="${notification_canvas_file}"
+# Info icon
+fbink -q -w -g file="/etc/images/info.png",x=$(calculate ${viewWidth}/${info_xf}),y=$(calculate ${viewHeight}/${info_yf}),w=$(calculate ${viewWidth}/${info_wf}),h=$(calculate ${viewHeight}/${info_hf})
+# Message
+fbink -q -w -t regular="/usr/share/fonts/u001-reg.ttf",size=15,top=$(calculate ${viewHeight}/${text_tf}),left=$(calculate ${viewWidth}/${text_lf}) "${message}"
+
+# Simple example to create a canvas
+# convert -size ${viewWidth}x$(calculate ${viewHeight}/9) xc:white -fill transparent -stroke black -strokewidth 5 -draw "roundrectangle 10,10 $(calculate ${viewWidth}-10),$(calculate ${viewHeight}/10) 10,10" out.png

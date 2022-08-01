@@ -6,6 +6,7 @@ echo ${$} > "/run/connect_to_network.sh.pid"
 
 quit() {
 	rm -f "/run/connect_to_network.sh.pid"
+	rm -f "/run/was_connected_to_wifi"
 	exit ${1}
 }
 
