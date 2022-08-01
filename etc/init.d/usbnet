@@ -32,6 +32,7 @@ start() {
 			elif [ "${DEVICE}" == "emu" ]; then
 				:
 			else
+				insmod "/modules/arcotg_udc.ko" 2>/dev/null
 				insmod "/modules/g_ether.ko"
 			fi
 			ifconfig usb0 up
