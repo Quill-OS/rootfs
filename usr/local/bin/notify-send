@@ -25,7 +25,7 @@ elif [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == 
     info_wf=14
     info_hf=19
     text_tf=29.5
-    text_lf=8.5
+    text_lf=8.15
     notification_canvas_file="/etc/images/notification_canvas-768x1024.png"
 elif [ "${DEVICE}" == "n437" ]; then
     info_yf=37
@@ -54,11 +54,11 @@ else
 fi
 
 # Canvas
-fbink -q -w -g file="${notification_canvas_file}"
+fbink -q -g file="${notification_canvas_file}"
 # Info icon
-fbink -q -w -g file="/etc/images/info.png",x=$(calculate ${viewWidth}/${info_xf}),y=$(calculate ${viewHeight}/${info_yf}),w=$(calculate ${viewWidth}/${info_wf}),h=$(calculate ${viewHeight}/${info_hf})
+fbink -q -g file="/etc/images/info.png",x=$(calculate ${viewWidth}/${info_xf}),y=$(calculate ${viewHeight}/${info_yf}),w=$(calculate ${viewWidth}/${info_wf}),h=$(calculate ${viewHeight}/${info_hf})
 # Message
-fbink -q -w -t regular="/usr/share/fonts/u001-reg.ttf",size=15,top=$(calculate ${viewHeight}/${text_tf}),left=$(calculate ${viewWidth}/${text_lf}) "${message}"
+fbink -q -t regular="/usr/share/fonts/u001-reg.ttf",size=15,top=$(calculate ${viewHeight}/${text_tf}),left=$(calculate ${viewWidth}/${text_lf}) "${message}"
 
 # Simple example to create a canvas
 # convert -size ${viewWidth}x$(calculate ${viewHeight}/9) xc:white -fill transparent -stroke black -strokewidth 5 -draw "roundrectangle 10,10 $(calculate ${viewWidth}-10),$(calculate ${viewHeight}/10) 10,10" out.png
