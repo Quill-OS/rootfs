@@ -115,14 +115,11 @@ start() {
 		touch /kobo/tmp/resolv.conf
 		mount --bind /etc/resolv.conf /kobo/tmp/resolv.conf
 
-		# Currently, Mini, Touch N905C and Glo don't have Wi-Fi (c.f. https://github.com/kobolabs/Kobo-Reader/issues/105)
-		if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
-			echo "false" > /kobo/run/wifi_able
-			echo "false" > /run/wifi_able
-		elif [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "kt" ]; then
+		if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ]; then
 			echo "true" > /kobo/run/wifi_able
 			echo "true" > /run/wifi_able
 		else
+			# Emulator or Kindle Touch (KT)
 			echo "false" > /kobo/run/wifi_able
 			echo "false" > /run/wifi_able
 		fi
