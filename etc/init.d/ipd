@@ -8,9 +8,26 @@ depend() {
 	after modules_init usbnet splash onboard_mount
 }
 
+turn_off_led() {
+	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
+		echo 0 > "/sys/class/leds/pmic_ledsg/brightness"
+	elif [ "${DEVICE}" == "n306" ]; then
+		echo 1 > "/sys/devices/platform/leds/leds/GLED/brightness" ; echo 0 > "/sys/devices/platform/leds/leds/GLED/brightness"
+	elif [ "${DEVICE}" == "n873" ]; then
+		echo 1 > "/sys/class/leds/GLED/brightness" ; echo 0 > "/sys/class/leds/GLED/brightness"
+	elif [ "${DEVICE}" == "bpi" ]; then
+		echo 0 > "/sys/devices/platform/leds/leds/bpi:red:pwr/brightness"
+	elif [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
+		/opt/bin/shutdown_led
+	else
+		echo 0 > "/sys/class/leds/pmic_ledsg/brightness"
+	fi
+}
+
 start() {
 	ebegin "Starting InkBox Power Daemon (ipd)"
 	killall -q -9 evtest
+	turn_off_led
 	DEBUG="$(cat /boot/flags/IPD_DEBUG 2>/dev/null)" /sbin/ipd &
 	eend ${?}
 }
