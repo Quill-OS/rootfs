@@ -23,58 +23,16 @@ else
 	PASSPHRASE="${2}"
 fi
 
-if [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n306" ]; then
-	WIFI_MODULE="/modules/wifi/8189fs.ko"
-	SDIO_WIFI_PWR_MODULE="/modules/drivers/mmc/card/sdio_wifi_pwr.ko"
+if [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n306" ] ||  [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "kt" ]; then
 	WIFI_DEV="eth0"
-elif [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
-	WIFI_MODULE="/modules/dhd.ko"
-	SDIO_WIFI_PWR_MODULE="/modules/sdio_wifi_pwr.ko"
-	WIFI_DEV="eth0"
-elif [ "${DEVICE}" == "n437" ]; then
-	WIFI_MODULE="/modules/wifi/bcmdhd.ko"
-	SDIO_WIFI_PWR_MODULE="/modules/drivers/mmc/card/sdio_wifi_pwr.ko"
-	WIFI_DEV="wlan0"
-elif [ "${DEVICE}" == "kt" ]; then
-	WIFI_MODULE="ar6003"
+elif [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "kt" ]; then
 	WIFI_DEV="wlan0"
 else
-	WIFI_MODULE="/modules/dhd.ko"
-	SDIO_WIFI_PWR_MODULE="/modules/sdio_wifi_pwr.ko"
 	WIFI_DEV="eth0"
 fi
 
-cleanup() {
-	killall -q dhcpcd wpa_supplicant
-	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n437" ]; then
-		wlarm_le down
-	fi
-	ifconfig "${WIFI_DEV}" down
-	if [ "${DEVICE}" != "kt" ]; then
-		rmmod "${WIFI_MODULE}" 2> /dev/null
-		rmmod "${SDIO_WIFI_PWR_MODULE}" 2> /dev/null
-	else
-		modprobe -r "${WIFI_MODULE}"
-	fi
-}
-
-setup() {
-	if [ "${DEVICE}" != "kt" ]; then
-		insmod "${SDIO_WIFI_PWR_MODULE}"
-		insmod "${WIFI_MODULE}"
-	else
-		modprobe "${WIFI_MODULE}"
-	fi
-	# Race condition
-	sleep 1.5
-	ifconfig "${WIFI_DEV}" up
-	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n437" ]; then
-		wlarm_le up
-	fi
-}
-
-cleanup
-setup
+/usr/local/bin/wifi/toggle.sh off
+/usr/local/bin/wifi/toggle.sh on
 
 wpa_passphrase "${ESSID}" "${PASSPHRASE}" > /run/wpa_supplicant.conf
 wpa_supplicant -D wext -i "${WIFI_DEV}" -c /run/wpa_supplicant.conf -O /run/wpa_supplicant -B
@@ -84,7 +42,7 @@ if [ ${?} != 0 ]; then
 	quit 1
 fi
 
-if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "kt" ]; then
+if [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "kt" ]; then
 	udhcpc -i "${WIFI_DEV}"
 else
 	dhcpcd "${WIFI_DEV}"
@@ -92,10 +50,11 @@ fi
 
 if [ ${?} != 0 ]; then
 	echo "DHCP request failed."
-	cleanup
+	/usr/local/bin/wifi/toggle.sh off
 	quit 1
 fi
 
 # Sync time
 /usr/local/bin/timesync.sh
+echo "Exiting"
 quit 0
