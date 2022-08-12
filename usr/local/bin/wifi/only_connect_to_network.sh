@@ -9,19 +9,6 @@ quit() {
 	exit ${1}
 }
 
-if [ -z "${1}" ]; then
-	echo "You must provide the 'ESSID' argument."
-	quit 1
-else
-	ESSID="${1}"
-fi
-if [ -z "${2}" ]; then
-	echo "You must provide the 'passphrase' argument."
-	quit 1
-else
-	PASSPHRASE="${2}"
-fi
-
 if [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n306" ] ||  [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "kt" ]; then
 	WIFI_DEV="eth0"
 elif [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "kt" ]; then
@@ -32,9 +19,9 @@ fi
 
 
 if [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "kt" ]; then
-	udhcpc -i "${WIFI_DEV}"
+	timeout 120s udhcpc -i "${WIFI_DEV}"
 else
-	dhcpcd "${WIFI_DEV}"
+	timeout 120s dhcpcd "${WIFI_DEV}"
 fi
 
 if [ ${?} != 0 ]; then

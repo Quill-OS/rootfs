@@ -16,8 +16,9 @@ else
 	ESSID="${1}"
 fi
 if [ -z "${2}" ]; then
-	echo "You must provide the 'passphrase' argument."
-	quit 1
+	echo "Warning: No PASSPHRASE argument, trying to connect to a open network"
+	# To preserve compability with other programs, NONE should be gived anyway
+	PASSPHRASE="NONE"
 else
 	PASSPHRASE="${2}"
 fi
@@ -30,8 +31,19 @@ else
 	WIFI_DEV="eth0"
 fi
 
+# to be sure
+rm -f /run/wpa_supplicant/eth0
 
-wpa_passphrase "${ESSID}" "${PASSPHRASE}" > /run/wpa_supplicant.conf
+if [ "$PASSPHRASE" = "NONE" ]; then
+    echo "Setting up wpa_supplicant.conf for no password"
+	echo "network={" > /run/wpa_supplicant.conf
+	echo "    ssid=\"${ESSID}\"" >> /run/wpa_supplicant.conf
+    echo "    key_mgmt=NONE" >> /run/wpa_supplicant.conf
+    echo "}" >> /run/wpa_supplicant.conf
+else
+	echo "Setting up wpa_supplicant.conf for password"
+	wpa_passphrase "${ESSID}" "${PASSPHRASE}" > /run/wpa_supplicant.conf
+fi
 wpa_supplicant -D wext -i "${WIFI_DEV}" -c /run/wpa_supplicant.conf -O /run/wpa_supplicant -B
 if [ ${?} != 0 ]; then
 	echo "Failed to prepare to network '${ESSID}'"

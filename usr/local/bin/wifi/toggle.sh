@@ -1,3 +1,5 @@
+#!/bin/sh
+
 DEVICE=$(cat /opt/inkbox_device)
 
 if [ -z "${1}" ]; then
