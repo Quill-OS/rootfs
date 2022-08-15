@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 DEVICE=$(cat /opt/inkbox_device)
 
