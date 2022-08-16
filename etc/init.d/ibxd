@@ -77,6 +77,7 @@ start() {
 			# Wifi things
 			elif [[ "$line" == "list_wifi_networks" ]]; then
 				/usr/local/bin/wifi/list_networks.bin
+
 			elif [[ "$line" == "connect_to_wifi_network" ]]; then
 				NET_ESSID=$(cat /kobo/run/wifi_network_essid)
 				NET_PASSPHRASE=$(cat /kobo/run/wifi_network_passphrase)
@@ -88,12 +89,13 @@ start() {
 				kill -9 ${CONNECT_TO_NETWORK_PID}
 				rm -f /run/connect_to_network.sh.pid
 				echo "true" > /kobo/run/stop_wifi_reconnection_done
+
 			elif [[ "$line" == "toggle_wifi_off" ]]; then
 				/usr/local/bin/wifi/toggle.sh off
-				echo "true" > /kobo/run/toggle_wifi_off_done
+
 			elif [[ "$line" == "toggle_wifi_on" ]]; then
-				/usr/local/bin/wifi/toggle.sh on
-				echo "true" > /kobo/run/toggle_wifi_on_done
+				/usr/local/bin/wifi/turn_on_with_stats.sh
+
 			elif [[ "$line" == "get_current_wifi_name" ]]; then
 				iwgetid -r > /run/current_wifi_name
 				# End of wifi
