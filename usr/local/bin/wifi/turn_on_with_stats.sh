@@ -3,8 +3,11 @@
 rm -f /run/wifi_stats
 touch /run/wifi_stats
 
+rm -f /run/wifi_logs
+touch /run/wifi_logs
+
 echo -n "Turning on wifi: " >>  /run/wifi_stats
-/usr/bin/time -f '%e' -a -o /run/wifi_stats /usr/local/bin/wifi/toggle.sh on
+/usr/bin/time -f '%e' -q -a -o /run/wifi_stats /usr/local/bin/wifi/toggle.sh on /run/wifi_logs 2>&1
 
 if [ ${?} != 0 ]; then
 	# remove the newline, also its here to not change the exit code
