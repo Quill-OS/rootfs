@@ -98,6 +98,8 @@ start() {
 
 			elif [[ "$line" == "get_current_wifi_name" ]]; then
 				iwgetid -r > /run/current_wifi_name
+			elif [[ "$line" == "get_wifi_informations" ]]; then
+				/usr/local/bin/wifi/wifi_informations.sh
 				# End of wifi
 
 			elif [[ "$line" == "ota_update_check" ]]; then
