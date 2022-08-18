@@ -23,6 +23,7 @@ if [ ${?} != 0 ]; then
 	# remove the newline, also its here to not change the exit code
 	truncate -s -1 /run/wifi_stats
 	echo "s - ERROR" >>  /run/wifi_stats
+	/usr/local/bin/wifi/toggle.sh off
 	exit 1
 else
 	# remove the newline, also its here to not change the exit code
@@ -31,12 +32,13 @@ else
 fi
 
 echo -n "Getting DHCP: " >>  /run/wifi_stats
-/usr/bin/time -f '%e' -a -o /run/wifi_stats -q /usr/local/bin/wifi/only_connect_to_network.sh >> /run/wifi_logs 2>&1
+/usr/bin/time -f '%e' -a -o /run/wifi_stats -q /usr/local/bin/wifi/get_dhcp.sh >> /run/wifi_logs 2>&1
 
 if [ ${?} != 0 ]; then
 	# remove the newline, also its here to not change the exit code
 	truncate -s -1 /run/wifi_stats
 	echo "s - ERROR" >>  /run/wifi_stats
+	/usr/local/bin/wifi/toggle.sh off
 	exit 1
 else
 	# remove the newline, also its here to not change the exit code
