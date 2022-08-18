@@ -83,13 +83,9 @@ start() {
 				NET_PASSPHRASE=$(cat /kobo/run/wifi_network_passphrase)
 				rm -f /kobo/run/wifi_network_essid
 				rm -f /kobo/run/wifi_network_passphrase
-				/usr/local/bin/wifi/connect_to_network.sh "${NET_ESSID}" "${NET_PASSPHRASE}"
-			elif [[ "$line" == "stop_wifi_reconnection" ]]; then
-				CONNECT_TO_NETWORK_PID=$(cat /run/connect_to_network.sh.pid)
-				kill -9 ${CONNECT_TO_NETWORK_PID}
-				rm -f /run/connect_to_network.sh.pid
-				echo "true" > /kobo/run/stop_wifi_reconnection_done
-
+				/usr/local/bin/wifi/connection_manager.sh "${NET_ESSID}" "${NET_PASSPHRASE}"
+			elif [[ "$line" == "stop_wifi_operations" ]]; then
+				/usr/local/bin/wifi/prepare_changing_wifi.sh
 			elif [[ "$line" == "toggle_wifi_off" ]]; then
 				/usr/local/bin/wifi/toggle.sh off
 
