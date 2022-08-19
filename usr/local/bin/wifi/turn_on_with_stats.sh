@@ -19,3 +19,5 @@ else
 	truncate -s -1 /run/wifi_stats
     echo "s - OK" >>  /run/wifi_stats
 fi
+
+iwevent >> /run/wifi_logs &

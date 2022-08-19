@@ -63,11 +63,18 @@ fi
 
 if [ ${?} != 0 ]; then
 	echo "DHCP request failed."
-	/usr/local/bin/wifi/toggle.sh off
+	if [ -f "/run/stopping_wifi" ]; then
+		echo "/run/stopping_wifi exists, dont shutting down wifi"
+		rm /run/stopping_wifi
+		exit 0
+	else
+		/usr/local/bin/wifi/toggle.sh off
+	fi
 	quit 1
 fi
 
 # Sync time
 /usr/local/bin/timesync.sh
 echo "Exiting"
+rm /run/stopping_wifi
 quit 0
