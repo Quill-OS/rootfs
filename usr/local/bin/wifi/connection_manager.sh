@@ -23,7 +23,15 @@ if [ ${?} != 0 ]; then
 	# remove the newline, also its here to not change the exit code
 	truncate -s -1 /run/wifi_stats
 	echo "s - ERROR" >>  /run/wifi_stats
-	/usr/local/bin/wifi/toggle.sh off
+	echo "Turning wifi off from connection_manager"
+	sleep 3
+	if [ -f "/run/stopping_wifi" ]; then
+		echo "/run/stopping_wifi exists, dont shutting down wifi"
+		rm /run/stopping_wifi
+		exit 0
+	else
+		/usr/local/bin/wifi/toggle.sh off
+	fi
 	exit 1
 else
 	# remove the newline, also its here to not change the exit code
@@ -38,7 +46,15 @@ if [ ${?} != 0 ]; then
 	# remove the newline, also its here to not change the exit code
 	truncate -s -1 /run/wifi_stats
 	echo "s - ERROR" >>  /run/wifi_stats
-	/usr/local/bin/wifi/toggle.sh off
+	echo "Turning wifi off from connection_manager"
+	sleep 3
+	if [ -f "/run/stopping_wifi" ]; then
+		echo "/run/stopping_wifi exists, dont shutting down wifi"
+		rm /run/stopping_wifi
+		exit 0
+	else
+		/usr/local/bin/wifi/toggle.sh off
+	fi
 	exit 1
 else
 	# remove the newline, also its here to not change the exit code
@@ -73,3 +89,5 @@ else
 	truncate -s -1 /run/wifi_stats
     echo "s - OK" >>  /run/wifi_stats
 fi
+
+rm /run/stopping_wifi

@@ -40,6 +40,8 @@ else
 fi
 
 cleanup() {
+	# To be sure...
+	/usr/local/bin/wifi/prepare_changing_wifi.sh
 	killall -q dhcpcd wpa_supplicant udhcpc
 	killall -q dhcpcd wpa_supplicant udhcpc
 	sleep 0.5

@@ -45,8 +45,6 @@ start() {
 		if read line < /run/ibxd; then
 			if [[ "$line" == "sleep_toggle" ]]; then
 				echo "state changed" > /tmp/power
-
-
 			elif [[ "$line" == "reboot" ]]; then
 				/sbin/reboot
 			elif [[ "$line" == "reboot splash reset_kobox" ]]; then
@@ -76,26 +74,27 @@ start() {
 
 			# Wifi things
 			elif [[ "$line" == "list_wifi_networks" ]]; then
-				/usr/local/bin/wifi/list_networks.bin
+				/usr/local/bin/wifi/list_networks.bin &
 
 			elif [[ "$line" == "connect_to_wifi_network" ]]; then
 				NET_ESSID=$(cat /kobo/run/wifi_network_essid)
 				NET_PASSPHRASE=$(cat /kobo/run/wifi_network_passphrase)
 				rm -f /kobo/run/wifi_network_essid
 				rm -f /kobo/run/wifi_network_passphrase
-				/usr/local/bin/wifi/connection_manager.sh "${NET_ESSID}" "${NET_PASSPHRASE}"
+				/usr/local/bin/wifi/connection_manager.sh "${NET_ESSID}" "${NET_PASSPHRASE}" &
 			elif [[ "$line" == "stop_wifi_operations" ]]; then
-				/usr/local/bin/wifi/prepare_changing_wifi.sh
+				/usr/local/bin/wifi/prepare_changing_wifi.sh &
 			elif [[ "$line" == "toggle_wifi_off" ]]; then
-				/usr/local/bin/wifi/toggle.sh off
+				echo "turning off wifi"
+				/usr/local/bin/wifi/toggle.sh off &
 
 			elif [[ "$line" == "toggle_wifi_on" ]]; then
-				/usr/local/bin/wifi/turn_on_with_stats.sh
+				/usr/local/bin/wifi/turn_on_with_stats.sh &
 
 			elif [[ "$line" == "get_current_wifi_name" ]]; then
-				iwgetid -r > /run/current_wifi_name
+				iwgetid -r > /run/current_wifi_name &
 			elif [[ "$line" == "get_wifi_informations" ]]; then
-				/usr/local/bin/wifi/wifi_informations.sh
+				/usr/local/bin/wifi/wifi_informations.sh &
 				# End of wifi
 
 			elif [[ "$line" == "ota_update_check" ]]; then
