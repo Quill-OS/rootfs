@@ -50,4 +50,15 @@ if [ ${?} != 0 ]; then
 	quit 1
 fi
 
+if [ "$PASSPHRASE" = "NONE" ]; then
+	echo "No need to check password for wifi"
+else
+	timeout 120s /usr/local/bin/wifi/check_wifi_password.sh
+
+	if [ ${?} != 0 ]; then
+	echo "Failed to prepare to network '${ESSID}. Wrong password?'"
+	quit 1
+	fi
+fi
+
 quit 0
