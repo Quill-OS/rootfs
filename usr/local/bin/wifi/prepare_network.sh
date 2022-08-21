@@ -52,13 +52,27 @@ fi
 
 if [ "$PASSPHRASE" = "NONE" ]; then
 	echo "No need to check password for wifi"
+	quit 0
 else
+	rm -f /run/correct_wifi_password
 	timeout 120s /usr/local/bin/wifi/check_wifi_password.sh
 
-	if [ ${?} != 0 ]; then
-	echo "Failed to prepare to network '${ESSID}. Wrong password?'"
-	quit 1
+	if test -f "/run/correct_wifi_password"; then
+		echo "/run/correct_wifi_password exists."
+		if grep -q true "/run/correct_wifi_password"; then
+			echo "Password is correct"
+			rm -f /run/correct_wifi_password
+			quit 0
+		else
+			echo "Password is not correct"
+			rm -f /run/correct_wifi_password
+			quit 1
+		fi
+	else
+		echo "/run/correct_wifi_password doesn't exists. Checking for password propably timed out"
+		quit 1
 	fi
 fi
 
-quit 0
+echo "This message will be never shown"
+quit 1

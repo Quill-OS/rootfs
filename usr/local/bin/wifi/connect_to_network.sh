@@ -32,9 +32,6 @@ else
 	WIFI_DEV="eth0"
 fi
 
-/usr/local/bin/wifi/toggle.sh off
-/usr/local/bin/wifi/toggle.sh on
-
 # to be sure
 rm -f /run/wpa_supplicant/eth0
 

@@ -1,5 +1,13 @@
 #!/bin/sh
 
+rm -f /run/wifi_stats
+touch /run/wifi_stats
+
+rm -f /run/wifi_logs
+touch /run/wifi_logs
+
+rm -f /run/stopping_wifi
+
 DEVICE=$(cat /opt/inkbox_device)
 
 if [ -z "${1}" ]; then
@@ -24,7 +32,7 @@ if [ ${?} != 0 ]; then
 	truncate -s -1 /run/wifi_stats
 	echo "s - ERROR" >>  /run/wifi_stats
 	sleep 3
-	if [ -f /run/stopping_wifi ]; then
+	if [ -f "/run/stopping_wifi" ]; then
 		echo "/run/stopping_wifi exists, dont shutting down wifi"
 		rm /run/stopping_wifi
 		exit 0
@@ -47,7 +55,7 @@ if [ ${?} != 0 ]; then
 	truncate -s -1 /run/wifi_stats
 	echo "s - ERROR" >>  /run/wifi_stats
 	sleep 3
-	if [ -f /run/stopping_wifi ]; then
+	if [ -f "/run/stopping_wifi" ]; then
 		echo "/run/stopping_wifi exists, dont shutting down wifi"
 		rm /run/stopping_wifi
 		exit 0
@@ -61,6 +69,9 @@ else
 	truncate -s -1 /run/wifi_stats
     echo "s - OK" >>  /run/wifi_stats
 fi
+
+# Here its connected, so say yes to it
+echo "true" > /run/was_connected_to_wifi
 
 echo -n "Syncing time: " >>  /run/wifi_stats
 /usr/bin/time -f '%e' -a -o /run/wifi_stats -q /usr/local/bin/wifi/smarter_time_sync.sh >> /run/wifi_logs 2>&1
