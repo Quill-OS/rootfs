@@ -24,3 +24,5 @@ killall -q dhcpcd wpa_supplicant udhcpc iwevent
 killall -q dhcpcd wpa_supplicant udhcpc iwevent
 sleep 0.5
 killall -9 dhcpcd wpa_supplicant udhcpc iwevent
+
+rm -f /run/was_connected_to_wifi
