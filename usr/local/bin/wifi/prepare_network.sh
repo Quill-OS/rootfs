@@ -35,13 +35,13 @@ fi
 rm -f "/run/wpa_supplicant/eth0"
 
 if [ "${PASSPHRASE}" = "NONE" ]; then
-	echo "Setting up wpa_supplicant.conf for no password"
+	echo "Setting up wpa_supplicant.conf for no passphrase"
 	echo "network={" > "/run/wpa_supplicant.conf"
 	echo "    ssid=\"${ESSID}\"" >> "/run/wpa_supplicant.conf"
 	echo "    key_mgmt=NONE" >> "/run/wpa_supplicant.conf"
 	echo "}" >> "/run/wpa_supplicant.conf"
 else
-	echo "Setting up wpa_supplicant.conf for password"
+	echo "Setting up wpa_supplicant.conf for passphrase"
 	wpa_passphrase "${ESSID}" "${PASSPHRASE}" > /run/wpa_supplicant.conf
 fi
 wpa_supplicant -D wext -i "${WIFI_DEV}" -c /run/wpa_supplicant.conf -O /run/wpa_supplicant -B
@@ -51,25 +51,25 @@ if [ ${?} != 0 ]; then
 fi
 
 if [ "${PASSPHRASE}" = "NONE" ]; then
-	echo "No need to check password for Wi-Fi network"
+	echo "No need to check passphrase for Wi-Fi network"
 	quit 0
 else
-	rm -f /run/correct_wifi_password
-	timeout 120s /usr/local/bin/wifi/check_wifi_password.sh
+	rm -f /run/correct_wifi_passphrase
+	timeout 120s /usr/local/bin/wifi/check_wifi_passphrase.sh
 
-	if test -f "/run/correct_wifi_password"; then
-		echo "/run/correct_wifi_password exists."
-		if grep -q true "/run/correct_wifi_password"; then
+	if test -f "/run/correct_wifi_passphrase"; then
+		echo "/run/correct_wifi_passphrase exists."
+		if grep -q true "/run/correct_wifi_passphrase"; then
 			echo "Password is correct"
-			rm -f /run/correct_wifi_password
+			rm -f /run/correct_wifi_passphrase
 			quit 0
 		else
 			echo "Password is incorrect"
-			rm -f /run/correct_wifi_password
+			rm -f /run/correct_wifi_passphrase
 			quit 1
 		fi
 	else
-		echo "'/run/correct_wifi_password' doesn't exist. Checking for password propably timed out."
+		echo "'/run/correct_wifi_passphrase' doesn't exist. Checking for passphrase propably timed out."
 		quit 1
 	fi
 fi
