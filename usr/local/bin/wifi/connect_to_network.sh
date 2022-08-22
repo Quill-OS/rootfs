@@ -32,8 +32,8 @@ else
 	WIFI_DEV="eth0"
 fi
 
-# to be sure
-rm -f /run/wpa_supplicant/eth0
+# To be sure
+rm -f "/run/wpa_supplicant/eth0"
 
 if [ "$PASSPHRASE" = "NONE" ]; then
     echo "Setting up wpa_supplicant.conf for no password"
@@ -62,7 +62,7 @@ if [ ${?} != 0 ]; then
 	echo "DHCP request failed."
 	if [ -f "/run/stopping_wifi" ]; then
 		echo "/run/stopping_wifi exists, dont shutting down wifi"
-		rm /run/stopping_wifi
+		rm "/run/stopping_wifi"
 		exit 0
 	else
 		/usr/local/bin/wifi/toggle.sh off

@@ -43,7 +43,6 @@ cleanup() {
 	# To be sure...
 	/usr/local/bin/wifi/prepare_changing_wifi.sh
 	killall -q dhcpcd wpa_supplicant udhcpc
-	killall -q dhcpcd wpa_supplicant udhcpc
 	sleep 0.5
 	killall -9 dhcpcd wpa_supplicant udhcpc	
 	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n437" ]; then

@@ -1,11 +1,11 @@
 #!/bin/sh
 
 DEVICE=$(cat /opt/inkbox_device)
-[ -e "/run/only_connect_to_network.sh.pid" ] && EXISTING_PID=$(cat /run/only_connect_to_network.sh.pid) && if [ -d "/proc/${EXISTING_PID}" ]; then echo "Please terminate other instance(s) of \`connect_to_network.sh' before starting a new one. Process(es) ${EXISTING_PID} still running!" && exit 255; else rm /run/only_connect_to_network.sh.pid; fi
-echo ${$} > "/run/only_connect_to_network.sh.pid"
+[ -e "/run/get_dhcp.sh.pid" ] && EXISTING_PID=$(cat "/run/get_dhcp.sh.pid") && if [ -d "/proc/${EXISTING_PID}" ]; then echo "Please terminate other instance(s) of \`get_dhcp.sh' before starting a new one. Process(es) ${EXISTING_PID} still running!" && exit 255; else rm -f "/run/get_dhcp.sh.pid"; fi
+echo ${$} > "/run/get_dhcp.sh.pid"
 
 quit() {
-	rm -f "/run/only_connect_to_network.sh.pid"
+	rm -f "/run/get_dhcp.sh.pid"
 	exit ${1}
 }
 
@@ -19,14 +19,13 @@ fi
 
 
 if [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "kt" ]; then
-	# Actually why not
 	timeout 320s udhcpc -i "${WIFI_DEV}"
 else
 	timeout 320s dhcpcd "${WIFI_DEV}"
 fi
 
 if [ ${?} != 0 ]; then
-	echo "Connecting failed."
+	echo "DHCP lease acquisition failed."
 	quit 1
 fi
 

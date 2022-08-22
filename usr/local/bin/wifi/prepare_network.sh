@@ -1,7 +1,7 @@
 #!/bin/sh
 
 DEVICE=$(cat /opt/inkbox_device)
-[ -e "/run/prepare_network.sh.pid" ] && EXISTING_PID=$(cat /run/prepare_network.sh.pid) && if [ -d "/proc/${EXISTING_PID}" ]; then echo "Please terminate other instance(s) of \`connect_to_network.sh' before starting a new one. Process(es) ${EXISTING_PID} still running!" && exit 255; else rm /run/prepare_network.sh.pid; fi
+[ -e "/run/prepare_network.sh.pid" ] && EXISTING_PID=$(cat "/run/prepare_network.sh.pid") && if [ -d "/proc/${EXISTING_PID}" ]; then echo "Please terminate other instance(s) of \`prepare_network.sh' before starting a new one. Process(es) ${EXISTING_PID} still running!" && exit 255; else rm -f "/run/prepare_network.sh.pid"; fi
 echo ${$} > "/run/prepare_network.sh.pid"
 
 quit() {
@@ -16,8 +16,8 @@ else
 	ESSID="${1}"
 fi
 if [ -z "${2}" ]; then
-	echo "Warning: No PASSPHRASE argument, trying to connect to a open network"
-	# To preserve compability with other programs, NONE should be gived anyway
+	echo "Warning: No 'PASSPHRASE' argument given, trying to connect to a open network"
+	# To preserve compability with other programs, NONE should be given anyway
 	PASSPHRASE="NONE"
 else
 	PASSPHRASE="${2}"
@@ -31,27 +31,27 @@ else
 	WIFI_DEV="eth0"
 fi
 
-# to be sure
-rm -f /run/wpa_supplicant/eth0
+# To be sure
+rm -f "/run/wpa_supplicant/eth0"
 
-if [ "$PASSPHRASE" = "NONE" ]; then
-    echo "Setting up wpa_supplicant.conf for no password"
-	echo "network={" > /run/wpa_supplicant.conf
-	echo "    ssid=\"${ESSID}\"" >> /run/wpa_supplicant.conf
-    echo "    key_mgmt=NONE" >> /run/wpa_supplicant.conf
-    echo "}" >> /run/wpa_supplicant.conf
+if [ "${PASSPHRASE}" = "NONE" ]; then
+	echo "Setting up wpa_supplicant.conf for no password"
+	echo "network={" > "/run/wpa_supplicant.conf"
+	echo "    ssid=\"${ESSID}\"" >> "/run/wpa_supplicant.conf"
+	echo "    key_mgmt=NONE" >> "/run/wpa_supplicant.conf"
+	echo "}" >> "/run/wpa_supplicant.conf"
 else
 	echo "Setting up wpa_supplicant.conf for password"
 	wpa_passphrase "${ESSID}" "${PASSPHRASE}" > /run/wpa_supplicant.conf
 fi
 wpa_supplicant -D wext -i "${WIFI_DEV}" -c /run/wpa_supplicant.conf -O /run/wpa_supplicant -B
 if [ ${?} != 0 ]; then
-	echo "Failed to prepare to network '${ESSID}'"
+	echo "Failed to prepare connection to network '${ESSID}'"
 	quit 1
 fi
 
-if [ "$PASSPHRASE" = "NONE" ]; then
-	echo "No need to check password for wifi"
+if [ "${PASSPHRASE}" = "NONE" ]; then
+	echo "No need to check password for Wi-Fi network"
 	quit 0
 else
 	rm -f /run/correct_wifi_password
@@ -64,15 +64,14 @@ else
 			rm -f /run/correct_wifi_password
 			quit 0
 		else
-			echo "Password is not correct"
+			echo "Password is incorrect"
 			rm -f /run/correct_wifi_password
 			quit 1
 		fi
 	else
-		echo "/run/correct_wifi_password doesn't exists. Checking for password propably timed out"
+		echo "'/run/correct_wifi_password' doesn't exist. Checking for password propably timed out."
 		quit 1
 	fi
 fi
 
-echo "This message will be never shown"
 quit 1
