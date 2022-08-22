@@ -1,12 +1,11 @@
 #!/bin/sh
 
 DEVICE=$(cat /opt/inkbox_device)
-[ -e "/run/connect_to_network.sh.pid" ] && EXISTING_PID=$(cat /run/connect_to_network.sh.pid) && if [ -d "/proc/${EXISTING_PID}" ]; then echo "Please terminate other instance(s) of \`connect_to_network.sh' before starting a new one. Process(es) ${EXISTING_PID} still running!" && exit 255; else rm /run/connect_to_network.sh.pid; fi
-echo ${$} > "/run/connect_to_network.sh.pid"
+[ -e "/run/prepare_network.sh.pid" ] && EXISTING_PID=$(cat /run/prepare_network.sh.pid) && if [ -d "/proc/${EXISTING_PID}" ]; then echo "Please terminate other instance(s) of \`connect_to_network.sh' before starting a new one. Process(es) ${EXISTING_PID} still running!" && exit 255; else rm /run/prepare_network.sh.pid; fi
+echo ${$} > "/run/prepare_network.sh.pid"
 
 quit() {
-	rm -f "/run/connect_to_network.sh.pid"
-	rm -f "/run/was_connected_to_wifi"
+	rm -f "/run/prepare_network.sh.pid"
 	exit ${1}
 }
 
@@ -47,31 +46,33 @@ else
 fi
 wpa_supplicant -D wext -i "${WIFI_DEV}" -c /run/wpa_supplicant.conf -O /run/wpa_supplicant -B
 if [ ${?} != 0 ]; then
-	echo "Failed to connect to network '${ESSID}'"
-	cleanup
+	echo "Failed to prepare to network '${ESSID}'"
 	quit 1
 fi
 
-if [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "kt" ]; then
-	timeout 120s udhcpc -i "${WIFI_DEV}"
+if [ "$PASSPHRASE" = "NONE" ]; then
+	echo "No need to check password for wifi"
+	quit 0
 else
-	timeout 120s dhcpcd "${WIFI_DEV}"
-fi
+	rm -f /run/correct_wifi_password
+	timeout 120s /usr/local/bin/wifi/check_wifi_password.sh
 
-if [ ${?} != 0 ]; then
-	echo "DHCP request failed."
-	if [ -f "/run/stopping_wifi" ]; then
-		echo "/run/stopping_wifi exists, dont shutting down wifi"
-		rm /run/stopping_wifi
-		exit 0
+	if test -f "/run/correct_wifi_password"; then
+		echo "/run/correct_wifi_password exists."
+		if grep -q true "/run/correct_wifi_password"; then
+			echo "Password is correct"
+			rm -f /run/correct_wifi_password
+			quit 0
+		else
+			echo "Password is not correct"
+			rm -f /run/correct_wifi_password
+			quit 1
+		fi
 	else
-		/usr/local/bin/wifi/toggle.sh off
+		echo "/run/correct_wifi_password doesn't exists. Checking for password propably timed out"
+		quit 1
 	fi
-	quit 1
 fi
 
-# Sync time
-/usr/local/bin/timesync.sh
-echo "Exiting"
-rm /run/stopping_wifi
-quit 0
+echo "This message will be never shown"
+quit 1
