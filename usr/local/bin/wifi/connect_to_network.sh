@@ -36,13 +36,13 @@ fi
 rm -f "/run/wpa_supplicant/eth0"
 
 if [ "$PASSPHRASE" = "NONE" ]; then
-    echo "Setting up wpa_supplicant.conf for no password"
+    echo "Setting up wpa_supplicant.conf for no passphrase"
 	echo "network={" > /run/wpa_supplicant.conf
 	echo "    ssid=\"${ESSID}\"" >> /run/wpa_supplicant.conf
     echo "    key_mgmt=NONE" >> /run/wpa_supplicant.conf
     echo "}" >> /run/wpa_supplicant.conf
 else
-	echo "Setting up wpa_supplicant.conf for password"
+	echo "Setting up wpa_supplicant.conf for passphrase"
 	wpa_passphrase "${ESSID}" "${PASSPHRASE}" > /run/wpa_supplicant.conf
 fi
 wpa_supplicant -D wext -i "${WIFI_DEV}" -c /run/wpa_supplicant.conf -O /run/wpa_supplicant -B

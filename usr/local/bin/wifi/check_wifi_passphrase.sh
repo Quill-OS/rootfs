@@ -9,18 +9,18 @@ function waitFunction {
 	done
 }
 
-function watchForPassword {
+function watchForPassphrase {
 	(waitFunction) | wpa_cli | while read line; do
 		case "${line}" in
 			*'4-Way Handshake failed'*)
 				echo "Incorrect key for network"
-				echo "false" > "/run/correct_wifi_password"
-				killall -9 check_wifi_password.sh
+				echo "false" > "/run/correct_wifi_passphrase"
+				killall -9 check_wifi_passphrase.sh
 				;;
 			*'CTRL-EVENT-CONNECTED'*)
 				echo "Connected to network"
-				echo "true" > "/run/correct_wifi_password"
-				killall -9 check_wifi_password.sh
+				echo "true" > "/run/correct_wifi_passphrase"
+				killall -9 check_wifi_passphrase.sh
 				;;
 			*)
 				# More logs
@@ -33,6 +33,6 @@ function watchForPassword {
 wpa_cli disable_network 0 > /dev/null
 wpa_cli enable_network 0 > /dev/null
 
-watchForPassword
+watchForPassphrase
 
 exit 1
