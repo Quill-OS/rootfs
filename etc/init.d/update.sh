@@ -21,7 +21,7 @@ DEVICE=$(cat /opt/inkbox_device 2>/dev/null)
 
 RAND_MNT_NUM=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 10)
 BASEPATH="/tmp/update-${RAND_MNT_NUM}"
-WRITEABLE_BASEPATH="/kobo/mnt/onboard/onboard/.inkbox"
+WRITEABLE_BASEPATH="/data/onboard/.inkbox"
 
 mkdir -p "${WRITEABLE_BASEPATH}"
 
