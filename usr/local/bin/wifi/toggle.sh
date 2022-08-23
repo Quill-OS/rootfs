@@ -18,7 +18,7 @@ else
 	exit 1
 fi
 
-if [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "236" ] || [ "${DEVICE}" == "n306" ]; then
+if [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n306" ]; then
 	WIFI_MODULE="/modules/wifi/8189fs.ko"
 	SDIO_WIFI_PWR_MODULE="/modules/drivers/mmc/card/sdio_wifi_pwr.ko"
 	WIFI_DEV="eth0"

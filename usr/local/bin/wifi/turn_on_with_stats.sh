@@ -6,7 +6,7 @@ touch "/run/wifi_stats"
 rm -f "/var/log/wifi.log"
 touch "/var/log/wifi.log"
 
-echo -n "Turning on wifi: " >> "/run/wifi_stats"
+echo -n "Turning on Wi-Fi: " >> "/run/wifi_stats"
 /usr/bin/time -f '%e' -q -a -o "/run/wifi_stats" /usr/local/bin/wifi/toggle.sh on >> "/var/log/wifi.log" 2>&1
 
 if [ ${?} != 0 ]; then
