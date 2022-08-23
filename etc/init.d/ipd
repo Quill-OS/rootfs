@@ -20,6 +20,8 @@ turn_off_led() {
 		echo 0 > "/sys/devices/platform/leds/leds/bpi:red:pwr/brightness"
 	elif [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
 		/opt/bin/shutdown_led
+	elif [ "${DEVICE}" == "emu" ]; then
+		:
 	else
 		echo 0 > "/sys/class/leds/pmic_ledsg/brightness"
 	fi
