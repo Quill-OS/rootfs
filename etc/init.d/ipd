@@ -9,6 +9,7 @@ depend() {
 }
 
 turn_off_led() {
+	DEVICE="$(cat /opt/inkbox_device)"
 	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
 		echo 0 > "/sys/class/leds/pmic_ledsg/brightness"
 	elif [ "${DEVICE}" == "n306" ]; then

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Syntax:
-# * Current wifi name
+# * Current Wi-Fi name
 # * IP address
 # * Subnet mask
 # * Default gateway
