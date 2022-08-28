@@ -18,7 +18,7 @@ else
 fi
 
 
-if [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "kt" ]; then
+if [ "${DEVICE}" != "n873" ]; then
 	timeout 320s udhcpc -i "${WIFI_DEV}"
 else
 	timeout 320s dhcpcd "${WIFI_DEV}"

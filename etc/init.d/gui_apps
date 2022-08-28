@@ -67,7 +67,7 @@ start() {
 				mount -t sysfs sysfs -o nosuid "${extension_mountpoint}/sys" || die "Failed to mount sys filesystem at '${extension_mountpoint}/sys'." 1
 				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/dev" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/dev'." 1
 				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/etc" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/etc'." 1
-				mount -t tmpfs tmpfs -o size=8M,nosuid "${extension_mountpoint}/app-temp" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/app-temp'." 1
+				mount -t tmpfs tmpfs -o size=32M,nosuid "${extension_mountpoint}/app-temp" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/app-temp'." 1
 				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/system-lib" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/system-lib'." 1
 				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/system-bin" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/system-bin'." 1
 				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/mnt" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/mnt'." 1
@@ -77,7 +77,13 @@ start() {
 				## bin
 				(touch "${extension_mountpoint}/system-bin/busybox" && mount --bind "/bin/busybox" "${extension_mountpoint}/system-bin/busybox" && chroot "${extension_mountpoint}" "/system-bin/busybox" "--install" "-s" "/system-bin") || die "Failed to bind-mount and/or set up temporary BusyBox binary at '${extension_mountpoint}/system-bin/busybox'." 1
 				## etc
-				(echo "user::1000:1000:user:/:/system-bin/sh" > "${extension_mountpoint}/etc/passwd" && echo "user:x:1000:" > "${extension_mountpoint}/etc/group" && touch "${extension_mountpoint}/etc/eink.qss" && bind_mount_stylesheet && touch "${extension_mountpoint}/etc/resolv.conf" && mount --bind "/etc/resolv.conf" "${extension_mountpoint}/etc/resolv.conf" && mount -o remount,ro "${extension_mountpoint}/etc") || die "Failed to set up restricted authentication profile at '${extension_mountpoint}/etc'." 1
+				(echo "user::1000:1000:user:/:/system-bin/sh" > "${extension_mountpoint}/etc/passwd" && echo "user:x:1000:" > "${extension_mountpoint}/etc/group" && touch "${extension_mountpoint}/etc/eink.qss" && bind_mount_stylesheet && touch "${extension_mountpoint}/etc/resolv.conf" && mount --bind "/etc/resolv.conf" "${extension_mountpoint}/etc/resolv.conf") || die "Failed to set up restricted authentication profile at '${extension_mountpoint}/etc'." 1
+				# Wi-Fi connection (SSL certificates)
+				if [ "${reqf_wifi_connection}" == 1 ]; then
+					(mkdir -p "${extension_mountpoint}/etc/ssl" && mount --bind "/etc/ssl" "${extension_mountpoint}/etc/ssl") || die "Failed to bind-mount host's SSL certificates at '${extension_mountpoint}/etc/ssl/certs'." 1
+				fi
+				(mount -o remount,ro "${extension_mountpoint}/etc") || die "Failed to remount '${extension_mountpoint}/etc' read-only." 1
+
 				## dev
 				# Framebuffer
 				(mknod "${extension_mountpoint}/dev/fb0" c 29 0 && chown user:user "${extension_mountpoint}/dev/fb0") || die "Failed to set up '${extension_mountpoint}/dev/fb0' device node." 1
