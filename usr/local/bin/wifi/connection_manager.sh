@@ -59,7 +59,7 @@ if [ ${?} != 0 ]; then
 		rm "/run/stopping_wifi"
 		exit 0
 	else
-		echo "Turning Wi-Fi off from connection_manager"
+		echo "Turning Wi-Fi off from connection_manager" >> "/var/log/wifi.log" 2>&1
 		/usr/local/bin/wifi/toggle.sh off
 	fi
 	exit 1

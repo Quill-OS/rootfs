@@ -22,6 +22,7 @@ killall -9  get_dhcp.sh timesync.sh check_wifi_passphrase.sh prepare_network.sh
 killall -9  get_dhcp.sh timesync.sh check_wifi_passphrase.sh prepare_network.sh
 
 wpa_cli disconnect; wpa_cli logoff; wpa_cli disable_network 0; wpa_cli remove_network 0; wpa_cli terminate; ip addr flush dev "${WIFI_DEV}"
+
 killall -q dhcpcd wpa_supplicant udhcpc iwevent
 killall -q dhcpcd wpa_supplicant udhcpc iwevent
 sleep 0.5
