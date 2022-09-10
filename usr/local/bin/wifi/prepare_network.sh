@@ -32,7 +32,7 @@ else
 fi
 
 # To be sure
-rm -f "/run/wpa_supplicant/eth0"
+rm -f "/run/wpa_supplicant/${WIFI_DEV}"
 
 if [ "${PASSPHRASE}" = "NONE" ]; then
 	echo "Setting up wpa_supplicant.conf for no passphrase"
@@ -55,7 +55,12 @@ if [ "${PASSPHRASE}" = "NONE" ]; then
 	quit 0
 else
 	rm -f /run/correct_wifi_passphrase
-	timeout 120s /usr/local/bin/wifi/check_wifi_passphrase.sh
+	if [ "${DEVICE}" != "n437" ]; then
+		timeout 120s /usr/local/bin/wifi/check_wifi_passphrase.sh
+	else
+		# Skip passphrase check for Glo HD because dhd.ko is a mess
+		echo "true" > /run/correct_wifi_passphrase
+	fi
 
 	if test -f "/run/correct_wifi_passphrase"; then
 		echo "/run/correct_wifi_passphrase exists."

@@ -45,7 +45,6 @@ start() {
 		squashfuse -o allow_other,nosuid /opt/isa/inkbox.isa /kobo/mnt/onboard/.adds/inkbox
 		mount --bind /opt/config /kobo/mnt/onboard/.adds/inkbox/.config
 		squashfuse -o allow_other,nosuid /opt/isa/qt.isa /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo
-		squashfuse -o allow_other,nosuid /opt/isa/python.isa /kobo/mnt/onboard/.adds/Python-3.9.2
 		if [ "${DEVICE}" == "n437" ]; then
 			mount --bind /lib/qt5-plugins/libkobo.so.2 /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo/plugins/platforms/libkobo.so
 		elif [ "${DEVICE}" == "kt" ]; then
