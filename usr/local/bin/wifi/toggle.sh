@@ -1,3 +1,5 @@
+#!/bin/sh
+
 DEVICE=$(cat /opt/inkbox_device)
 
 if [ -z "${1}" ]; then
@@ -16,7 +18,7 @@ else
 	exit 1
 fi
 
-if [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "236" ] || [ "${DEVICE}" == "n306" ]; then
+if [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n306" ]; then
 	WIFI_MODULE="/modules/wifi/8189fs.ko"
 	SDIO_WIFI_PWR_MODULE="/modules/drivers/mmc/card/sdio_wifi_pwr.ko"
 	WIFI_DEV="eth0"
@@ -38,7 +40,11 @@ else
 fi
 
 cleanup() {
-	killall -q dhcpcd wpa_supplicant
+	# To be sure...
+	/usr/local/bin/wifi/prepare_changing_wifi.sh
+	killall -q dhcpcd wpa_supplicant udhcpc
+	sleep 0.5
+	killall -9 dhcpcd wpa_supplicant udhcpc	
 	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n437" ]; then
 		wlarm_le down
 	fi
