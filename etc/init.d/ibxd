@@ -45,8 +45,6 @@ start() {
 		if read line < /run/ibxd; then
 			if [[ "$line" == "sleep_toggle" ]]; then
 				echo "state changed" > /tmp/power
-
-
 			elif [[ "$line" == "reboot" ]]; then
 				/sbin/reboot
 			elif [[ "$line" == "reboot splash reset_kobox" ]]; then
@@ -73,31 +71,27 @@ start() {
 			elif [[ "$line" == "app_start_vnc" ]]; then
 				rc-service inkbox_gui stop
 				/usr/local/bin/appvnc_start.sh &
+
+			# Wi-Fi things
 			elif [[ "$line" == "list_wifi_networks" ]]; then
-				/usr/local/bin/wifi/list_networks.sh
-				cp /run/wifi_networks_list /kobo/run/wifi_networks_list
+				/usr/local/bin/wifi/list_networks &
 			elif [[ "$line" == "connect_to_wifi_network" ]]; then
 				NET_ESSID=$(cat /kobo/run/wifi_network_essid)
 				NET_PASSPHRASE=$(cat /kobo/run/wifi_network_passphrase)
 				rm -f /kobo/run/wifi_network_essid
 				rm -f /kobo/run/wifi_network_passphrase
-				/usr/local/bin/wifi/connect_to_network.sh "${NET_ESSID}" "${NET_PASSPHRASE}"
-				if [ ${?} != 0 ]; then
-					echo "false" > /kobo/run/wifi_connected_successfully
-				else
-					echo "true" > /kobo/run/wifi_connected_successfully
-				fi
-			elif [[ "$line" == "stop_wifi_reconnection" ]]; then
-				CONNECT_TO_NETWORK_PID=$(cat /run/connect_to_network.sh.pid)
-				kill -9 ${CONNECT_TO_NETWORK_PID}
-				rm -f /run/connect_to_network.sh.pid
-				echo "true" > /kobo/run/stop_wifi_reconnection_done
+				/usr/local/bin/wifi/connection_manager.sh "${NET_ESSID}" "${NET_PASSPHRASE}" &
+			elif [[ "$line" == "stop_wifi_operations" ]]; then
+				/usr/local/bin/wifi/prepare_changing_wifi.sh &
 			elif [[ "$line" == "toggle_wifi_off" ]]; then
-				/usr/local/bin/wifi/toggle.sh off
-				echo "true" > /kobo/run/toggle_wifi_off_done
+				/usr/local/bin/wifi/toggle.sh off &
 			elif [[ "$line" == "toggle_wifi_on" ]]; then
-				/usr/local/bin/wifi/toggle.sh on
-				echo "true" > /kobo/run/toggle_wifi_on_done
+				/usr/local/bin/wifi/turn_on_with_stats.sh &
+			elif [[ "$line" == "get_current_wifi_name" ]]; then
+				iwgetid -r > /run/current_wifi_name &
+			elif [[ "$line" == "get_wifi_information" ]]; then
+				/usr/local/bin/wifi/wifi_information.sh &
+
 			elif [[ "$line" == "ota_update_check" ]]; then
 				/usr/local/bin/ota_update.sh
 			elif [[ "$line" == "ota_update_download" ]]; then
