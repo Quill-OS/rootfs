@@ -18,5 +18,5 @@ fi
 
 iwgetid -r > "/run/wifi_information"
 ifconfig "${WIFI_DEV}" 2> "/dev/null" | awk '/inet addr:/ {print $2}' | sed 's/addr://' >> "/run/wifi_information"
-ifconfig eth0 | grep "Mask" | cut -d":" -f4 >> "/run/wifi_information"
+ifconfig "${WIFI_DEV}" | grep "Mask" | cut -d":" -f4 >> "/run/wifi_information"
 ip route | awk '/default/ { print $3 }' >> "/run/wifi_information"

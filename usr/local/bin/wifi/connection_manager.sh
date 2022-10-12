@@ -25,6 +25,11 @@ else
 fi
 
 echo -n "Preparing WPA connection: " >> "/run/wifi_stats"
+# Because dhd.ko is the worst Wi-Fi driver I have ever encountered in my whole life
+if [ "${DEVICE}" == "n437" ]; then
+	MAGIC_WORD="No, thanks" /usr/local/bin/wifi/toggle.sh off
+	/usr/local/bin/wifi/toggle.sh on
+fi
 /usr/bin/time -f '%e' -a -o /run/wifi_stats -q /usr/local/bin/wifi/prepare_network.sh "${ESSID}" "${PASSPHRASE}" >> "/var/log/wifi.log" 2>&1
 
 if [ ${?} != 0 ]; then
