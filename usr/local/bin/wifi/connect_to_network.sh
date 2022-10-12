@@ -17,8 +17,8 @@ else
 	ESSID="${1}"
 fi
 if [ -z "${2}" ]; then
-	echo "Warning: No PASSPHRASE argument, trying to connect to a open network"
-	# To preserve compability with other programs, NONE should be gived anyway
+	echo "Warning: No 'PASSPHRASE' argument provided, trying to connect to an open network"
+	# To preserve compability with other programs, NONE should be given anyway
 	PASSPHRASE="NONE"
 else
 	PASSPHRASE="${2}"
@@ -48,7 +48,7 @@ fi
 wpa_supplicant -D wext -i "${WIFI_DEV}" -c /run/wpa_supplicant.conf -O /run/wpa_supplicant -B
 if [ ${?} != 0 ]; then
 	echo "Failed to connect to network '${ESSID}'"
-	cleanup
+	/usr/local/bin/wifi/toggle.sh off
 	quit 1
 fi
 
