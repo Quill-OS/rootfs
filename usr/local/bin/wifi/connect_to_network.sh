@@ -61,7 +61,7 @@ fi
 if [ ${?} != 0 ]; then
 	echo "DHCP request failed."
 	if [ -f "/run/stopping_wifi" ]; then
-		echo "/run/stopping_wifi exists, dont shutting down wifi"
+		echo "/run/stopping_wifi exists, not shutting down Wi-Fi"
 		rm "/run/stopping_wifi"
 		exit 0
 	else
