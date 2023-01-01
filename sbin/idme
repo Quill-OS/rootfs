@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #    idme: Set NVRAM variables
-#    Copyright (C) 2022 Nicolas Mailloux <nicolecrivain@gmail.com>
+#    Copyright (C) 2022-2023 Nicolas Mailloux <nicolecrivain@gmail.com>
 #    SPDX-License-Identifier: GPL-3.0-only
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 print_help() {
-	printf "idme: Set NVRAM variables. Copyright (C) 2022 Nicolas Mailloux <nicolecrivain@gmail.com>.\nLicensed under the GNU Public License version 3.\nUsage: %s <var> <value>\nAvailable variables:\n\tpcbsn - Board ID\n\tserial - Serial number\n\tmac - MAC address\n\tbootmode - Boot mode\n\nWARNING: NEVER run this program without knowing what you are doing. Misuse of this tool can brick your device permanently.\n" "${0}"
+	printf "idme: Set NVRAM variables. Copyright (C) 2022-2023 Nicolas Mailloux <nicolecrivain@gmail.com>.\nLicensed under the GNU General Public License version 3.\nUsage: %s <var> <value>\nAvailable variables:\n\tpcbsn - Board ID\n\tserial - Serial number\n\tmac - MAC address\n\tbootmode - Boot mode\n\nWARNING: NEVER run this program without knowing what you are doing. Misuse of this tool can brick your device permanently.\n" "${0}"
 }
 
 write_update_magic() {
