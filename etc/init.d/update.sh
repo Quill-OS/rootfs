@@ -228,9 +228,7 @@ update_rootfs() {
 		error_msg
 		exit 1
 	else
-		mkdir -p /tmp/update/rootfs
-		cp "${ROOTFS}" /tmp/update/rootfs/rootfs.squashfs
-		cp "${ROOTFS_DGST}" /tmp/update/rootfs/rootfs.squashfs.dgst
+		echo "${BASEPATH}" > /run/update_package_mountpoint
 		sync
 		rm /opt/update/will_update
 		echo "true" > "${UPDATE_DIR}/inkbox_updated"
