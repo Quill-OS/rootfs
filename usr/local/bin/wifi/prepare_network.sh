@@ -65,11 +65,11 @@ else
 	if test -f "/run/correct_wifi_passphrase"; then
 		echo "/run/correct_wifi_passphrase exists."
 		if grep -q true "/run/correct_wifi_passphrase"; then
-			echo "Password is correct"
+			echo "Passphrase is correct"
 			rm -f /run/correct_wifi_passphrase
 			quit 0
 		else
-			echo "Password is incorrect"
+			echo "Passphrase is incorrect"
 			rm -f /run/correct_wifi_passphrase
 			quit 1
 		fi
