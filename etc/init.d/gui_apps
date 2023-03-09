@@ -58,6 +58,18 @@ start() {
 					elif [ "${feature}" == "2" ]; then
 						# Needs '/dev/{pts/,ptmx}' (e.g. for terminal emulators)
 						reqf_pseudoterminal_support=1
+					elif [ "${feature}" == "3" ]; then
+						# Access to all input devices
+						reqf_input_devices_support=1
+					elif [ "${feature}" == "4" ]; then
+						# Brightness control
+						reqf_brightness_control=1
+					elif [ "${feature}" == "5" ]; then
+						# Rotation
+						reqf_rotation_control=1
+					elif [ "${feature}" == "6" ]; then
+						# Debugfs
+						reqf_debugfs=1
 					fi
 				done
 
@@ -89,10 +101,49 @@ start() {
 				(mknod "${extension_mountpoint}/dev/fb0" c 29 0 && chown user:user "${extension_mountpoint}/dev/fb0") || die "Failed to set up '${extension_mountpoint}/dev/fb0' device node." 1
 				# Input
 				mkdir -p "${extension_mountpoint}/dev/input" || die "Failed to create '${extension_mountpoint}/dev/input' directory." 1
-				(mknod "${extension_mountpoint}/dev/input/event0" c 13 64 && mknod "${extension_mountpoint}/dev/input/event1" c 13 65 && mknod "${extension_mountpoint}/dev/input/event2" c 13 66 && chown -R user:user "${extension_mountpoint}/dev/input/") || die "Failed to set up device input nodes at '${extension_mountpoint}/dev/input'." 1
+				(mknod "${extension_mountpoint}/dev/input/event0" c 13 64 && mknod "${extension_mountpoint}/dev/input/event1" c 13 65 && mknod "${extension_mountpoint}/dev/input/event2" c 13 66 &&
+				if [ "${reqf_input_devices_support}" == 1 ]; then
+					mknod "${extension_mountpoint}/dev/input/event3" c 13 67 || die "Failed add input device" 1
+					mknod "${extension_mountpoint}/dev/input/event4" c 13 68 || die "Failed add input device" 1
+					mknod "${extension_mountpoint}/dev/input/event5" c 13 69 || die "Failed add input device" 1
+					mknod "${extension_mountpoint}/dev/input/event6" c 13 70 || die "Failed add input device" 1
+					mknod "${extension_mountpoint}/dev/input/event7" c 13 71 || die "Failed add input device" 1
+					mknod "${extension_mountpoint}/dev/input/event8" c 13 72 || die "Failed add input device" 1
+					mknod "${extension_mountpoint}/dev/input/event9" c 13 73 || die "Failed add input device" 1
+					mknod "${extension_mountpoint}/dev/input/event10" c 13 74 || die "Failed add input device" 1
+
+					mknod "${extension_mountpoint}/dev/input/mice" c 13 63 || die "Failed add input device" 1
+					mknod "${extension_mountpoint}/dev/input/mouse0" c 13 32 || die "Failed add input device" 1
+					mknod "${extension_mountpoint}/dev/input/mouse1" c 13 33 || die "Failed add input device" 1
+					mknod "${extension_mountpoint}/dev/input/mouse2" c 13 34 || die "Failed add input device" 1
+					mknod "${extension_mountpoint}/dev/input/mouse3" c 13 35 || die "Failed add input device" 1
+					mknod "${extension_mountpoint}/dev/input/mouse4" c 13 36 || die "Failed add input device" 1
+					mknod "${extension_mountpoint}/dev/input/mouse5" c 13 37 || die "Failed add input device" 1
+					mknod "${extension_mountpoint}/dev/input/mouse6" c 13 38 || die "Failed add input device" 1
+				fi
+				chown -R user:user "${extension_mountpoint}/dev/input/") || die "Failed to set up device input nodes at '${extension_mountpoint}/dev/input'." 1
 				# ptmx/pts
 				if [ "${reqf_pseudoterminal_support}" == 1 ]; then
-					(mknod "${extension_mountpoint}/dev/tty" c 5 0 && chown user:user "${extension_mountpoint}/dev/tty" && mknod "${extension_mountpoint}/dev/ptmx" c 5 2 && chown user:user "${extension_mountpoint}/dev/ptmx" && (if [ -f "${extension_mountpoint}/dev/urandom" ]; then mknod "${extension_mountpoint}/dev/urandom" c 1 9 && chown user:user "${extension_mountpoint}/dev/urandom"; else return 0; fi) && mkdir -p "${extension_mountpoint}/dev/pts" && mount -t devpts devpts -o nosuid,noexec "${extension_mountpoint}/dev/pts") || die "Failed to set up pseudoterminal support at '${extension_mountpoint}/dev'." 1
+					(mknod "${extension_mountpoint}/dev/tty" c 5 0 && chown user:user "${extension_mountpoint}/dev/tty" && mknod "${extension_mountpoint}/dev/ptmx" c 5 2 && chown user:user "${extension_mountpoint}/dev/ptmx" && (if [ ! -f "${extension_mountpoint}/dev/urandom" ]; then mknod "${extension_mountpoint}/dev/urandom" c 1 9 && chown user:user "${extension_mountpoint}/dev/urandom"; else return 0; fi) && mkdir -p "${extension_mountpoint}/dev/pts" && mount -t devpts devpts -o nosuid,noexec "${extension_mountpoint}/dev/pts") || die "Failed to set up pseudoterminal support at '${extension_mountpoint}/dev'." 1
+				fi
+				# Brightness
+				if [ "${reqf_brightness_control}" == 1 ]; then
+					# ntx_io will not be used because it has more access than brightness. Let's go with native interfaces
+					# TODO: add other devices
+					if [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
+						chmod -R 706 "${extension_mountpoint}/sys/class/backlight/mxc_msp430_fl.0/" || die "Failed to chmod 706 '${extension_mountpoint}/sys/class/backlight/mxc_msp430_fl.0/'." 1
+					else
+						chmod -R 706 "${extension_mountpoint}/sys/class/backlight/mxc_msp430.0/" || die "Failed to chmod 706 '${extension_mountpoint}/sys/class/backlight/mxc_msp430.0/'." 1
+					fi
+				fi
+				# Rotation
+				if [ "${reqf_rotation_control}" == 1 ]; then
+					chmod 706 "${extension_mountpoint}/sys/class/graphics/fb0/rotate" || die "Failed to chmod 706 '${extension_mountpoint}/sys/class/graphics/fb0/rotate'." 1
+				fi
+				# Debugfs
+				if [ "${reqf_debugfs}" == 1 ]; then
+					mount -t debugfs none "${extension_mountpoint}/sys/kernel/debug" || die "Failed to mount debug filesystem at '${extension_mountpoint}/sys/kernel/debug'." 1
+					chmod -R 706 "${extension_mountpoint}/sys/kernel/debug" || die "Failed to chmod 706 '${extension_mountpoint}/sys/class/graphics/fb0/rotate'." 1
 				fi
 				# Power daemon
 				(mkdir -p "${extension_mountpoint}/dev/ipd" && touch "${extension_mountpoint}/dev/ipd/fifo" && mount --bind "/run/ipd/fifo" "${extension_mountpoint}/dev/ipd/fifo") || die "Failed to bind-mount InkBox Power Daemon (ipd) named pipe" 1
