@@ -131,19 +131,19 @@ start() {
 					# ntx_io will not be used because it has more access than brightness. Let's go with native interfaces
 					# TODO: add other devices
 					if [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
-						chmod -R 706 "${extension_mountpoint}/sys/class/backlight/mxc_msp430_fl.0/" || die "Failed to chmod 706 '${extension_mountpoint}/sys/class/backlight/mxc_msp430_fl.0/'." 1
+						chmod -R 707 "${extension_mountpoint}/sys/class/backlight/mxc_msp430_fl.0/" || die "Failed to chmod 707 '${extension_mountpoint}/sys/class/backlight/mxc_msp430_fl.0/'." 1
 					else
-						chmod -R 706 "${extension_mountpoint}/sys/class/backlight/mxc_msp430.0/" || die "Failed to chmod 706 '${extension_mountpoint}/sys/class/backlight/mxc_msp430.0/'." 1
+						chmod -R 707 "${extension_mountpoint}/sys/class/backlight/mxc_msp430.0/" || die "Failed to chmod 707 '${extension_mountpoint}/sys/class/backlight/mxc_msp430.0/'." 1
 					fi
 				fi
 				# Rotation
 				if [ "${reqf_rotation_control}" == 1 ]; then
-					chmod 706 "${extension_mountpoint}/sys/class/graphics/fb0/rotate" || die "Failed to chmod 706 '${extension_mountpoint}/sys/class/graphics/fb0/rotate'." 1
+					chmod 707 "${extension_mountpoint}/sys/class/graphics/fb0/rotate" || die "Failed to chmod 707 '${extension_mountpoint}/sys/class/graphics/fb0/rotate'." 1
 				fi
 				# Debugfs
 				if [ "${reqf_debugfs}" == 1 ]; then
 					mount -t debugfs none "${extension_mountpoint}/sys/kernel/debug" || die "Failed to mount debug filesystem at '${extension_mountpoint}/sys/kernel/debug'." 1
-					chmod -R 706 "${extension_mountpoint}/sys/kernel/debug" || die "Failed to chmod 706 '${extension_mountpoint}/sys/class/graphics/fb0/rotate'." 1
+					chmod -R 707 "${extension_mountpoint}/sys/kernel/debug" || die "Failed to chmod 707 '${extension_mountpoint}/sys/kernel/debug'." 1
 				fi
 				# Power daemon
 				(mkdir -p "${extension_mountpoint}/dev/ipd" && touch "${extension_mountpoint}/dev/ipd/fifo" && mount --bind "/run/ipd/fifo" "${extension_mountpoint}/dev/ipd/fifo") || die "Failed to bind-mount InkBox Power Daemon (ipd) named pipe" 1
