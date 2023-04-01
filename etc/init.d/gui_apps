@@ -7,6 +7,10 @@ depend() {
 	after onboard_mount ipd
 }
 
+calculate() {
+        awk "BEGIN { print "$*" }";
+}
+
 bind_mount_stylesheet() {
 	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "kt" ]; then
 		mount --bind /usr/local/share/inkbox/stylesheets/eink-600x800.qss "${extension_mountpoint}/etc/eink.qss"
@@ -92,7 +96,7 @@ start() {
 				(echo "user::1000:1000:user:/:/system-bin/sh" > "${extension_mountpoint}/etc/passwd" && echo "user:x:1000:" > "${extension_mountpoint}/etc/group" && touch "${extension_mountpoint}/etc/eink.qss" && bind_mount_stylesheet && touch "${extension_mountpoint}/etc/resolv.conf" && mount --bind "/etc/resolv.conf" "${extension_mountpoint}/etc/resolv.conf") || die "Failed to set up restricted authentication profile at '${extension_mountpoint}/etc'." 1
 				# Wi-Fi connection (SSL certificates)
 				if [ "${reqf_wifi_connection}" == 1 ]; then
-					(mkdir -p "${extension_mountpoint}/etc/ssl" && mount --bind "/etc/ssl" "${extension_mountpoint}/etc/ssl" && mknod "${extension_mountpoint}/dev/urandom" c 1 9 && chown user:user "${extension_mountpoint}/dev/urandom") || die "Failed to bind-mount host's SSL certificates at '${extension_mountpoint}/etc/ssl/certs' and/or set up 'urandom' device node at '${extension_mountpoint}/dev/urandom'." 1
+					(mkdir -p "${extension_mountpoint}/etc/ssl" && mount --bind "/etc/ssl" "${extension_mountpoint}/etc/ssl" && (if [ ! -e "${extension_mountpoint}/dev/urandom" ];then mknod "${extension_mountpoint}/dev/urandom" c 1 9 && chown user:user "${extension_mountpoint}/dev/urandom"; else return 0; fi)) || die "Failed to bind-mount host's SSL certificates at '${extension_mountpoint}/etc/ssl/certs' and/or set up 'urandom' device node at '${extension_mountpoint}/dev/urandom'." 1
 				fi
 				(mount -o remount,ro "${extension_mountpoint}/etc") || die "Failed to remount '${extension_mountpoint}/etc' read-only." 1
 
@@ -103,28 +107,23 @@ start() {
 				mkdir -p "${extension_mountpoint}/dev/input" || die "Failed to create '${extension_mountpoint}/dev/input' directory." 1
 				(mknod "${extension_mountpoint}/dev/input/event0" c 13 64 && mknod "${extension_mountpoint}/dev/input/event1" c 13 65 && mknod "${extension_mountpoint}/dev/input/event2" c 13 66 &&
 				if [ "${reqf_input_devices_support}" == 1 ]; then
-					mknod "${extension_mountpoint}/dev/input/event3" c 13 67 || die "Failed add input device" 1
-					mknod "${extension_mountpoint}/dev/input/event4" c 13 68 || die "Failed add input device" 1
-					mknod "${extension_mountpoint}/dev/input/event5" c 13 69 || die "Failed add input device" 1
-					mknod "${extension_mountpoint}/dev/input/event6" c 13 70 || die "Failed add input device" 1
-					mknod "${extension_mountpoint}/dev/input/event7" c 13 71 || die "Failed add input device" 1
-					mknod "${extension_mountpoint}/dev/input/event8" c 13 72 || die "Failed add input device" 1
-					mknod "${extension_mountpoint}/dev/input/event9" c 13 73 || die "Failed add input device" 1
-					mknod "${extension_mountpoint}/dev/input/event10" c 13 74 || die "Failed add input device" 1
+					input_n=0
+					for input_n in $(seq 3 10); do
+						mknod "${extension_mountpoint}/dev/input/event${input_n}" c 13 $(calculate ${input_n}-3+67) || die "Failed add input device '${extension_mountpoint}/dev/input/event${input_n}'" 1
+						input_n=$((input_n+1))
+					done
 
-					mknod "${extension_mountpoint}/dev/input/mice" c 13 63 || die "Failed add input device" 1
-					mknod "${extension_mountpoint}/dev/input/mouse0" c 13 32 || die "Failed add input device" 1
-					mknod "${extension_mountpoint}/dev/input/mouse1" c 13 33 || die "Failed add input device" 1
-					mknod "${extension_mountpoint}/dev/input/mouse2" c 13 34 || die "Failed add input device" 1
-					mknod "${extension_mountpoint}/dev/input/mouse3" c 13 35 || die "Failed add input device" 1
-					mknod "${extension_mountpoint}/dev/input/mouse4" c 13 36 || die "Failed add input device" 1
-					mknod "${extension_mountpoint}/dev/input/mouse5" c 13 37 || die "Failed add input device" 1
-					mknod "${extension_mountpoint}/dev/input/mouse6" c 13 38 || die "Failed add input device" 1
+					input_n=0
+					mknod "${extension_mountpoint}/dev/input/mice" c 13 63 || die "Failed add input device '${extension_mountpoint}/dev/input/mice'" 1
+					for input_n in $(seq 0 6); do
+						mknod "${extension_mountpoint}/dev/input/mouse${input_n}" c 13 $(calculate ${input_n}+32) || die "Failed add input device ${extension_mountpoint}/dev/input/event${input_n}'" 1
+						input_n=$((input_n+1))
+					done
 				fi
 				chown -R user:user "${extension_mountpoint}/dev/input/") || die "Failed to set up device input nodes at '${extension_mountpoint}/dev/input'." 1
 				# ptmx/pts
 				if [ "${reqf_pseudoterminal_support}" == 1 ]; then
-					(mknod "${extension_mountpoint}/dev/tty" c 5 0 && chown user:user "${extension_mountpoint}/dev/tty" && mknod "${extension_mountpoint}/dev/ptmx" c 5 2 && chown user:user "${extension_mountpoint}/dev/ptmx" && (if [ ! -f "${extension_mountpoint}/dev/urandom" ]; then mknod "${extension_mountpoint}/dev/urandom" c 1 9 && chown user:user "${extension_mountpoint}/dev/urandom"; else return 0; fi) && mkdir -p "${extension_mountpoint}/dev/pts" && mount -t devpts devpts -o nosuid,noexec "${extension_mountpoint}/dev/pts") || die "Failed to set up pseudoterminal support at '${extension_mountpoint}/dev'." 1
+					(mknod "${extension_mountpoint}/dev/tty" c 5 0 && chown user:user "${extension_mountpoint}/dev/tty" && mknod "${extension_mountpoint}/dev/ptmx" c 5 2 && chown user:user "${extension_mountpoint}/dev/ptmx" && (if [ ! -e "${extension_mountpoint}/dev/urandom" ]; then mknod "${extension_mountpoint}/dev/urandom" c 1 9 && chown user:user "${extension_mountpoint}/dev/urandom"; else return 0; fi) && mkdir -p "${extension_mountpoint}/dev/pts" && mount -t devpts devpts -o nosuid,noexec "${extension_mountpoint}/dev/pts") || die "Failed to set up pseudoterminal support at '${extension_mountpoint}/dev'." 1
 				fi
 				# Brightness
 				if [ "${reqf_brightness_control}" == 1 ]; then

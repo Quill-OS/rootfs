@@ -1,6 +1,6 @@
 #!/sbin/openrc-run
 
-description="Updates Inkbox Software Archives (ISA) and cleans up the onboard storage after."
+description="Updates Inkbox Software Archives (ISA) and cleans up the onboard storage afterwards."
 
 depend() {
 	after onboard_mount
