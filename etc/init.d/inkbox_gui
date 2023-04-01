@@ -123,6 +123,13 @@ start() {
 			echo "false" > /run/wifi_able
 		fi
 
+		# Also important: remount_tmpfs_launch.sh
+		service udev restart
+		udevadm control --reload
+		udevadm control --reload-rules
+		udevadm trigger
+		ln -s /external_root/run/udev/ /kobo/run/udev
+
 		/usr/bin/inkbox.sh
 	else
 		echo "UI bundle signature verification failed! Aborting launch ..."
