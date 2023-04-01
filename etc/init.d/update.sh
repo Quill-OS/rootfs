@@ -15,9 +15,20 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+DEVICE=$(cat /opt/inkbox_device 2>/dev/null)
+if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "kt" ]; then
+        ROOTFS_FMT="ext4"
+        RECOVERYFS_PART=2
+elif [ "${DEVICE}" == "n873" ]; then
+        ROOTFS_FMT="vfat"
+        RECOVERYFS_PART=5
+else
+        ROOTFS_FMT="ext4"
+        RECOVERYFS_PART=2
+fi
+
 ROOT=$(cat /opt/root/rooted 2>/dev/null)
 ALLOW_DOWNGRADE=$(cat /boot/flags/ALLOW_DOWNGRADE 2>/dev/null)
-DEVICE=$(cat /opt/inkbox_device 2>/dev/null)
 
 RAND_MNT_NUM=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 10)
 BASEPATH="/tmp/update-${RAND_MNT_NUM}"
@@ -29,10 +40,16 @@ ISA_PACKAGE=$(ls "${WRITEABLE_BASEPATH}/"*".upd.isa" 2>/dev/null)
 UPDATE_DIR="/opt/update"
 UI_BUNDLE="${BASEPATH}/update.isa"
 UI_BUNDLE_DGST="${UI_BUNDLE}.dgst"
+GUI_ROOTFS="${BASEPATH}/gui_rootfs.isa"
+GUI_ROOTFS_DGST="${GUI_ROOTFS}.dgst"
 ROOTFS="${BASEPATH}/rootfs.squashfs"
 ROOTFS_DGST="${ROOTFS}.dgst"
 RECOVERYFS="${BASEPATH}/recoveryfs.squashfs"
 RECOVERYFS_DGST="${RECOVERYFS}.dgst"
+X11_BASE_ROOTFS="${BASEPATH}/X11/base.img"
+X11_BASE_ROOTFS_DGST="${X11_BASE_ROOTFS}.dgst"
+X11_EXTENSIONS_ROOTFS="${BASEPATH}/X11/extensions-base.img"
+X11_EXTENSIONS_ROOTFS_DGST="${X11_EXTENSIONS_ROOTFS}.dgst"
 U_BOOT="${BASEPATH}/u-boot_inkbox.bin"
 U_BOOT_DGST="${U_BOOT}.dgst"
 
@@ -128,6 +145,67 @@ update_ui_bundle() {
 	fi
 }
 
+update_x11_base_rootfs() {
+	openssl dgst -sha256 -verify /opt/key/kobox-graphic-public.pem -signature "${X11_BASE_ROOTFS_DGST}" "${X11_BASE_ROOTFS}"
+	if [ ${?} != 0 ]; then
+		SUB_VERIFIED="${X11_BASE_ROOTFS}"
+		error_msg
+		write_alert signature
+		exit 1
+	else
+		umount -l -f /xorg 2>/dev/null
+		cp "${X11_BASE_ROOTFS}" /data/storage/X11/base.img
+		rm /opt/update/will_update
+		echo "true" > "${UPDATE_DIR}/inkbox_updated"
+		echo "false" > /boot/flags/WILL_UPDATE
+		echo "false" > /opt/update/will_update
+		sync
+		REBOOT_FLAG=1
+		return 0
+	fi
+}
+
+update_x11_extensions_rootfs() {
+	openssl dgst -sha256 -verify /opt/key/kobox-graphic-public.pem -signature "${X11_EXTENSIONS_ROOTFS_DGST}" "${X11_EXTENSIONS_ROOTFS}"
+	if [ ${?} != 0 ]; then
+		SUB_VERIFIED="${X11_EXTENSIONS_ROOTFS}"
+		error_msg
+		write_alert signature
+		exit 1
+	else
+		umount -l -f /xorg 2>/dev/null
+		cp "${X11_EXTENSIONS_ROOTFS}" /data/storage/X11/extensions-base.img
+		rm /opt/update/will_update
+		echo "true" > "${UPDATE_DIR}/inkbox_updated"
+		echo "false" > /boot/flags/WILL_UPDATE
+		echo "false" > /opt/update/will_update
+		sync
+		REBOOT_FLAG=1
+		return 0
+	fi
+}
+
+update_gui_rootfs() {
+	openssl dgst -sha256 -verify /opt/key/public.pem -signature "${GUI_ROOTFS_DGST}" "${GUI_ROOTFS}"
+	if [ ${?} != 0 ]; then
+		SUB_VERIFIED="${GUI_ROOTFS}"
+		error_msg
+		write_alert signature
+		exit 1
+	else
+		umount -l -f /kobo 2>/dev/null
+		cp "${GUI_ROOTFS}" /data/storage/gui_rootfs.isa
+		cp "${GUI_ROOTFS_DGST}" /data/storage/gui_rootfs.isa.dgst
+		rm /opt/update/will_update
+		echo "true" > "${UPDATE_DIR}/inkbox_updated"
+		echo "false" > /boot/flags/WILL_UPDATE
+		echo "false" > /opt/update/will_update
+		sync
+		REBOOT_FLAG=1
+		return 0
+	fi
+}
+
 update_u_boot() {
 	openssl dgst -sha256 -verify /opt/key/public.pem -signature "${U_BOOT_DGST}" "${U_BOOT}"
 	if [ ${?} != 0 ]; then
@@ -187,6 +265,35 @@ update_diags_kernel() {
 		else
 			dd if="${DIAGS_KERNEL}" of=/dev/mmcblk0 bs=512 seek=19456
 		fi
+		rm /opt/update/will_update
+		echo "true" > "${UPDATE_DIR}/inkbox_updated"
+		echo "false" > /boot/flags/WILL_UPDATE
+		echo "false" > /opt/update/will_update
+		sync
+		return 0
+	fi
+}
+
+update_overlaymount_rootfs() {
+	openssl dgst -sha256 -verify /opt/key/public.pem -signature "${OVERLAYMOUNT_ROOTFS}" "${OVERLAYMOUNT_ROOTFS_DGST}"
+	if [ ${?} != 0 ]; then
+		SUB_VERIFIED="${OVERLAYMOUNT_ROOTFS}"
+		error_msg
+		write_alert signature
+		exit 1
+	else
+		mkdir -p /tmp/update/rootfs
+		mkdir -p /tmp/update/recoveryfs
+		mount -t "${ROOTFS_FMT}" -o noexec,nosuid,nodev /dev/mmcblk0p3 /tmp/update/rootfs
+		mount -t ext4 -o noexec,nosuid,nodev "/dev/mmcblk0p${RECOVERYFS_PART}" /tmp/update/recoveryfs
+		cp "${OVERLAYMOUNT_ROOTFS}" /tmp/update/rootfs/overlaymount-rootfs.squashfs
+		cp "${OVERLAYMOUNT_ROOTFS_DGST}" /tmp/update/rootfs/overlaymount-rootfs.squashfs.dgst
+		cp "${OVERLAYMOUNT_ROOTFS}" /tmp/update/recoveryfs/overlaymount-rootfs.squashfs
+		cp "${OVERLAYMOUNT_ROOTFS_DGST}" /tmp/update/recoveryfs/overlaymount-rootfs.squashfs.dgst
+		sync
+		umount /tmp/update/rootfs -l -f
+		umount /tmp/update/recoveryfs -l -f
+		sync
 		rm /opt/update/will_update
 		echo "true" > "${UPDATE_DIR}/inkbox_updated"
 		echo "false" > /boot/flags/WILL_UPDATE
@@ -269,6 +376,18 @@ if [ ${CAN_UPDATE} == 1 ]; then
 					echo "Updating UI bundle ..."
 					update_ui_bundle
 				fi
+				if [ -e "${X11_BASE_ROOTFS}" ]; then
+					echo "Updating X11 base root filesystem ..."
+					update_x11_base_rootfs
+				fi
+				if [ -e "${X11_EXTENSIONS_BASE_ROOTFS}" ]; then
+					echo "Updating X11 extensions root filesystem ..."
+					update_x11_extensions_rootfs
+				fi
+				if [ -e "${GUI_ROOTFS}" ]; then
+					echo "Updating GUI rootfs ..."
+					update_gui_rootfs
+				fi
 				if [ -e "${U_BOOT}" ]; then
 					echo "Updating U-Boot ..."
 					update_u_boot
@@ -280,6 +399,10 @@ if [ ${CAN_UPDATE} == 1 ]; then
 				if [ -e "${DIAGS_KERNEL}" ]; then
 					echo "Updating 'Basic Diagnostics' Linux kernel ..."
 					update_diags_kernel
+				fi
+				if [ -e "${OVERLAYMOUNT_ROOTFS}" ]; then
+					echo "Updating overlay mount root filesystem ..."
+					update_overlaymount_rootfs
 				fi
 				if [ -e "${RECOVERYFS}" ]; then
 					echo "Updating recovery filesystem ..."
