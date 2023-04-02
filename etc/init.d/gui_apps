@@ -25,6 +25,17 @@ bind_mount_stylesheet() {
 	fi
 }
 
+# Argument without / at the end
+# If the second argument is "gui" it will bind mount starting from /kobo
+bind_mount_wrapper() {
+	mount_start=""
+	if [ "${2}" = "gui" ]; then
+		mount_start="/kobo"
+	fi
+	mkdir -p "${extension_mountpoint}${1}"  || die "Failed to create path: '${extension_mountpoint}${1}'" 1
+	mount --bind "${mount_start}${1}" "${extension_mountpoint}${1}" || die "Failed to bind mount path: '${mount_start}${1}' at '${extension_mountpoint}${1}'" 1
+}
+
 start() {
 	einfo "Setting up GUI user applications"
 	[ ! -d "/data/onboard/.apps" ] && mkdir -p "/data/onboard/.apps"
@@ -80,9 +91,11 @@ start() {
 				## Filesystems
 				[ ! -d "/data/onboard/.apps-data" ] && mkdir -p "/data/onboard/.apps-data"
 				[ ! -d "${extension_userdata_path}" ] && mkdir -p "${extension_userdata_path}"
-				mount -t sysfs sysfs -o nosuid "${extension_mountpoint}/sys" || die "Failed to mount sys filesystem at '${extension_mountpoint}/sys'." 1
+				# mount -t sysfs sysfs -o nosuid "${extension_mountpoint}/sys" || die "Failed to mount sys filesystem at '${extension_mountpoint}/sys'." 1
+				mount -t tmpfs tmpfs -o size=3M,nosuid "${extension_mountpoint}/sys" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/sys'." 1
+
 				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/dev" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/dev'." 1
-				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/etc" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/etc'." 1
+				mount -t tmpfs tmpfs -o size=128K,nosuid "${extension_mountpoint}/etc" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/etc'." 1
 				mount -t tmpfs tmpfs -o size=32M,nosuid "${extension_mountpoint}/app-temp" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/app-temp'." 1
 				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/system-lib" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/system-lib'." 1
 				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/system-bin" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/system-bin'." 1
@@ -98,29 +111,46 @@ start() {
 				if [ "${reqf_wifi_connection}" == 1 ]; then
 					(mkdir -p "${extension_mountpoint}/etc/ssl" && mount --bind "/etc/ssl" "${extension_mountpoint}/etc/ssl" && (if [ ! -e "${extension_mountpoint}/dev/urandom" ];then mknod "${extension_mountpoint}/dev/urandom" c 1 9 && chown user:user "${extension_mountpoint}/dev/urandom"; else return 0; fi)) || die "Failed to bind-mount host's SSL certificates at '${extension_mountpoint}/etc/ssl/certs' and/or set up 'urandom' device node at '${extension_mountpoint}/dev/urandom'." 1
 				fi
-				(mount -o remount,ro "${extension_mountpoint}/etc") || die "Failed to remount '${extension_mountpoint}/etc' read-only." 1
-
 				## dev
 				# Framebuffer
 				(mknod "${extension_mountpoint}/dev/fb0" c 29 0 && chown user:user "${extension_mountpoint}/dev/fb0") || die "Failed to set up '${extension_mountpoint}/dev/fb0' device node." 1
 				# Input
 				mkdir -p "${extension_mountpoint}/dev/input" || die "Failed to create '${extension_mountpoint}/dev/input' directory." 1
-				(mknod "${extension_mountpoint}/dev/input/event0" c 13 64 && mknod "${extension_mountpoint}/dev/input/event1" c 13 65 && mknod "${extension_mountpoint}/dev/input/event2" c 13 66 &&
 				if [ "${reqf_input_devices_support}" == 1 ]; then
-					input_n=0
-					for input_n in $(seq 3 10); do
-						mknod "${extension_mountpoint}/dev/input/event${input_n}" c 13 $(calculate ${input_n}-3+67) || die "Failed add input device '${extension_mountpoint}/dev/input/event${input_n}'" 1
-						input_n=$((input_n+1))
-					done
+					bind_mount_wrapper "/dev/input"
 
-					input_n=0
-					mknod "${extension_mountpoint}/dev/input/mice" c 13 63 || die "Failed add input device '${extension_mountpoint}/dev/input/mice'" 1
-					for input_n in $(seq 0 6); do
-						mknod "${extension_mountpoint}/dev/input/mouse${input_n}" c 13 $(calculate ${input_n}+32) || die "Failed add input device ${extension_mountpoint}/dev/input/event${input_n}'" 1
-						input_n=$((input_n+1))
-					done
+					# Strace says it's needed
+					bind_mount_wrapper "/sys/dev/char"
+					chmod -R 707 "${extension_mountpoint}/sys/dev/char" || die "Failed to chmod 707 '${extension_mountpoint}/sys/dev/char'." 1
+
+					# Also needed because /sys/dev/char points to those devices
+					bind_mount_wrapper "/sys/devices"
+					chmod -R 707 "${extension_mountpoint}/sys/devices" || die "Failed to chmod 707 '${extension_mountpoint}/sys/devices'." 1
+
+					# These for getting devices at start
+					bind_mount_wrapper "/sys/bus"
+					chmod -R 707 "${extension_mountpoint}/sys/bus" || die "Failed to chmod 707 '${extension_mountpoint}/sys/bus'." 1
+
+					bind_mount_wrapper "/sys/class"
+					chmod -R 707 "${extension_mountpoint}/sys/class" || die "Failed to chmod 707 '${extension_mountpoint}/sys/class'." 1
+
+					# Libinput Requires this too: important, it's from gui_rootfs
+					mount -t tmpfs tmpfs -o size=3M,nosuid "${extension_mountpoint}/usr" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/usr'." 1
+					bind_mount_wrapper "/usr/local/share" "gui"
+					chmod -R 705 "${extension_mountpoint}/usr"
+
+					mount -t tmpfs tmpfs -o size=3M,nosuid "${extension_mountpoint}/run" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/run'." 1
+					bind_mount_wrapper "/run/udev"
+					chmod -R 707 "${extension_mountpoint}/run/udev" || die "Failed to chmod 707 '${extension_mountpoint}/sys/class'." 1
+
+					echo "input:x:23:user" >> "${extension_mountpoint}/etc/group" || die "Failed to add 'input' group at ${extension_mountpoint}/etc/group" 1
+				else
+					mknod "${extension_mountpoint}/dev/input/event0" c 13 64
+					mknod "${extension_mountpoint}/dev/input/event1" c 13 65
+					mknod "${extension_mountpoint}/dev/input/event2" c 13 66
+					chown -R user:user "${extension_mountpoint}/dev/input/" || die "Failed to set up device input nodes at '${extension_mountpoint}/dev/input'." 1
 				fi
-				chown -R user:user "${extension_mountpoint}/dev/input/") || die "Failed to set up device input nodes at '${extension_mountpoint}/dev/input'." 1
+				chmod -R 777 "${extension_mountpoint}/dev/input/" || die "Failed to chmod 777 '${extension_mountpoint}/dev/input/'." 1
 				# ptmx/pts
 				if [ "${reqf_pseudoterminal_support}" == 1 ]; then
 					(mknod "${extension_mountpoint}/dev/tty" c 5 0 && chown user:user "${extension_mountpoint}/dev/tty" && mknod "${extension_mountpoint}/dev/ptmx" c 5 2 && chown user:user "${extension_mountpoint}/dev/ptmx" && (if [ ! -e "${extension_mountpoint}/dev/urandom" ]; then mknod "${extension_mountpoint}/dev/urandom" c 1 9 && chown user:user "${extension_mountpoint}/dev/urandom"; else return 0; fi) && mkdir -p "${extension_mountpoint}/dev/pts" && mount -t devpts devpts -o nosuid,noexec "${extension_mountpoint}/dev/pts") || die "Failed to set up pseudoterminal support at '${extension_mountpoint}/dev'." 1
@@ -130,17 +160,21 @@ start() {
 					# ntx_io will not be used because it has more access than brightness. Let's go with native interfaces
 					# TODO: add other devices
 					if [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
+						bind_mount_wrapper "/sys/class/backlight/mxc_msp430_fl.0/"
 						chmod -R 707 "${extension_mountpoint}/sys/class/backlight/mxc_msp430_fl.0/" || die "Failed to chmod 707 '${extension_mountpoint}/sys/class/backlight/mxc_msp430_fl.0/'." 1
 					else
+						bind_mount_wrapper "/sys/class/backlight/mxc_msp430.0/"
 						chmod -R 707 "${extension_mountpoint}/sys/class/backlight/mxc_msp430.0/" || die "Failed to chmod 707 '${extension_mountpoint}/sys/class/backlight/mxc_msp430.0/'." 1
 					fi
 				fi
 				# Rotation
 				if [ "${reqf_rotation_control}" == 1 ]; then
+					bind_mount_wrapper "/sys/class/graphics/fb0"
 					chmod 707 "${extension_mountpoint}/sys/class/graphics/fb0/rotate" || die "Failed to chmod 707 '${extension_mountpoint}/sys/class/graphics/fb0/rotate'." 1
 				fi
 				# Debugfs
 				if [ "${reqf_debugfs}" == 1 ]; then
+					mkdir -p "${extension_mountpoint}/sys/kernel/debug"
 					mount -t debugfs none "${extension_mountpoint}/sys/kernel/debug" || die "Failed to mount debug filesystem at '${extension_mountpoint}/sys/kernel/debug'." 1
 					chmod -R 707 "${extension_mountpoint}/sys/kernel/debug" || die "Failed to chmod 707 '${extension_mountpoint}/sys/kernel/debug'." 1
 				fi
@@ -151,6 +185,9 @@ start() {
 				(mkdir -p "${extension_mountpoint}/mnt/onboard/.kobo" && echo "$(cat /opt/inkbox_device | tr [:lower:] [:upper:])" > "${extension_mountpoint}/mnt/onboard/.kobo/version" && mount -o remount,ro "${extension_mountpoint}/mnt") || die "Failed to set up fake onboard filesystem for FBInk." 1
 				## User data
 				(mount --bind "${extension_userdata_path}" "${extension_mountpoint}/app-data" && chown user:user "${extension_mountpoint}/app-data") || die "Failed to bind-mount user data directory '${extension_userdata_path}' at '${extension_mountpoint}/app-data'." 1
+				# Do it at the end, restrict /etc
+				(mount -o remount,ro "${extension_mountpoint}/etc") || die "Failed to remount '${extension_mountpoint}/etc' read-only." 1
+
 				einfo "Successfully set up application '${extension_name}'"
 			else
 				ewarn "GUI user application '${extension_archive}''s digital signature is invalid!"
