@@ -26,13 +26,13 @@ bind_mount_stylesheet() {
 }
 
 # Argument without / at the end
-# If the second argument is "gui" it will bind mount starting from /kobo
+# If the second argument is "gui", it will bind-mount starting from /kobo
 bind_mount_wrapper() {
 	mount_start=""
 	if [ "${2}" = "gui" ]; then
 		mount_start="/kobo"
 	fi
-	mkdir -p "${extension_mountpoint}${1}"  || die "Failed to create path: '${extension_mountpoint}${1}'" 1
+	mkdir -p "${extension_mountpoint}${1}"  || die "Failed to create '${extension_mountpoint}${1}'" 1
 	mount --bind "${mount_start}${1}" "${extension_mountpoint}${1}" || die "Failed to bind mount path: '${mount_start}${1}' at '${extension_mountpoint}${1}'" 1
 }
 
@@ -92,7 +92,7 @@ start() {
 				[ ! -d "/data/onboard/.apps-data" ] && mkdir -p "/data/onboard/.apps-data"
 				[ ! -d "${extension_userdata_path}" ] && mkdir -p "${extension_userdata_path}"
 				# mount -t sysfs sysfs -o nosuid "${extension_mountpoint}/sys" || die "Failed to mount sys filesystem at '${extension_mountpoint}/sys'." 1
-				mount -t tmpfs tmpfs -o size=3M,nosuid "${extension_mountpoint}/sys" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/sys'." 1
+				mount -t tmpfs tmpfs -o size=512K,nosuid "${extension_mountpoint}/sys" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/sys'." 1
 
 				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/dev" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/dev'." 1
 				mount -t tmpfs tmpfs -o size=128K,nosuid "${extension_mountpoint}/etc" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/etc'." 1
@@ -119,7 +119,7 @@ start() {
 				if [ "${reqf_input_devices_support}" == 1 ]; then
 					bind_mount_wrapper "/dev/input"
 
-					# Strace says it's needed
+					# strace requires it
 					bind_mount_wrapper "/sys/dev/char"
 					chmod -R 707 "${extension_mountpoint}/sys/dev/char" || die "Failed to chmod 707 '${extension_mountpoint}/sys/dev/char'." 1
 
@@ -127,19 +127,19 @@ start() {
 					bind_mount_wrapper "/sys/devices"
 					chmod -R 707 "${extension_mountpoint}/sys/devices" || die "Failed to chmod 707 '${extension_mountpoint}/sys/devices'." 1
 
-					# These for getting devices at start
+					# These for getting devices to start
 					bind_mount_wrapper "/sys/bus"
 					chmod -R 707 "${extension_mountpoint}/sys/bus" || die "Failed to chmod 707 '${extension_mountpoint}/sys/bus'." 1
 
 					bind_mount_wrapper "/sys/class"
 					chmod -R 707 "${extension_mountpoint}/sys/class" || die "Failed to chmod 707 '${extension_mountpoint}/sys/class'." 1
 
-					# Libinput Requires this too: important, it's from gui_rootfs
-					mount -t tmpfs tmpfs -o size=3M,nosuid "${extension_mountpoint}/usr" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/usr'." 1
+					# libinput requires this too; important, it's from gui_rootfs
+					mount -t tmpfs tmpfs -o size=512K,nosuid "${extension_mountpoint}/usr" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/usr'." 1
 					bind_mount_wrapper "/usr/local/share" "gui"
 					chmod -R 705 "${extension_mountpoint}/usr"
 
-					mount -t tmpfs tmpfs -o size=3M,nosuid "${extension_mountpoint}/run" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/run'." 1
+					mount -t tmpfs tmpfs -o size=512K,nosuid "${extension_mountpoint}/run" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/run'." 1
 					bind_mount_wrapper "/run/udev"
 					chmod -R 707 "${extension_mountpoint}/run/udev" || die "Failed to chmod 707 '${extension_mountpoint}/sys/class'." 1
 
@@ -172,7 +172,7 @@ start() {
 					bind_mount_wrapper "/sys/class/graphics/fb0"
 					chmod 707 "${extension_mountpoint}/sys/class/graphics/fb0/rotate" || die "Failed to chmod 707 '${extension_mountpoint}/sys/class/graphics/fb0/rotate'." 1
 				fi
-				# Debugfs
+				# debugfs
 				if [ "${reqf_debugfs}" == 1 ]; then
 					mkdir -p "${extension_mountpoint}/sys/kernel/debug"
 					mount -t debugfs none "${extension_mountpoint}/sys/kernel/debug" || die "Failed to mount debug filesystem at '${extension_mountpoint}/sys/kernel/debug'." 1
@@ -185,7 +185,7 @@ start() {
 				(mkdir -p "${extension_mountpoint}/mnt/onboard/.kobo" && echo "$(cat /opt/inkbox_device | tr [:lower:] [:upper:])" > "${extension_mountpoint}/mnt/onboard/.kobo/version" && mount -o remount,ro "${extension_mountpoint}/mnt") || die "Failed to set up fake onboard filesystem for FBInk." 1
 				## User data
 				(mount --bind "${extension_userdata_path}" "${extension_mountpoint}/app-data" && chown user:user "${extension_mountpoint}/app-data") || die "Failed to bind-mount user data directory '${extension_userdata_path}' at '${extension_mountpoint}/app-data'." 1
-				# Do it at the end, restrict /etc
+				## Restrict /etc
 				(mount -o remount,ro "${extension_mountpoint}/etc") || die "Failed to remount '${extension_mountpoint}/etc' read-only." 1
 
 				einfo "Successfully set up application '${extension_name}'"
