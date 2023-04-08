@@ -190,7 +190,7 @@ start() {
 
 				einfo "Successfully set up application '${extension_name}'"
 			else
-				ewarn "GUI user application '${extension_archive}''s digital signature is invalid!"
+				ewarn "GUI user application '${f}''s digital signature is invalid!"
 			fi
 		fi
 	done
