@@ -127,7 +127,8 @@ start() {
 		service udev restart
 		udevadm control --reload
 		udevadm control --reload-rules
-		udevadm trigger
+		# PROBLEM: Causes KT to go to sleep on inkbox_gui launch # udevadm trigger
+
 		ln -s /external_root/run/udev/ /kobo/run/udev
 
 		/usr/bin/inkbox.sh
