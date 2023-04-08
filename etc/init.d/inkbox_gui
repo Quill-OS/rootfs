@@ -127,7 +127,10 @@ start() {
 		service udev restart
 		udevadm control --reload
 		udevadm control --reload-rules
-		# PROBLEM: Causes KT to go to sleep on inkbox_gui launch # udevadm trigger
+		if [ "${DEVICE}" == "kt" ]; then
+			echo "true" > /run/power_button_cancel
+		fi
+		udevadm trigger
 
 		ln -s /external_root/run/udev/ /kobo/run/udev
 
