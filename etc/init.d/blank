@@ -1,0 +1,24 @@
+#!/sbin/openrc-run
+
+description="Blanks eInk screen of some devices if needed to solve freeze problems"
+
+depend() {
+	keyword -prefix -lxc
+}
+
+start() {
+	ebegin "Setting up eInk screen blanking recovery system"
+	DEVICE="$(cat /opt/inkbox_device)"
+	if ! grep -q "false" /boot/flags/EINK_BLANK 2>/dev/null; then
+		if [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "kt" ] || [ "${DEVICE}" == "n873" ]; then
+			if grep -q "true" /boot/flags/X11_START 2>/dev/null; then
+				/opt/bin/blank &
+			fi
+		fi
+	fi
+	eend $?
+}
+
+stop() {
+	killall -q /opt/bin/blank
+}
