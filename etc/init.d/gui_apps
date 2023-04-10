@@ -186,11 +186,10 @@ start() {
 				## User data
 				(mount --bind "${extension_userdata_path}" "${extension_mountpoint}/app-data" && chown user:user "${extension_mountpoint}/app-data") || die "Failed to bind-mount user data directory '${extension_userdata_path}' at '${extension_mountpoint}/app-data'." 1
 				## Time zone
-				# mount from gui because inkbox_gui script manages config files for it
+				# Mount from gui because inkbox_gui script manages config files for it
 				bind_mount_wrapper "/usr/share/zoneinfo/" "gui"
 				touch "${extension_mountpoint}/etc/localtime"
 				mount --bind "/kobo/etc/localtime" "${extension_mountpoint}/etc/localtime"
-
 				## Restrict /etc
 				(mount -o remount,ro "${extension_mountpoint}/etc") || die "Failed to remount '${extension_mountpoint}/etc' read-only." 1
 
