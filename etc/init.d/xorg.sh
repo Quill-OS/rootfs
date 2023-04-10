@@ -30,11 +30,11 @@ fi
 echo $FB_UR > /sys/class/graphics/fb0/rotate
 
 if [ "$DPI" == "" ]; then
-        chroot /xorg "X" "-nocursor" &
+        chroot /xorg "X" "-v" "-nocursor" &
 	DISPLAY=:0 chroot /xorg "x11vnc" "-localhost" "-forever" "-quiet" &
 	sleep 20
 else
-        chroot /xorg "X" "-nocursor" "-dpi" "$DPI" &
+        chroot /xorg "X" "-v" "-nocursor" "-dpi" "$DPI" &
 	DISPLAY=:0 chroot /xorg "x11vnc" "-localhost" "-forever" "-quiet" &
 	sleep 20
 fi
