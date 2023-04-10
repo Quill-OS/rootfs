@@ -59,7 +59,6 @@ start() {
 		else
 			mount --bind /usr/local/share/inkbox/stylesheets/eink-600x800.qss /kobo/mnt/onboard/.adds/inkbox/eink.qss
 		fi
-		rc-service gui_apps restart
 
 	        mount -t sysfs sysfs /kobo/sys
 	        mount -t proc proc /kobo/proc
@@ -129,6 +128,8 @@ start() {
 		udevadm trigger
 
 		ln -s /external_root/run/udev/ /kobo/run/udev
+
+		rc-service gui_apps restart
 
 		/usr/bin/inkbox.sh
 	else
