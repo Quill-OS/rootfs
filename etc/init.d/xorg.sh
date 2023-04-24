@@ -41,7 +41,6 @@ fi
 
 # Launch touch input handler
 echo $FB_UR > /sys/class/graphics/fb0/rotate
-# fbink_xdamage on the Glo HD displays things very strangely
 chroot /opt/X11/vnc-touch /bin/bash -c 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/qt5/lib QT_QPA_PLATFORM=kobo /root/vnc/vnc-nographic vnc://localhost' &
 
 # Rebuilding caches; here, the FUSE version of OverlayFS does not allow renaming/moving files (probably due to an old 2.6.35.3 kernel version), so we have to circumvent that sometimes by mounting a tmpfs where the files have to be moved.
@@ -71,18 +70,27 @@ if [ "$CUSTOM_DPI" != "" ]; then
 	DPI="$CUSTOM_DPI"
 fi
 
-# Launching requested program
+# ibxd
 if [ "$PROGRAM" == "!netsurf" ]; then
 	rc-service ibxd restart
 fi
+
 LAUNCH_OSK=`cat "/opt/X11/extension-storage-merged/${PROGRAM}/.${PROGRAM}_launch_osk" 2>/dev/null`
 # A built-in text editor needs its keyboard, doesn't it? ;p
 if [ "$PROGRAM" == "geany" ]; then
 	LAUNCH_OSK="true"
 fi
-# Launching onboard (On-Screen Keyboard) if needed
+# Launching matchbox-keyboard if needed
 if [ "$LAUNCH_OSK" == "true" ]; then
-	DISPLAY=:0 chroot /xorg /usr/bin/onboard &
+	MATCHBOX_KEYBOARD_ARGUMENTS=""
+	if [ "${DEVICE}" == "n437" ]; then
+		MATCHBOX_KEYBOARD_ARGUMENTS="-s 8 -p 22 -g 415x450"
+	elif [ "${DEVICE}" == "n873" ]; then
+		MATCHBOX_KEYBOARD_ARGUMENTS="-s 8 -p 28 -g 500x450"
+	else
+		MATCHBOX_KEYBOARD_ARGUMENTS=""
+	fi
+	DISPLAY=:0 chroot /xorg /usr/local/bin/matchbox-keyboard ${MATCHBOX_KEYBOARD_ARGUMENTS} &
 fi
 
 echo $FB_UR > /sys/class/graphics/fb0/rotate
