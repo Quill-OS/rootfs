@@ -90,7 +90,14 @@ if [ "$LAUNCH_OSK" == "true" ]; then
 	else
 		MATCHBOX_KEYBOARD_ARGUMENTS=""
 	fi
-	DISPLAY=:0 chroot /xorg /usr/local/bin/matchbox-keyboard ${MATCHBOX_KEYBOARD_ARGUMENTS} &
+	while true; do
+		# Check number of open windows; once one has opened, we can launch matchbox-keyboard to allow proper display layout
+		if [ "$(DISPLAY=:0 chroot /xorg /usr/local/bin/wmctrl -l | wc -l)" != 0 ]; then
+			DISPLAY=:0 chroot /xorg /usr/local/bin/matchbox-keyboard ${MATCHBOX_KEYBOARD_ARGUMENTS} &
+			break
+		fi
+		sleep 1
+	done &
 fi
 
 echo $FB_UR > /sys/class/graphics/fb0/rotate
