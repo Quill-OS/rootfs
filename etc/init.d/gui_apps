@@ -65,7 +65,7 @@ start() {
 				required_features="$(jq -r '.[].RequiredFeatures |= join(" ")|.[].RequiredFeatures' ""${extension_json_file_descriptor}"")"
 
 				# https://inkbox.ddns.net/wiki/index.php?title=InkBox_GUI_user_apps
-				# Somehow, those values persist between the for loops
+				# Somehow, these values persist between the `for` loops
 				reqf_wifi_connection=0
 				reqf_root_kernel=0
 				reqf_pseudoterminal_support=0
@@ -110,7 +110,7 @@ start() {
 				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/system-lib" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/system-lib'." 1
 				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/system-bin" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/system-bin'." 1
 				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/mnt" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/mnt'." 1
-				# Not only libinput, but also time zone is here located
+				# Timezone information & libinput
 				mount -t tmpfs tmpfs -o size=512K,nosuid "${extension_mountpoint}/usr" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/usr'." 1
 
 				## lib
