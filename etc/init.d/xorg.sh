@@ -83,15 +83,19 @@ fi
 # Launching matchbox-keyboard if needed
 if [ "$LAUNCH_OSK" == "true" ]; then
 	MATCHBOX_KEYBOARD_ARGUMENTS=""
-	if [ "${DEVICE}" == "n437" ]; then
+	if [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "kt" ]; then
+		MATCHBOX_KEYBOARD_ARGUMENTS="-s 8 -p 7 -g 185x450"
+	elif [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n306" ]; then
+		MATCHBOX_KEYBOARD_ARGUMENTS="-s 8 -p 12 -g 270x450"
+	elif [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n249" ]; then
 		MATCHBOX_KEYBOARD_ARGUMENTS="-s 8 -p 22 -g 415x450"
 	elif [ "${DEVICE}" == "n873" ]; then
 		MATCHBOX_KEYBOARD_ARGUMENTS="-s 8 -p 28 -g 500x450"
 	else
-		MATCHBOX_KEYBOARD_ARGUMENTS=""
+		MATCHBOX_KEYBOARD_ARGUMENTS="-s 8 -p 7 -g 185x450"
 	fi
 	while true; do
-		# Check number of open windows; once one has opened, we can launch matchbox-keyboard to allow proper display layout
+		# Check number of open windows; once one has opened, we can launch matchbox-keyboard to allow for a proper display layout
 		if [ "$(DISPLAY=:0 chroot /xorg /usr/local/bin/wmctrl -l | wc -l)" != 0 ]; then
 			DISPLAY=:0 chroot /xorg /usr/local/bin/matchbox-keyboard ${MATCHBOX_KEYBOARD_ARGUMENTS} &
 			break
