@@ -63,6 +63,16 @@ start() {
 				#### chroot requirements
 				## Required features
 				required_features="$(jq -r '.[].RequiredFeatures |= join(" ")|.[].RequiredFeatures' ""${extension_json_file_descriptor}"")"
+
+				# https://inkbox.ddns.net/wiki/index.php?title=InkBox_GUI_user_apps
+				# Somehow, those values persist between the for loops
+				reqf_wifi_connection=0
+				reqf_root_kernel=0
+				reqf_pseudoterminal_support=0
+				reqf_input_devices_support=0
+				reqf_rotation_control=0
+				reqf_debugfs=0
+
 				for feature in ${required_features}; do
 					if [ "${feature}" == "0" ]; then
 						# Needs Wi-Fi connection
@@ -100,6 +110,8 @@ start() {
 				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/system-lib" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/system-lib'." 1
 				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/system-bin" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/system-bin'." 1
 				mount -t tmpfs tmpfs -o size=64K,nosuid "${extension_mountpoint}/mnt" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/mnt'." 1
+				# Not only libinput, but also time zone is here located
+				mount -t tmpfs tmpfs -o size=512K,nosuid "${extension_mountpoint}/usr" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/usr'." 1
 
 				## lib
 				(mkdir -p "${extension_mountpoint}/system-lib/lib" && mount --bind "/kobo/lib" "${extension_mountpoint}/system-lib/lib" && mkdir -p "${extension_mountpoint}/system-lib/qt" && mount --rbind "/kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo/" "${extension_mountpoint}/system-lib/qt" && chmod 555 "${extension_mountpoint}/system-lib" "${extension_mountpoint}/system-lib/lib") || die "Failed to bind-mount system libraries at '${extension_mountpoint}/system-lib'." 1
@@ -135,7 +147,6 @@ start() {
 					chmod -R 707 "${extension_mountpoint}/sys/class" || die "Failed to chmod 707 '${extension_mountpoint}/sys/class'." 1
 
 					# libinput requires this too; important, it's from gui_rootfs
-					mount -t tmpfs tmpfs -o size=512K,nosuid "${extension_mountpoint}/usr" || die "Failed to mount temporary filesystem at '${extension_mountpoint}/usr'." 1
 					bind_mount_wrapper "/usr/local/share" "gui"
 					chmod -R 705 "${extension_mountpoint}/usr"
 
