@@ -93,7 +93,7 @@ start() {
 						# Rotation
 						reqf_rotation_control=1
 					elif [ "${feature}" == "6" ]; then
-						# Debugfs
+						# DebugFS
 						reqf_debugfs=1
 					fi
 				done
@@ -121,9 +121,11 @@ start() {
 				(echo "user::1000:1000:user:/:/system-bin/sh" > "${extension_mountpoint}/etc/passwd" && echo "user:x:1000:" > "${extension_mountpoint}/etc/group" && touch "${extension_mountpoint}/etc/eink.qss" && bind_mount_stylesheet && touch "${extension_mountpoint}/etc/resolv.conf" && mount --bind "/etc/resolv.conf" "${extension_mountpoint}/etc/resolv.conf") || die "Failed to set up restricted authentication profile at '${extension_mountpoint}/etc'." 1
 				# Wi-Fi connection (SSL certificates)
 				if [ "${reqf_wifi_connection}" == 1 ]; then
-					(mkdir -p "${extension_mountpoint}/etc/ssl" && mount --bind "/etc/ssl" "${extension_mountpoint}/etc/ssl" && (if [ ! -e "${extension_mountpoint}/dev/urandom" ];then mknod "${extension_mountpoint}/dev/urandom" c 1 9 && chown user:user "${extension_mountpoint}/dev/urandom"; else return 0; fi)) || die "Failed to bind-mount host's SSL certificates at '${extension_mountpoint}/etc/ssl/certs' and/or set up 'urandom' device node at '${extension_mountpoint}/dev/urandom'." 1
+					(mkdir -p "${extension_mountpoint}/etc/ssl" && mount --bind "/etc/ssl" "${extension_mountpoint}/etc/ssl") || die "Failed to bind-mount host's SSL certificates at '${extension_mountpoint}/etc/ssl/certs'." 1
 				fi
 				## dev
+				# urandom
+				(mknod "${extension_mountpoint}/dev/urandom" c 1 9 && chown user:user "${extension_mountpoint}/dev/urandom") || die "Failed to set up '${extension_mountpoint}/dev/urandom' device node." 1
 				# Framebuffer
 				(mknod "${extension_mountpoint}/dev/fb0" c 29 0 && chown user:user "${extension_mountpoint}/dev/fb0") || die "Failed to set up '${extension_mountpoint}/dev/fb0' device node." 1
 				# Input
@@ -164,7 +166,7 @@ start() {
 				chmod -R 777 "${extension_mountpoint}/dev/input/" || die "Failed to chmod 777 '${extension_mountpoint}/dev/input/'." 1
 				# ptmx/pts
 				if [ "${reqf_pseudoterminal_support}" == 1 ]; then
-					(mknod "${extension_mountpoint}/dev/tty" c 5 0 && chown user:user "${extension_mountpoint}/dev/tty" && mknod "${extension_mountpoint}/dev/ptmx" c 5 2 && chown user:user "${extension_mountpoint}/dev/ptmx" && (if [ ! -e "${extension_mountpoint}/dev/urandom" ]; then mknod "${extension_mountpoint}/dev/urandom" c 1 9 && chown user:user "${extension_mountpoint}/dev/urandom"; else return 0; fi) && mkdir -p "${extension_mountpoint}/dev/pts" && mount -t devpts devpts -o nosuid,noexec "${extension_mountpoint}/dev/pts") || die "Failed to set up pseudoterminal support at '${extension_mountpoint}/dev'." 1
+					(mknod "${extension_mountpoint}/dev/tty" c 5 0 && chown user:user "${extension_mountpoint}/dev/tty" && mknod "${extension_mountpoint}/dev/ptmx" c 5 2 && chown user:user "${extension_mountpoint}/dev/ptmx" && mkdir -p "${extension_mountpoint}/dev/pts" && mount -t devpts devpts -o nosuid,noexec "${extension_mountpoint}/dev/pts") || die "Failed to set up pseudoterminal support at '${extension_mountpoint}/dev'." 1
 				fi
 				# Brightness
 				if [ "${reqf_brightness_control}" == 1 ]; then
