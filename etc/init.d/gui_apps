@@ -33,7 +33,7 @@ bind_mount_wrapper() {
 		mount_start="/kobo"
 	fi
 	mkdir -p "${extension_mountpoint}${1}"  || die "Failed to create '${extension_mountpoint}${1}'" 1
-	mount --bind "${mount_start}${1}" "${extension_mountpoint}${1}" || die "Failed to bind mount path: '${mount_start}${1}' at '${extension_mountpoint}${1}'" 1
+	mount --bind "${mount_start}${1}" "${extension_mountpoint}${1}" || die "Failed to bind-mount path: '${mount_start}${1}' at '${extension_mountpoint}${1}'" 1
 }
 
 start() {
