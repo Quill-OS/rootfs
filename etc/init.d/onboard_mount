@@ -15,6 +15,8 @@ start() {
 stop() {
 	ebegin "Unmounting onboard storage filesystem"
 	sync
+	umount /kobo/mnt/onboard/onboard -l -f
+	umount /data/onboard -l -f
 	umount /dev/loop0 -l -f
 	losetup -d /dev/loop0
 	eend $?

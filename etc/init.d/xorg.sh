@@ -105,7 +105,7 @@ if [ "$LAUNCH_OSK" == "true" ]; then
 fi
 
 echo $FB_UR > /sys/class/graphics/fb0/rotate
-if [ "${DEVICE}" == "n437" ]; then
+if [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ]; then
 	# Don't even try to understand this
 	if ! grep -q "true" /tmp/kobox_initial_launch_done; then
 		/opt/bin/fbink/fbdepth -d 16
@@ -123,7 +123,7 @@ else
 	chroot /xorg /scripts/start.sh "$DPMODE" "${PROGRAM}" "$DPI"
 fi
 
-if [ "${DEVICE}" == "kt" ] || [ "${DEVICE}" == "n437" ]; then
+if [ "${DEVICE}" == "kt" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ]; then
 	/opt/bin/fbink/fbdepth -d 8
 fi
 
