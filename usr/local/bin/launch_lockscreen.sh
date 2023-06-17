@@ -1,10 +1,15 @@
 #!/bin/sh
 
 DEVICE="$(cat /opt/inkbox_device)"
-DARK_MODE="$(cat /data/config/10-dark_mode/config)"
+
+if [ -e "/var/run/openrc/started/inkbox_gui" ]; then
+	DARK_MODE="$(cat /kobo/mnt/onboard/.adds/inkbox/.config/10-dark_mode/config)"
+else
+	DARK_MODE="$(cat /data/config/10-dark_mode/config)"
+fi
 
 if [ "${DEVICE}" != "emu" ]; then
-	env QT_QPA_PLATFORM="kobo:touchscreen_rotate=90:touchscreen_invert_x=auto:touchscreen_invert_y=auto:logicaldpitarget=0" QT_FONT_DPI=${DPI} ADDSPATH="/mnt/onboard/.adds/" QTPATH="${ADDSPATH}/qt-linux-5.15.2-kobo" LD_LIBRARY_PATH="${QTPATH}lib:lib:" chroot /kobo /mnt/onboard/.adds/inkbox/lockscreen
+	env QT_QPA_PLATFORM="kobo:touchscreen_rotate=90:touchscreen_invert_x=auto:touchscreen_invert_y=auto:logicaldpitarget=0" QT_FONT_DPI=${DPI} ADDSPATH="/mnt/onboard/.adds/" QTPATH="${ADDSPATH}/qt-linux-5.15.2-kobo/" LD_LIBRARY_PATH="${QTPATH}lib:/lib" chroot /kobo /mnt/onboard/.adds/inkbox/lockscreen
 	# Displaying the screen as it was before the device went to sleep to avoid eInk issues
 	sleep 0.1
 	if [ "${DARK_MODE}" == "true" ]; then
@@ -18,5 +23,5 @@ if [ "${DEVICE}" != "emu" ]; then
 	fi
 	rm -f "/tmp/lockscreen.png"
 else
-	env QT_QPA_PLATFORM="vnc:size=758x1024" QT_FONT_DPI=${DPI} ADDSPATH="/mnt/onboard/.adds/" QTPATH="${ADDSPATH}/qt-linux-5.15.2-kobo" LD_LIBRARY_PATH="${QTPATH}lib:lib:" chroot /kobo /mnt/onboard/.adds/inkbox/lockscreen
+	env QT_QPA_PLATFORM="vnc:size=758x1024" QT_FONT_DPI=${DPI} ADDSPATH="/mnt/onboard/.adds/" QTPATH="${ADDSPATH}/qt-linux-5.15.2-kobo" LD_LIBRARY_PATH="${QTPATH}lib:/lib" chroot /kobo /mnt/onboard/.adds/inkbox/lockscreen
 fi
