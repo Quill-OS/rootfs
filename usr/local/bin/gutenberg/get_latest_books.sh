@@ -6,7 +6,7 @@ calculate() {
 }
 
 eval $(fbink -e)
-coverSize="$(calculate ${viewWidth}/4)x$(calculate ${viewHeight}/4)"
+coverSize="$(calculate ${viewWidth}/4)!x$(calculate ${viewHeight}/4)!"
 
 mkdir -p /data/onboard/.inkbox/gutenberg-data && cd /data/onboard/.inkbox/gutenberg-data
 rm -rf /data/onboard/.inkbox/gutenberg-data/latest-books
