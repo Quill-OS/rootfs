@@ -43,6 +43,7 @@ fi
 echo $FB_UR > /sys/class/graphics/fb0/rotate
 chroot /opt/X11/vnc-touch /bin/bash -c 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/qt5/lib QT_QPA_PLATFORM=kobo /root/vnc/vnc-nographic vnc://localhost' &
 
+# NOTE: The following comment doesn't hold true anymore since we switched to unionfs with COW for all devices, but I will leave this here to prevent unwanted bugs, at least for now
 # Rebuilding caches; here, the FUSE version of OverlayFS does not allow renaming/moving files (probably due to an old 2.6.35.3 kernel version), so we have to circumvent that sometimes by mounting a tmpfs where the files have to be moved.
 # GSchemas (Onboard keyboard needs them to be recompiled)
 rm /xorg/usr/share/glib-2.0/schemas/gschemas.compiled
@@ -111,7 +112,7 @@ if [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ]; then
 	if grep -q "true" /opt/root/rooted && ! grep -q "true" /tmp/kobox_initial_launch_done && ! grep -q "n306" /opt/inkbox_device; then
 		/opt/bin/fbink/fbdepth -d 16
 	# This runs when either the device is NOT rooted * OR * it's the FIRST launch of an X11 app since boot * OR * (we are running on a Kobo Nia * AND * it's the first time we launch an X11 app)
-	else if ! grep -q "true" /tmp/kobox_initial_launch_done; then
+	elif ! grep -q "true" /tmp/kobox_initial_launch_done; then
 		/opt/bin/fbink/fbdepth -d 16
 	# This runs when the device ALREADY launched an X11 app since boot * OR * when it's on a standard kernel
 	else
