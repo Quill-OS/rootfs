@@ -110,10 +110,10 @@ if [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ]; then
 	# This runs when the device IS rooted * AND * it's the FIRST launch of an X11 app since boot * AND * we are NOT running on a Kobo Nia
 	if grep -q "true" /opt/root/rooted && ! grep -q "true" /tmp/kobox_initial_launch_done && ! grep -q "n306" /opt/inkbox_device; then
 		/opt/bin/fbink/fbdepth -d 16
-	# This runs when either the device is NOT rooted * OR * it's the FIRST launch of an X11 app since boot * OR * we are running on a Kobo Nia
+	# This runs when either the device is NOT rooted * OR * it's the FIRST launch of an X11 app since boot * OR * (we are running on a Kobo Nia * AND * it's the first time we launch an X11 app)
 	else if ! grep -q "true" /tmp/kobox_initial_launch_done; then
 		/opt/bin/fbink/fbdepth -d 16
-	# This runs when the device (rooted or not) ALREADY launched an X11 app since boot
+	# This runs when the device ALREADY launched an X11 app since boot * OR * when it's on a standard kernel
 	else
 		/opt/bin/fbink/fbdepth -d 32
 	fi
