@@ -107,7 +107,7 @@ fi
 echo $FB_UR > /sys/class/graphics/fb0/rotate
 if [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ]; then
 	# Don't even try to understand this
-	if ! grep -q "true" /tmp/kobox_initial_launch_done; then
+	if grep -q "true" /opt/root/rooted && ! grep -q "true" /tmp/kobox_initial_launch_done; then
 		/opt/bin/fbink/fbdepth -d 16
 	else
 		/opt/bin/fbink/fbdepth -d 32
