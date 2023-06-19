@@ -220,6 +220,7 @@ start() {
 
 	sleep 0.5
 	mount --rbind /data/onboard /kobo/mnt/onboard/onboard
+	mount --rbind /data/onboard /kobo/external_root/data/onboard
 	eend $?
 }
 
