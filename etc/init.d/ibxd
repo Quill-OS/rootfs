@@ -17,6 +17,7 @@ bookconfig_mount() {
 	mkdir -p /kobo/mnt/onboard/.adds/inkbox/.config/12-lockscreen
 	mkdir -p /kobo/mnt/onboard/.adds/inkbox/.config/13-epub_page_size
 	mkdir -p /kobo/mnt/onboard/.adds/inkbox/.config/14-reader_scrollbar
+	mkdir -p /kobo/mnt/onboard/.adds/inkbox/.config/18-encrypted_storage
 	mkdir -p /kobo/mnt/onboard/.adds/inkbox/.config/19-timezone
 	mkdir -p /kobo/mnt/onboard/.adds/inkbox/.config/20-sleep_daemon
 
@@ -28,6 +29,7 @@ bookconfig_mount() {
 	mount --bind /data/config/12-lockscreen /kobo/mnt/onboard/.adds/inkbox/.config/12-lockscreen
 	mount --bind /data/config/13-epub_page_size /kobo/mnt/onboard/.adds/inkbox/.config/13-epub_page_size
 	mount --bind /data/config/14-reader_scrollbar /kobo/mnt/onboard/.adds/inkbox/.config/14-reader_scrollbar
+	mount --bind /data/config/18-encrypted_storage /kobo/mnt/onboard/.adds/inkbox/.config/18-encrypted_storage
 	mount --bind /data/config/19-timezone /kobo/mnt/onboard/.adds/inkbox/.config/19-timezone
 	mount --bind /data/config/20-sleep_daemon /kobo/mnt/onboard/.adds/inkbox/.config/20-sleep_daemon
 	echo "true" > /kobo/inkbox/bookConfigSetUp
