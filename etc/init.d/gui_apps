@@ -248,6 +248,7 @@ die() {
 stop() {
 	sync
 	umount -l -f /kobo/mnt/onboard/onboard/.apps/*/* 2>/dev/null
+	umount -l -f /kobo/external_root/data/onboard/.apps/*/* 2>/dev/null
 	umount -l -f /data/onboard/.apps/*/* 2>/dev/null
 	return 0
 }
