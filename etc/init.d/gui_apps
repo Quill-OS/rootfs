@@ -118,7 +118,7 @@ start() {
 				## bin
 				(touch "${extension_mountpoint}/system-bin/busybox" && mount --bind "/bin/busybox" "${extension_mountpoint}/system-bin/busybox" && chroot "${extension_mountpoint}" "/system-bin/busybox" "--install" "-s" "/system-bin") || die "Failed to bind-mount and/or set up temporary BusyBox binary at '${extension_mountpoint}/system-bin/busybox'." 1
 				## etc
-				(echo "user::1000:1000:user:/:/system-bin/sh" > "${extension_mountpoint}/etc/passwd" && echo "user:x:1000:" > "${extension_mountpoint}/etc/group" && touch "${extension_mountpoint}/etc/eink.qss" && bind_mount_stylesheet && touch "${extension_mountpoint}/etc/resolv.conf" && mount --bind "/etc/resolv.conf" "${extension_mountpoint}/etc/resolv.conf") || die "Failed to set up restricted authentication profile at '${extension_mountpoint}/etc'." 1
+				(echo "user:0ks1aDZQB18uk:1000:1000:user:/:/system-bin/sh" > "${extension_mountpoint}/etc/passwd" && echo "user:x:1000:" > "${extension_mountpoint}/etc/group" && echo "/system-bin/sh" > "${extension_mountpoint}/etc/shells" && touch "${extension_mountpoint}/etc/eink.qss" && bind_mount_stylesheet && touch "${extension_mountpoint}/etc/resolv.conf" && mount --bind "/etc/resolv.conf" "${extension_mountpoint}/etc/resolv.conf") || die "Failed to set up restricted authentication profile at '${extension_mountpoint}/etc'." 1
 				# Wi-Fi connection (SSL certificates)
 				if [ "${reqf_wifi_connection}" == 1 ]; then
 					(mkdir -p "${extension_mountpoint}/etc/ssl" && mount --bind "/etc/ssl" "${extension_mountpoint}/etc/ssl") || die "Failed to bind-mount host's SSL certificates at '${extension_mountpoint}/etc/ssl/certs'." 1
