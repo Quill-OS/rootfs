@@ -7,6 +7,9 @@ get_brightness() {
 		BRIGHTNESS=$(cat /opt/config/03-brightness/config)
 	elif [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
 		BRIGHTNESS=$(cat /sys/class/backlight/mxc_msp430_fl.0/brightness)
+	elif [ "${DEVICE}" == "n249" ]; then
+		BRIGHTNESS=$(cat /sys/class/backlight/backlight_cold/brightness)
+		WARM_BRIGHTNESS=$(cat /sys/class/backlight/backlight_warm/brightness)
 	else
 		BRIGHTNESS=$(cat /sys/class/backlight/mxc_msp430.0/brightness)
 	fi
@@ -17,6 +20,10 @@ set_brightness() {
 		/opt/bin/frontlight ${1}
 	elif [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
 		echo ${1} > "/sys/class/backlight/mxc_msp430_fl.0/brightness"
+	elif [ "${DEVICE}" == "n249" ]; then
+		echo "${1}" > "/sys/class/backlight/backlight_cold/brightness"
+		# TODO: Improve this hackery
+		echo "${1}" > "/sys/class/backlight/backlight_warm/brightness"
 	else
 		echo ${1} > "/sys/class/backlight/mxc_msp430.0/brightness"
 	fi
