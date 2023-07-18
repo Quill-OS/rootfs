@@ -26,7 +26,7 @@ fi
 
 echo -n "Preparing WPA connection: " >> "/run/wifi_stats"
 # Because dhd.ko is the worst Wi-Fi driver I have ever encountered in my whole life
-if [ "${DEVICE}" == "n437" ]; then
+if [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n437" ]; then
 	MAGIC_WORD="No, thanks" /usr/local/bin/wifi/toggle.sh off
 	/usr/local/bin/wifi/toggle.sh on
 fi

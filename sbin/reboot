@@ -4,7 +4,12 @@ DEVICE=$(cat /opt/inkbox_device)
 if [ "${DEVICE}" != "n236" ] && [ "${DEVICE}" != "n437" ]; then
 	BRIGHTNESS_SYSFS_FILE="/sys/class/backlight/mxc_msp430.0/brightness"
 else
-	BRIGHTNESS_SYSFS_FILE="/sys/class/backlight/mxc_msp430_fl.0/brightness"
+	if [ "${DEVICE}" == "n249" ]; then
+		BRIGHTNESS_SYSFS_FILE="/sys/class/backlight/backlight_cold/brightness"
+		WARM_BRIGHTNESS_SYSFS_FILE="/sys/class/backlight/backlight_warm/brightness"
+	else
+		BRIGHTNESS_SYSFS_FILE="/sys/class/backlight/mxc_msp430_fl.0/brightness"
+	fi
 fi
 /opt/bin/wall "The system is going down for reboot NOW!"
 
@@ -28,6 +33,9 @@ else
 			/opt/bin/frontlight 0
 		else
 			echo 0 > "${BRIGHTNESS_SYSFS_FILE}"
+			if [ "${DEVICE}" == "n249" ]; then
+				echo 0 > "${WARM_BRIGHTNESS_SYSFS_FILE}"
+			fi
 		fi
 	fi
 fi
