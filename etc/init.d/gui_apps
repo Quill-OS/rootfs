@@ -16,7 +16,7 @@ bind_mount_stylesheet() {
 		mount --bind /usr/local/share/inkbox/stylesheets/eink-600x800.qss "${extension_mountpoint}/etc/eink.qss"
 	elif [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "emu" ]; then
 		mount --bind /usr/local/share/inkbox/stylesheets/eink-768x1024.qss "${extension_mountpoint}/etc/eink.qss"
-	elif [ "${DEVICE}" == "n437" ]; then
+	elif [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n249" ]; then
 		mount --bind /usr/local/share/inkbox/stylesheets/eink-1072x1448.qss "${extension_mountpoint}/etc/eink.qss"
 	elif [ "${DEVICE}" == "n873" ]; then
 		mount --bind /usr/local/share/inkbox/stylesheets/eink-1264x1680.qss "${extension_mountpoint}/etc/eink.qss"
@@ -95,6 +95,9 @@ start() {
 					elif [ "${feature}" == "6" ]; then
 						# DebugFS
 						reqf_debugfs=1
+					elif [ "${feature}" == "7" ]; then
+						# Onboard storage access
+						reqf_onboard_storage_access=1
 					fi
 				done
 
@@ -175,6 +178,11 @@ start() {
 					if [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
 						bind_mount_wrapper "/sys/class/backlight/mxc_msp430_fl.0/"
 						chmod -R 707 "${extension_mountpoint}/sys/class/backlight/mxc_msp430_fl.0/" || die "Failed to chmod 707 '${extension_mountpoint}/sys/class/backlight/mxc_msp430_fl.0/'." 1
+					elif [ "${DEVICE}" == "n249" ]; then
+						bind_mount_wrapper "/sys/class/backlight/backlight_cold/"
+						bind_mount_wrapper "/sys/class/backlight/backlight_warm/"
+						chmod -R 707 "${extension_mountpoint}/sys/class/backlight/backlight_cold/" || die "Failed to chmod 707 '${extension_mountpoint}/sys/class/backlight/backlight_cold/'." 1
+						chmod -R 707 "${extension_mountpoint}/sys/class/backlight/backlight_warm/" || die "Failed to chmod 707 '${extension_mountpoint}/sys/class/backlight/backlight_warm/'." 1
 					else
 						bind_mount_wrapper "/sys/class/backlight/mxc_msp430.0/"
 						chmod -R 707 "${extension_mountpoint}/sys/class/backlight/mxc_msp430.0/" || die "Failed to chmod 707 '${extension_mountpoint}/sys/class/backlight/mxc_msp430.0/'." 1
@@ -190,6 +198,10 @@ start() {
 					mkdir -p "${extension_mountpoint}/sys/kernel/debug"
 					mount -t debugfs none "${extension_mountpoint}/sys/kernel/debug" || die "Failed to mount debug filesystem at '${extension_mountpoint}/sys/kernel/debug'." 1
 					chmod -R 707 "${extension_mountpoint}/sys/kernel/debug" || die "Failed to chmod 707 '${extension_mountpoint}/sys/kernel/debug'." 1
+				fi
+				# Onboard storage access
+				if [ "${reqf_onboard_storage_access}" == 1 ]; then
+					mount --bind "/data/onboard" "${extension_mountpoint}/system-onboard" || die "Failed to mount system onboard storage at '${extension_mountpoint}/system-onboard'." 1
 				fi
 				# Power daemon
 				(mkdir -p "${extension_mountpoint}/dev/ipd" && touch "${extension_mountpoint}/dev/ipd/fifo" && mount --bind "/run/ipd/fifo" "${extension_mountpoint}/dev/ipd/fifo") || die "Failed to bind-mount InkBox Power Daemon (ipd) named pipe" 1

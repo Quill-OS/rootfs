@@ -30,6 +30,9 @@ elif [ "${DEVICE}" == "n437" ]; then
 	WIFI_MODULE="/modules/wifi/bcmdhd.ko"
 	SDIO_WIFI_PWR_MODULE="/modules/drivers/mmc/card/sdio_wifi_pwr.ko"
 	WIFI_DEV="wlan0"
+elif [ "${DEVICE}" == "n249" ]; then
+	WIFI_MODULE="/modules/drivers/wifi/net/wireless/8189fs.ko"
+	WIFI_DEV="wlan0"
 elif [ "${DEVICE}" == "kt" ]; then
 	WIFI_MODULE="ar6003"
 	WIFI_DEV="wlan0"
@@ -63,7 +66,9 @@ cleanup() {
 setup() {
 	if [ "${DEVICE}" != "kt" ]; then
 		insmod "${SDIO_WIFI_PWR_MODULE}"
-		insmod "${WIFI_MODULE}"
+		if [ "${DEVICE}" != "n249" ]; then
+			insmod "${WIFI_MODULE}"
+		fi
 	else
 		modprobe "${WIFI_MODULE}"
 	fi
