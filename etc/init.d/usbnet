@@ -29,7 +29,7 @@ start() {
 				insmod "/modules/drivers/usb/gadget/function/usb_f_ecm_subset.ko"
 				insmod "/modules/drivers/usb/gadget/function/usb_f_rndis.ko"
 				insmod "/modules/drivers/usb/gadget/legacy/g_ether.ko" dev_addr="${DEVICE_ADDRESS}" host_addr="${HOST_ADDRESS}"
-			elif [ "${DEVICE}" == "kt" ]; then
+			elif [ "${DEVICE}" == "n249" ] || [ "${DEVICE}" == "kt" ]; then
 				modprobe g_ether dev_addr="${DEVICE_ADDRESS}" host_addr="${HOST_ADDRESS}"
 			elif [ "${DEVICE}" == "emu" ]; then
 				:

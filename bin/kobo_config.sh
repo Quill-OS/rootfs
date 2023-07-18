@@ -14,6 +14,8 @@ elif [ "${DEVICE}" = "n437" ]; then
 	echo "alyssum"
 elif [ "${DEVICE}" = "n306" ]; then
 	echo "luna"
+elif [ "${DEVICE}" == "n249" ]; then
+	echo "nova"
 elif [ "${DEVICE}" = "n873" ]; then
 	echo "storm"
 fi
