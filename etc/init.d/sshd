@@ -64,6 +64,12 @@ checkconfig() {
 	[ "$cfgfile" != "/etc/ssh/sshd_config" ] \
 		&& command_args="$command_args -f $cfgfile"
 
+	DEVICE="$(cat /opt/inkbox_device)"
+	if [ "${DEVICE}" == "n249" ]; then
+		[ ! -e "/etc/ssh/id_rsa" ] && /usr/local/bin/dropbearkey -t rsa -f "/etc/ssh/id_rsa"
+		/usr/local/sbin/dropbear -r "/etc/ssh/id_rsa" || return 1
+	fi
+
 	"$command" -t $command_args || return 1
 }
 
