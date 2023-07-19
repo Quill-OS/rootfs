@@ -15,9 +15,9 @@ fi
 
 if [ "${1}" != "no_splash" ]; then
 	sleep 2
-	/opt/bin/fbink/fbink -k -f -h -q
-	/opt/bin/fbink/fbink -k -f -q
-	/opt/bin/fbink/fbink -t regular=/etc/init.d/splash.d/fonts/resources/inter-b.ttf,size=20 "Rebooting" -m -M -q
+	/opt/bin/fbink/fbink -k -f -h -q -w
+	/opt/bin/fbink/fbink -k -f -q -w
+	/opt/bin/fbink/fbink -t regular=/etc/init.d/splash.d/fonts/resources/inter-b.ttf,size=20 "Rebooting" -m -M -q -w
 	sleep 1
 	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "kt" ]; then
 		:
