@@ -31,7 +31,7 @@ write_device_ID() {
 	VERSION="$(cat /opt/inkbox_device | tr [:lower:] [:upper:])000000000,${KERNEL_VERSION},$(cat /opt/version),${KERNEL_VERSION},${KERNEL_VERSION},00000000-0000-0000-0000-000000000${DEVICE_ID}"
 
 	if [ "$(cat /kobo/mnt/onboard/.kobo/version)" != "${VERSION}" ]; then
-		echo "${VERSION}" > "/kobo/mnt/onboard/.kobo/version"
+		echo -n "${VERSION}" > "/kobo/mnt/onboard/.kobo/version"
 	fi
 }
 
