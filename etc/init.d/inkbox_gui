@@ -7,6 +7,34 @@ depend() {
 	keyword -prefix -lxc
 }
 
+write_device_ID() {
+	KERNEL_VERSION="$(uname -r)"
+	if [ "${DEVICE}" == "n705" ]; then
+		DEVICE_ID=340
+	elif [ "${DEVICE}" == "n905b" ]; then
+		DEVICE_ID=310
+	elif [ "${DEVICE}" == "n905c" ]; then
+		DEVICE_ID=320
+	elif [ "${DEVICE}" == "n613" ]; then
+		DEVICE_ID=330
+	elif [ "${DEVICE}" == "n236" ]; then
+		DEVICE_ID=375
+	elif [ "${DEVICE}" == "n437" ]; then
+		DEVICE_ID=371
+	elif [ "${DEVICE}" == "n306" ]; then
+		DEVICE_ID=382
+	elif [ "${DEVICE}" == "n249" ]; then
+		DEVICE_ID=376
+	elif [ "${DEVICE}" == "n873" ]; then
+		DEVICE_ID=384
+	fi
+	VERSION="$(cat /opt/inkbox_device | tr [:lower:] [:upper:])000000000,${KERNEL_VERSION},$(cat /opt/version),${KERNEL_VERSION},${KERNEL_VERSION},00000000-0000-0000-0000-000000000${DEVICE_ID}"
+
+	if [ "$(cat /kobo/mnt/onboard/.kobo/version)" != "${VERSION}" ]; then
+		echo "${VERSION}" > "/kobo/mnt/onboard/.kobo/version"
+	fi
+}
+
 start() {
 	ebegin "Starting InkBox GUI"
 	DEVICE=$(cat /opt/inkbox_device)
@@ -116,6 +144,8 @@ start() {
 			echo "false" > /kobo/run/wifi_able
 			echo "false" > /run/wifi_able
 		fi
+
+		write_device_ID
 
 		# Also important: remount_tmpfs_launch.sh
 		service udev restart
