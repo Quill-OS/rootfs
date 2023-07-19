@@ -68,9 +68,9 @@ checkconfig() {
 	if [ "${DEVICE}" == "n249" ]; then
 		[ ! -e "/etc/ssh/id_rsa" ] && /usr/local/bin/dropbearkey -t rsa -f "/etc/ssh/id_rsa"
 		/usr/local/sbin/dropbear -r "/etc/ssh/id_rsa" || return 1
+	else
+		"$command" -t $command_args || return 1
 	fi
-
-	"$command" -t $command_args || return 1
 }
 
 start_pre() {
