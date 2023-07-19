@@ -18,8 +18,8 @@ echo ${FB_UR} > /sys/class/graphics/fb0/rotate
 if [ "${DISPLAY_DEBUG}" != "true" ]; then
 	if [ "${UPDATE_SPLASH}" == "true" ]; then
 		killall -q update-splash
-		/opt/bin/fbink/fbink -k -f -h -q
-		/opt/bin/fbink/fbink -t regular=/etc/init.d/splash.d/fonts/resources/inter-b.ttf,size=20 "Updating" -m -M -h -q
+		/opt/bin/fbink/fbink -k -f -h -q -w
+		/opt/bin/fbink/fbink -t regular=/etc/init.d/splash.d/fonts/resources/inter-b.ttf,size=20 "Updating" -m -M -h -q -w
 		/opt/bin/update-splash &
 	else
 		echo "inkbox_splash" > /run/initrd-fifo
