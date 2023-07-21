@@ -213,6 +213,11 @@ start() {
 				fi
 			elif [[ "$line" == "gui_apps_stop" ]]; then
 				rc-service gui_apps stop
+				if [ ${?} == 0 ]; then
+					echo true > /kobo/tmp/gui_apps_stopped
+				else
+					echo false > /kobo/tmp/gui_apps_stopped
+				fi
 			fi
 		fi
 	done &

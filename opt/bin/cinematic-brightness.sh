@@ -8,8 +8,8 @@ get_brightness() {
 	elif [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
 		BRIGHTNESS=$(cat /sys/class/backlight/mxc_msp430_fl.0/brightness)
 	elif [ "${DEVICE}" == "n249" ]; then
-		BRIGHTNESS=$(cat /sys/class/backlight/backlight_cold/brightness)
-		WARM_BRIGHTNESS=$(cat /sys/class/backlight/backlight_warm/brightness)
+		BRIGHTNESS=$(cat /sys/class/backlight/backlight_cold/actual_brightness)
+		WARM_BRIGHTNESS=$(cat /sys/class/backlight/backlight_warm/actual_brightness)
 	else
 		BRIGHTNESS=$(cat /sys/class/backlight/mxc_msp430.0/brightness)
 	fi

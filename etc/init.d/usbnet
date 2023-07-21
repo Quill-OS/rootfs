@@ -59,7 +59,7 @@ stop() {
 	ebegin "Stopping USBNet"
 	DEVICE=$(cat /opt/inkbox_device)
 	if [ "${DEVICE}" != "emu" ] && [ "${DEVICE}" != "kt" ]; then
-		rmmod /modules/g_ether.ko
+		rmmod g_ether
 	elif [ "${DEVICE}" == "kt" ]; then
 		modprobe -r g_ether
 	fi
