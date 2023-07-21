@@ -38,6 +38,7 @@ bind_mount_wrapper() {
 
 start() {
 	einfo "Setting up GUI user applications"
+	DEVICE="$(cat /opt/inkbox_device)"
 	[ ! -d "/data/onboard/.apps" ] && mkdir -p "/data/onboard/.apps"
 
 	# If developer mode is enabled, bypass OpenSSL digital signature verification
@@ -161,8 +162,16 @@ start() {
 
 					echo "input:x:23:user" >> "${extension_mountpoint}/etc/group" || die "Failed to add 'input' group at ${extension_mountpoint}/etc/group" 1
 				else
-					mknod "${extension_mountpoint}/dev/input/event0" c 13 64
-					mknod "${extension_mountpoint}/dev/input/event1" c 13 65
+					if [ "${DEVICE}" == "n249" ]; then
+						# cf. https://github.com/Kobo-InkBox/inkbox-os-init/commit/f09f9714cd7eb2aaa93b045fd61c32f26ef068db
+						EVENT0_MINOR=65
+						EVENT1_MINOR=64
+					else
+						EVENT0_MINOR=64
+						EVENT1_MINOR=65
+					fi
+					mknod "${extension_mountpoint}/dev/input/event0" c 13 "${EVENT0_MINOR}"
+					mknod "${extension_mountpoint}/dev/input/event1" c 13 "${EVENT1_MINOR}"
 					mknod "${extension_mountpoint}/dev/input/event2" c 13 66
 					chown -R user:user "${extension_mountpoint}/dev/input/" || die "Failed to set up device input nodes at '${extension_mountpoint}/dev/input'." 1
 				fi
@@ -207,7 +216,7 @@ start() {
 				(mkdir -p "${extension_mountpoint}/dev/ipd" && touch "${extension_mountpoint}/dev/ipd/fifo" && mount --bind "/run/ipd/fifo" "${extension_mountpoint}/dev/ipd/fifo") || die "Failed to bind-mount InkBox Power Daemon (ipd) named pipe" 1
 				mount -o remount,ro "${extension_mountpoint}/dev" || die "Failed to remount '${extension_mountpoint}/dev' read-only." 1
 				## mnt
-				(mkdir -p "${extension_mountpoint}/mnt/onboard/.kobo" && echo "$(cat /opt/inkbox_device | tr [:lower:] [:upper:])" > "${extension_mountpoint}/mnt/onboard/.kobo/version" && mount -o remount,ro "${extension_mountpoint}/mnt") || die "Failed to set up fake onboard filesystem for FBInk." 1
+				(mkdir -p "${extension_mountpoint}/mnt/onboard/.kobo" && mount --bind "/kobo/mnt/onboard/.kobo/version" "${extension_mountpoint}/mnt/onboard/.kobo/version" > "${extension_mountpoint}/mnt/onboard/.kobo/version" && mount -o remount,ro "${extension_mountpoint}/mnt") || die "Failed to set up fake onboard filesystem for FBInk." 1
 				## Time zone
 				# Mount from gui because inkbox_gui script manages config files for it
 				bind_mount_wrapper "/usr/share/zoneinfo/" "gui"
@@ -219,7 +228,7 @@ start() {
 				## ITerm
 				if [ "${extension_name}" == "ITerm" ]; then
 					iterm_extensions_path="${extension_userdata_path}/extensions"
-					if [ "$(ls -A ""${iterm_extensions_path}"")" ]; then
+					if [ "$(ls -A ""${iterm_extensions_path}"" 2>/dev/null)" ]; then
 						for iterm_extension in ${iterm_extensions_path}/*; do
 							if [ "${iterm_extension}" != "${iterm_extensions_path}/*" ]; then
 								iterm_extension_path="${iterm_extension}"

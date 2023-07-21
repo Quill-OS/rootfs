@@ -57,7 +57,9 @@ cleanup() {
 
 	if [ "${DEVICE}" != "kt" ]; then
 		rmmod "${WIFI_MODULE}"
-		rmmod "${SDIO_WIFI_PWR_MODULE}"
+		if [ "${DEVICE}" != "n249" ]; then
+			rmmod "${SDIO_WIFI_PWR_MODULE}"
+		fi
 	else
 		modprobe -r "${WIFI_MODULE}"
 	fi
@@ -65,10 +67,10 @@ cleanup() {
 
 setup() {
 	if [ "${DEVICE}" != "kt" ]; then
-		insmod "${SDIO_WIFI_PWR_MODULE}"
 		if [ "${DEVICE}" != "n249" ]; then
-			insmod "${WIFI_MODULE}"
+			insmod "${SDIO_WIFI_PWR_MODULE}"
 		fi
+		insmod "${WIFI_MODULE}"
 	else
 		modprobe "${WIFI_MODULE}"
 	fi
