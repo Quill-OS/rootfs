@@ -13,6 +13,10 @@ battery_check() {
 		SYSFS_PATH_CAPACITY="/sys/devices/system/yoshi_battery/yoshi_battery0/battery_capacity"
 		SYSFS_PATH_STATUS="/sys/devices/system/yoshi_battery/yoshi_battery0/battery_status"
 		STATUS_CHARGING=1
+	elif [ "${DEVICE}" == "n249" ]; then
+		SYSFS_PATH_CAPACITY="/sys/class/power_supply/rn5t618-battery/capacity"
+		SYSFS_PATH_STATUS="/sys/class/power_supply/rn5t618-battery/status"
+		STATUS_CHARGING="Charging"
 	else
 		SYSFS_PATH_CAPACITY="/sys/devices/platform/pmic_battery.1/power_supply/mc13892_bat/capacity"
 		SYSFS_PATH_STATUS="/sys/devices/platform/pmic_battery.1/power_supply/mc13892_bat/status"

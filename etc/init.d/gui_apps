@@ -214,7 +214,11 @@ start() {
 				fi
 				# Power daemon
 				(mkdir -p "${extension_mountpoint}/dev/ipd" && touch "${extension_mountpoint}/dev/ipd/fifo" && mount --bind "/run/ipd/fifo" "${extension_mountpoint}/dev/ipd/fifo") || die "Failed to bind-mount InkBox Power Daemon (ipd) named pipe" 1
+				# /dev/null
+				touch "${extension_mountpoint}/dev/null" && mount --bind "/dev/null" "${extension_mountpoint}/dev/null" || die "Failed to bind-mount '/dev/null' at '${extension_mountpoint}/dev/null'." 1
+				# Remount /dev read-only
 				mount -o remount,ro "${extension_mountpoint}/dev" || die "Failed to remount '${extension_mountpoint}/dev' read-only." 1
+
 				## mnt
 				(mkdir -p "${extension_mountpoint}/mnt/onboard/.kobo" && mount --bind "/kobo/mnt/onboard/.kobo/version" "${extension_mountpoint}/mnt/onboard/.kobo/version" > "${extension_mountpoint}/mnt/onboard/.kobo/version" && mount -o remount,ro "${extension_mountpoint}/mnt") || die "Failed to set up fake onboard filesystem for FBInk." 1
 				## Time zone
