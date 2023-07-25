@@ -7,12 +7,17 @@ depend() {
 }
 
 battery_check() {
-	DEVICE=$(cat /opt/inkbox_device)
+	DEVICE="$(cat /opt/inkbox_device)"
+	DEVICE_VARIANT="$(uname -r | grep -o '[^-]*$')"
 
 	if [ "${DEVICE}" == "kt" ]; then
 		SYSFS_PATH_CAPACITY="/sys/devices/system/yoshi_battery/yoshi_battery0/battery_capacity"
 		SYSFS_PATH_STATUS="/sys/devices/system/yoshi_battery/yoshi_battery0/battery_status"
 		STATUS_CHARGING=1
+	elif [ "${DEVICE}" == "n306" ] && [ "${DEVICE_VARIANT}" == "n306c" ]; then
+		SYSFS_PATH_CAPACITY="/sys/class/power_supply/battery/capacity"
+		SYSFS_PATH_STATUS="/sys/class/power_supply/battery/status"
+		STATUS_CHARGING="Charging"
 	elif [ "${DEVICE}" == "n249" ]; then
 		SYSFS_PATH_CAPACITY="/sys/class/power_supply/rn5t618-battery/capacity"
 		SYSFS_PATH_STATUS="/sys/class/power_supply/rn5t618-battery/status"
@@ -28,7 +33,7 @@ battery_check() {
 
 	if grep -q "${STATUS_CHARGING}" "${SYSFS_PATH_STATUS}" &>/dev/null; then
 		# Skip since the battery is charging
-			:
+		:
 	else
 		BT_LEVEL=$(cat "${SYSFS_PATH_CAPACITY}")
 		if [ ${BT_LEVEL} -le 5 ]; then
@@ -50,7 +55,9 @@ battery_check() {
 
 start() {
 	ebegin "Starting battery watchdog"
-	DEVICE=$(cat /opt/inkbox_device)
+	DEVICE="$(cat /opt/inkbox_device)"
+	DEVICE_VARIANT="$(uname -r | grep -o '[^-]*$')"
+
 	if [ "${DEVICE}" != "emu" ]; then
 		while true; do
 			if grep -q "true" "/kobo/tmp/inkbox_running" &>/dev/null; then
