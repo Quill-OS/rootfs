@@ -10,14 +10,18 @@ start() {
 	ebegin "Exporting onboard storage over USB..."
 	FILE=$(cat /run/mass_storage_export)
 	DEVICE=$(cat /opt/inkbox_device)
+	[ "$(uname -r | grep -o '[^-]*$')" == "n306c" ] && DEVICE_VARIANT="n306c"
+
 	if [ -z "${FILE}" ]; then
 		FILE="/opt/storage/onboard"
 	fi
 	rc-service usbnet stop
 	if [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "n873" ]; then
-		insmod /modules/fs/configfs/configfs.ko
-		insmod /modules/drivers/usb/gadget/libcomposite.ko
-		insmod /modules/drivers/usb/gadget/function/usb_f_mass_storage.ko
+		if [ "${DEVICE_VARIANT}" != "n306c" ]; then
+			insmod /modules/fs/configfs/configfs.ko
+			insmod /modules/drivers/usb/gadget/libcomposite.ko
+			insmod /modules/drivers/usb/gadget/function/usb_f_mass_storage.ko
+		fi
 	fi
 	if [ "${DEVICE}" != "emu" ]; then
 		insmod /modules/g_mass_storage.ko file="${FILE}" removable=y stall=0
