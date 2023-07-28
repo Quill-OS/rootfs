@@ -122,8 +122,18 @@ start() {
 				mount --bind /opt/config /kobo/mnt/onboard/.adds/inkbox/.config
 			elif [[ "$line" == "onboard_mount" ]]; then
 				rc-service onboard_mount start
+				if [ ${?} == 0 ]; then
+					echo "true" > /kobo/tmp/onboard_mounted
+				else
+					echo "false" > /kobo/tmp/onboard_mounted
+				fi
 			elif [[ "$line" == "onboard_unmount" ]]; then
 				rc-service onboard_mount stop
+				if [ ${?} == 0 ]; then
+					echo "true" > /kobo/tmp/onboard_unmounted
+				else
+					echo "false" > /kobo/tmp/onboard_unmounted
+				fi
 			elif [[ "$line" == "kobox_extensions_storage_unmount" ]]; then
 				sync
 				umount -l -f /opt/X11/extensions-user
@@ -131,10 +141,25 @@ start() {
 				break
 			elif [[ "$line" == "usbnet_start" ]]; then
 				rc-service usbnet start
+				if [ ${?} == 0 ]; then
+					echo "true" > /kobo/tmp/usbnet_started
+				else
+					echo "false" > /kobo/tmp/usbnet_started
+				fi
 			elif [[ "$line" == "usbnet_stop" ]]; then
 				rc-service usbnet stop
+				if [ ${?} == 0 ]; then
+					echo "true" > /kobo/tmp/usbnet_stopped
+				else
+					echo "false" > /kobo/tmp/usbnet_stopped
+				fi
 			elif [[ "$line" == "update_inkbox_restart" ]]; then
 				rc-service update_inkbox restart
+				if [ ${?} == 0 ]; then
+					echo "true" > /kobo/tmp/update_inkbox_restarted
+				else
+					echo "false" > /kobo/tmp/update_inkbox_restarted
+				fi
 			elif [[ "$line" == "inkbox_splash" ]]; then
 				rc-service splash restart
 			elif [[ "$line" == "netsurf_launch" ]]; then
@@ -144,6 +169,11 @@ start() {
 				rc-service encfs restart
 			elif [[ "$line" == "encfs_stop" ]]; then
 				rc-service encfs stop
+				if [ ${?} == 0 ]; then
+					echo "true" > /kobo/tmp/encfs_stopped
+				else
+					echo "false" > /kobo/tmp/encfs_stopped
+				fi
 			elif [[ "$line" == "gutenberg_sync" ]]; then
 				/usr/local/bin/gutenberg/fetch_catalog.sh
 				if [ ${?} == 0 ]; then
