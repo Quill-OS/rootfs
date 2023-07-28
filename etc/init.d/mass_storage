@@ -16,7 +16,7 @@ start() {
 		FILE="/opt/storage/onboard"
 	fi
 	rc-service usbnet stop
-	if [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "n873" ]; then
+	if [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "n249" ] || [ "${DEVICE}" == "n873" ]; then
 		if [ "${DEVICE_VARIANT}" != "n306c" ]; then
 			insmod /modules/fs/configfs/configfs.ko
 			insmod /modules/drivers/usb/gadget/libcomposite.ko
@@ -30,7 +30,7 @@ start() {
 }
 stop() {
 	ebegin "Exiting USBMS session..."
-	if [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "n873" ]; then
+	if [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "n249" ] || [ "${DEVICE}" == "n873" ]; then
 		rmmod /modules/drivers/usb/gadget/function/usb_f_mass_storage.ko
 		rmmod /modules/drivers/usb/gadget/libcomposite.ko
 		rmmod /modules/fs/configfs/configfs.ko
