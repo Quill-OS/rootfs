@@ -73,6 +73,8 @@ start() {
 				reqf_input_devices_support=0
 				reqf_rotation_control=0
 				reqf_debugfs=0
+				reqf_onboard_storage_access=0
+				reqf_audio=0
 
 				for feature in ${required_features}; do
 					if [ "${feature}" == "0" ]; then
@@ -99,6 +101,9 @@ start() {
 					elif [ "${feature}" == "7" ]; then
 						# Onboard storage access
 						reqf_onboard_storage_access=1
+					elif [ "${feature}" == "8" ]; then
+						# Audio socket access
+						reqf_audio=1
 					fi
 				done
 
@@ -211,6 +216,16 @@ start() {
 				# Onboard storage access
 				if [ "${reqf_onboard_storage_access}" == 1 ]; then
 					mount --bind "/data/onboard" "${extension_mountpoint}/system-onboard" || die "Failed to mount system onboard storage at '${extension_mountpoint}/system-onboard'." 1
+				fi
+				# Audio
+				if [ "${reqf_audio}" == 1 ]; then
+					touch "${extension_mountpoint}/dev/iaudio.socket"
+					mount --bind "/dev/iaudio.socket" "${extension_mountpoint}/dev/iaudio.socket" || die "Failed to bind-mount '/dev/iaudio.socket' at '${extension_mountpoint}/dev/iaudio.socket'." 1
+					chmod 777 "${extension_mountpoint}/dev/iaudio.socket"
+					mkdir -p "${extension_mountpoint}/mnt/onboard/onboard/music"
+					chown -R user:user "${extension_mountpoint}/mnt/onboard/onboard/music"
+					mount --rbind "/data/onboard/music/" "${extension_mountpoint}/mnt/onboard/onboard/music"
+					chown -R user:user "${extension_mountpoint}/mnt/onboard/onboard/music"
 				fi
 				# Power daemon
 				(mkdir -p "${extension_mountpoint}/dev/ipd" && touch "${extension_mountpoint}/dev/ipd/fifo" && mount --bind "/run/ipd/fifo" "${extension_mountpoint}/dev/ipd/fifo") || die "Failed to bind-mount InkBox Power Daemon (ipd) named pipe" 1
