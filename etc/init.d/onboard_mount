@@ -8,6 +8,7 @@ depend() {
 
 start() {
 	ebegin "Mounting onboard storage filesystem"
+	fsck.fat -y -V -n /opt/storage/onboard
 	losetup /dev/loop0 /opt/storage/onboard
 	mount /dev/loop0 /data/onboard -o nosuid,noexec,nodev,uid=1000,gid=1000
 	eend $?
