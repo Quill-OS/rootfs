@@ -308,6 +308,9 @@ die() {
 stop() {
 	sync
 
+	# We use more paths than those below, so adding that - those below stay just to be sure
+	findmnt -l -o TARGET | grep .apps | awk '{ print length, $0 }' | sort -r | sort -n | tac | cut -d " " -f2- | xargs umount {} 2>/dev/null
+
 	umount -l -f /kobo/mnt/onboard/onboard/.apps-data/*/* 2>/dev/null
 	umount -l -f /kobo/mnt/onboard/onboard/.apps-data/ITerm/extensions/* 2>/dev/null
 	umount -l -f /kobo/mnt/onboard/onboard/.apps/*/* 2>/dev/null
