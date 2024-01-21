@@ -215,7 +215,7 @@ start() {
 				fi
 				# Onboard storage access
 				if [ "${reqf_onboard_storage_access}" == 1 ]; then
-					mount --bind "/data/onboard" "${extension_mountpoint}/system-onboard" || die "Failed to mount system onboard storage at '${extension_mountpoint}/system-onboard'." 1
+					mount --rbind "/data/onboard" "${extension_mountpoint}/system-onboard" || die "Failed to mount system onboard storage at '${extension_mountpoint}/system-onboard'." 1
 				fi
 				# Audio
 				if [ "${reqf_audio}" == 1 ]; then
