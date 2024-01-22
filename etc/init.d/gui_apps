@@ -75,6 +75,7 @@ start() {
 				reqf_debugfs=0
 				reqf_onboard_storage_access=0
 				reqf_audio=0
+				reqf_onboard_storage_access_extra=0
 
 				for feature in ${required_features}; do
 					if [ "${feature}" == "0" ]; then
@@ -104,6 +105,9 @@ start() {
 					elif [ "${feature}" == "8" ]; then
 						# Audio socket access
 						reqf_audio=1
+					elif [ "${feature}" == "9" ]; then
+						# Onboard storage access - extra
+						reqf_onboard_storage_access_extra=1
 					fi
 				done
 
@@ -214,8 +218,12 @@ start() {
 					chmod -R 707 "${extension_mountpoint}/sys/kernel/debug" || die "Failed to chmod 707 '${extension_mountpoint}/sys/kernel/debug'." 1
 				fi
 				# Onboard storage access
-				if [ "${reqf_onboard_storage_access}" == 1 ]; then
-					mount --bind "/data/onboard" "${extension_mountpoint}/system-onboard" || die "Failed to mount system onboard storage at '${extension_mountpoint}/system-onboard'." 1
+				if [ "${reqf_onboard_storage_access_extra}" == 1 ]; then
+					mount --rbind "/data/onboard" "${extension_mountpoint}/system-onboard" || die "Failed to mount system onboard storage - extra at '${extension_mountpoint}/system-onboard'." 1
+				else
+					if [ "${reqf_onboard_storage_access}" == 1 ]; then
+						mount --bind "/data/onboard" "${extension_mountpoint}/system-onboard" || die "Failed to mount system onboard storage at '${extension_mountpoint}/system-onboard'." 1
+					fi
 				fi
 				# Audio
 				if [ "${reqf_audio}" == 1 ]; then
