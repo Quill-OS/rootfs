@@ -45,10 +45,34 @@ start() {
 				ifconfig usb0 "${IP}"
 				if [ ${?} != 0 ]; then
 					ifconfig usb0 192.168.2.2
+					IP="192.168.2.2"
 				fi
 			else
 				ifconfig usb0 192.168.2.2
+				IP="192.168.2.2"
 			fi
+
+			# Create udhcpd config to provide dhcp server for usbnet
+			IP_NETWORK=$(echo $IP | rev | cut -d'.' -f2- | rev)
+			IP_NUMBER=$(echo $IP | rev | cut -d'.' -f1 | rev)
+
+			if [ "$IP_NUMBER" -eq "$IP_NUMBER" ] 2>/dev/null; then
+				IP_NUMBER=$((IP_NUMBER + 1))
+			else
+				IP_NUMBER=2
+			fi
+
+			CONF_IP_START="start $IP_NETWORK.$IP_NUMBER"
+			CONF_IP_END="end $IP_NETWORK.254"
+			CONF_INTERFACE="interface usb0"
+			CONF_PATH="/tmp/usbnet-dhcp.conf"
+
+			touch $CONF_PATH
+			echo $CONF_IP_START >> $CONF_PATH
+			echo $CONF_IP_END >> $CONF_PATH
+			echo $CONF_INTERFACE >> $CONF_PATH
+
+			udhcpd ${CONF_PATH}
 		else
 			ewarn "USB networking is disabled. Please set the USBNET_ENABLE flag and try again."
 		fi
