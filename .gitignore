@@ -1,4 +1,8 @@
 .vscode
 # Things added by creation in scripts:
+# Use this:
+# https://stackoverflow.com/questions/71777713/how-can-i-remove-files-from-git-history-that-dont-exist-anymore
+# To remove files to make the repo smaller
+# After that also run git rm
 opt/bin/fbink/fbdepth-kobo
 opt/bin/fbink/fbink-kobo
