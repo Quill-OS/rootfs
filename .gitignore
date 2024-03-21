@@ -4,5 +4,6 @@
 # https://stackoverflow.com/questions/71777713/how-can-i-remove-files-from-git-history-that-dont-exist-anymore
 # To remove files to make the repo smaller
 # After that also run git rm
+# You could need to remove .git/refs/original/refs if it asks about a backup being overwritten
 opt/bin/fbink/fbdepth-kobo
 opt/bin/fbink/fbink-kobo
