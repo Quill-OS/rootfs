@@ -5,5 +5,6 @@
 # To remove files to make the repo smaller
 # After that also run git rm
 # You could need to remove .git/refs/original/refs if it asks about a backup being overwritten
+# Then push with git push origin --force --all
 opt/bin/fbink/fbdepth-kobo
 opt/bin/fbink/fbink-kobo
