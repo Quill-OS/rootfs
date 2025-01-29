@@ -136,6 +136,10 @@ start() {
 		touch /kobo/tmp/resolv.conf
 		mount --bind /etc/resolv.conf /kobo/tmp/resolv.conf
 
+		FLASHCARDS_FILE="/data/onboard/flashcards.sqsh"
+		FLASHCARDS_MOUNT_DIRECTORY="/data/onboard/.flashexam"
+		[ -e "${FLASHCARDS_FILE}" ] && mkdir -p "${FLASHCARDS_MOUNT_DIRECTORY}" && squashfuse -o nonempty "${FLASHCARDS_FILE}" "${FLASHCARDS_MOUNT_DIRECTORY}"
+
 		if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "n249" ]; then
 			echo "true" > /kobo/run/wifi_able
 			echo "true" > /run/wifi_able
