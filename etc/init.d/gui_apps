@@ -18,7 +18,7 @@ bind_mount_stylesheet() {
 		mount --bind /usr/local/share/inkbox/stylesheets/eink-768x1024.qss "${extension_mountpoint}/etc/eink.qss"
 	elif [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n249" ]; then
 		mount --bind /usr/local/share/inkbox/stylesheets/eink-1072x1448.qss "${extension_mountpoint}/etc/eink.qss"
-	elif [ "${DEVICE}" == "n873" ]; then
+	elif [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n418" ]; then
 		mount --bind /usr/local/share/inkbox/stylesheets/eink-1264x1680.qss "${extension_mountpoint}/etc/eink.qss"
 	else
 		mount --bind /usr/local/share/inkbox/stylesheets/eink-600x800.qss "${extension_mountpoint}/etc/eink.qss"

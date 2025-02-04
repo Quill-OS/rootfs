@@ -25,7 +25,7 @@ elif [ "${DEVICE}" == "bpi" ]; then
 	FB_UR=0
 elif [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n249" ]; then
 	FB_UR=3
-elif [ "${DEVICE}" == "kt" ]; then
+elif [ "${DEVICE}" == "n418" ] || [ "${DEVICE}" == "kt" ]; then
 	FB_UR=1
 else
 	FB_UR=0

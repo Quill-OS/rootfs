@@ -35,7 +35,7 @@ elif [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n249" ]; then
     text_tf=29.5
     text_lf=7.9
     notification_canvas_file="/etc/images/notification_canvas-1072x1448.png"
-elif [ "${DEVICE}" == "n873" ]; then
+elif [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n418" ]; then
     info_yf=37
     info_xf=26
     info_wf=14

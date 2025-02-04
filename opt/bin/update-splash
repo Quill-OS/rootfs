@@ -7,7 +7,7 @@ elif [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == 
 	ROW=37
 elif [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n249" ]; then
 	ROW=35
-elif [ "${DEVICE}" == "n873" ]; then
+elif [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n418" ]; then
 	#TODO
 	ROW=50
 fi

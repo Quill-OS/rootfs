@@ -18,4 +18,6 @@ elif [ "${DEVICE}" == "n249" ]; then
 	echo "nova"
 elif [ "${DEVICE}" = "n873" ]; then
 	echo "storm"
+elif [ "${DEVICE}" == "n418" ]; then
+	echo "io"
 fi

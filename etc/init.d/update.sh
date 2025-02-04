@@ -59,7 +59,7 @@ else
 	KERNEL_TYPE="std"
 fi
 
-if [ "${DEVICE}" != "n306" ] && [ "${DEVICE}" != "n249" ] && [ "${DEVICE}" != "n873" ]; then
+if [ "${DEVICE}" != "n306" ] && [ "${DEVICE}" != "n249" ] && [ "${DEVICE}" != "n873" ] && [ "${DEVICE}" != "n418" ]; then
 	KERNEL_IMAGE_TYPE="uImage"
 else
 	KERNEL_IMAGE_TYPE="zImage"
@@ -214,7 +214,7 @@ update_u_boot() {
 		write_alert signature
 		exit 1
 	else
-		if [ "${DEVICE}" != "n306" ] && [ "${DEVICE}" != "n249" ]; then
+		if [ "${DEVICE}" != "n306" ] && [ "${DEVICE}" != "n249" ] && [ "${DEVICE}" != "n418" ]; then
 			dd if="${U_BOOT}" of=/dev/mmcblk0 bs=1K seek=1 skip=1
 		else
 			dd if="${U_BOOT}" of=/dev/mmcblk0 bs=1K seek=1
@@ -239,7 +239,7 @@ update_kernel() {
 	else
 		if [ "${DEVICE}" == "kt" ]; then
 			dd if="${KERNEL}" of=/dev/mmcblk0 bs=512 seek=520
-		elif [ "${DEVICE}" == "n249" ]; then
+		elif [ "${DEVICE}" == "n249" ] || [ "${DEVICE}" == "n418" ]; then
 			cp "${KERNEL}" /boot/zImage
 		else
 			dd if="${KERNEL}" of=/dev/mmcblk0 bs=512 seek=81920
