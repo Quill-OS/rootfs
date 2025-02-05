@@ -33,7 +33,9 @@ start() {
 	ebegin "Starting InkBox Power Daemon (ipd)"
 	killall -q -9 evtest
 	turn_off_led
-	rename-input-devices &
+	if [ ! -e "/dev/input/origin" ]; then
+		rename-input-devices &
+	fi
 	DEBUG="$(cat /boot/flags/IPD_DEBUG 2>/dev/null)" /sbin/ipd &
 	eend ${?}
 }

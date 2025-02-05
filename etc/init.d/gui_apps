@@ -175,13 +175,15 @@ start() {
 						# cf. https://github.com/Kobo-InkBox/inkbox-os-init/commit/f09f9714cd7eb2aaa93b045fd61c32f26ef068db
 						EVENT0_MINOR=65
 						EVENT1_MINOR=64
+						mknod "${extension_mountpoint}/dev/input/event0" c 13 "${EVENT0_MINOR}"
+						mknod "${extension_mountpoint}/dev/input/event1" c 13 "${EVENT1_MINOR}"
+						mknod "${extension_mountpoint}/dev/input/event2" c 13 66
 					else
-						EVENT0_MINOR=64
-						EVENT1_MINOR=65
+						for input_node in /dev/input/event*; do
+							touch "${extension_mountpoint}/dev/input/$(basename ${input_node})"
+							mount --bind "/dev/input/$(basename ${input_node})" "${extension_mountpoint}/dev/input/$(basename ${input_node})"
+						done
 					fi
-					mknod "${extension_mountpoint}/dev/input/event0" c 13 "${EVENT0_MINOR}"
-					mknod "${extension_mountpoint}/dev/input/event1" c 13 "${EVENT1_MINOR}"
-					mknod "${extension_mountpoint}/dev/input/event2" c 13 66
 					chown -R user:user "${extension_mountpoint}/dev/input/" || die "Failed to set up device input nodes at '${extension_mountpoint}/dev/input'." 1
 				fi
 				chmod -R 777 "${extension_mountpoint}/dev/input/" || die "Failed to chmod 777 '${extension_mountpoint}/dev/input/'." 1
