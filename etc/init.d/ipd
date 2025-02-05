@@ -1,6 +1,7 @@
 #!/sbin/openrc-run
 
 description="Launches InkBox Power Daemon (ipd)"
+DEVICE="$(cat /opt/inkbox_device)"
 
 depend() {
 	keyword -prefix -lxc
@@ -9,7 +10,6 @@ depend() {
 }
 
 turn_off_led() {
-	DEVICE="$(cat /opt/inkbox_device)"
 	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
 		echo 0 > "/sys/class/leds/pmic_ledsg/brightness"
 	elif [ "${DEVICE}" == "n306" ]; then
@@ -33,6 +33,7 @@ start() {
 	ebegin "Starting InkBox Power Daemon (ipd)"
 	killall -q -9 evtest
 	turn_off_led
+	rename-input-devices &
 	DEBUG="$(cat /boot/flags/IPD_DEBUG 2>/dev/null)" /sbin/ipd &
 	eend ${?}
 }

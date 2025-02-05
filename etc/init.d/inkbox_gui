@@ -169,6 +169,16 @@ start() {
 
 		rc-service gui_apps restart
 
+		if [ "${DEVICE}" == "n418" ]; then
+			while true; do
+				if [ -e "/dev/input/origin" ]; then
+					rc-service ipd stop
+					rc-service ipd start
+					break
+				fi
+				sleep 1
+			done
+		fi
 		/usr/bin/inkbox.sh
 	else
 		echo "UI bundle signature verification failed! Aborting launch ..."
