@@ -1,6 +1,10 @@
 #!/bin/sh
 
-DEVICE=$(cat /opt/inkbox_device)
+if [ -e "/external_root/opt/inkbox_device" ]; then
+	DEVICE=$(cat /external_root/opt/inkbox_device)
+else
+	DEVICE=$(cat /opt/inkbox_device)
+fi
 
 if [ "${DEVICE}" = "n705" ]; then
 	echo "pixie"
