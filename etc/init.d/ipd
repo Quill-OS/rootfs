@@ -42,6 +42,7 @@ start() {
 
 stop() {
 	ebegin "Stopping InkBox Power Daemon (ipd)"
+	umount -l -f /run/ipd
 	killall -9 ipd
 	eend ${?}
 }

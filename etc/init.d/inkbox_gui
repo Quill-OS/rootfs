@@ -173,13 +173,14 @@ start() {
 
 		if [ "${DEVICE}" == "n418" ]; then
 			while true; do
-				if [ -e "/dev/input/origin" ] && [ "$(cat "/proc/$(fuser /dev/input/origin/event0 | sed 's/ //g')/cmdline")" == "/sbin/ipd" ]; then
+				if [ -e "/dev/input/origin" ] && ! grabcheck /dev/input/origin/event0; then
 					rc-service ipd stop
 					rc-service ipd start
 					(sleep 10 && mkdir -p /kobo/dev/ipd && mount --bind /run/ipd /kobo/dev/ipd) &
 					break
 				fi
 				mkdir -p /kobo/dev/ipd && mount --bind /run/ipd /kobo/dev/ipd
+				break
 			done
 		fi
 		/usr/bin/inkbox.sh
