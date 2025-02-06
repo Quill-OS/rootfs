@@ -96,7 +96,9 @@ start() {
 	        mount -t tmpfs tmpfs -o size=128M /kobo/var/run
 		mount --bind /dev /kobo/dev
 	        mount --bind /dev/pts /kobo/dev/pts
-		mkdir -p /kobo/dev/ipd && mount --bind /run/ipd /kobo/dev/ipd
+		if [ "${DEVICE}" != "n418" ]; then
+			mkdir -p /kobo/dev/ipd && mount --bind /run/ipd /kobo/dev/ipd
+		fi
 
 		mount --bind / /kobo/external_root
 		mount --bind /dev /kobo/external_root/dev
@@ -171,12 +173,13 @@ start() {
 
 		if [ "${DEVICE}" == "n418" ]; then
 			while true; do
-				if [ -e "/dev/input/origin" ]; then
+				if [ -e "/dev/input/origin" ] && [ "$(cat "/proc/$(fuser /dev/input/origin/event0 | sed 's/ //g')/cmdline")" == "/sbin/ipd" ]; then
 					rc-service ipd stop
 					rc-service ipd start
+					(sleep 10 && mkdir -p /kobo/dev/ipd && mount --bind /run/ipd /kobo/dev/ipd) &
 					break
 				fi
-				sleep 1
+				mkdir -p /kobo/dev/ipd && mount --bind /run/ipd /kobo/dev/ipd
 			done
 		fi
 		/usr/bin/inkbox.sh
