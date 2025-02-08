@@ -10,7 +10,7 @@ start() {
 	ebegin "Setting up eInk screen blanking recovery system"
 	DEVICE="$(cat /opt/inkbox_device)"
 	if ! grep -q "false" /boot/flags/EINK_BLANK 2>/dev/null; then
-		if [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "kt" ] || [ "${DEVICE}" == "n873" ]; then
+		if [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "kt" ] || [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n418" ]; then
 			if grep -q "true" /boot/flags/X11_START 2>/dev/null; then
 				/opt/bin/blank &
 			fi

@@ -20,7 +20,7 @@ mount --bind /opt/inkbox_device /xorg/opt/device
 
 if [ "$DEVICE" == "n705" ] || [ "$DEVICE" == "n905b" ] || [ "$DEVICE" == "n905c" ] || [ "$DEVICE" == "n613" ] || [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "n249" ]; then
 	FB_UR=3
-elif [ "${DEVICE}" == "kt" ]; then
+elif [ "${DEVICE}" == "n418" ] || [ "${DEVICE}" == "kt" ]; then
 	FB_UR=1
 elif [ "$DEVICE" == "n873" ]; then
 	FB_UR=0
@@ -90,7 +90,7 @@ if [ "$LAUNCH_OSK" == "true" ]; then
 		MATCHBOX_KEYBOARD_ARGUMENTS="-s 8 -p 12 -g 270x450"
 	elif [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n249" ]; then
 		MATCHBOX_KEYBOARD_ARGUMENTS="-s 8 -p 22 -g 415x450"
-	elif [ "${DEVICE}" == "n873" ]; then
+	elif [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n418" ]; then
 		MATCHBOX_KEYBOARD_ARGUMENTS="-s 8 -p 28 -g 500x450"
 	else
 		MATCHBOX_KEYBOARD_ARGUMENTS="-s 8 -p 7 -g 185x450"

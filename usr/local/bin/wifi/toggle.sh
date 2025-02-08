@@ -33,6 +33,10 @@ elif [ "${DEVICE}" == "n437" ]; then
 elif [ "${DEVICE}" == "n249" ]; then
 	WIFI_MODULE="/modules/drivers/net/wireless/8189fs.ko"
 	WIFI_DEV="wlan0"
+elif [ "${DEVICE}" == "n418" ]; then
+	WIFI_MODULE="/modules/4.1.15-inkbox/kernel/8723ds.ko"
+	SDIO_WIFI_PWR_MODULE="/modules/4.1.15-inkbox/kernel/drivers/mmc/card/sdio_wifi_pwr.ko"
+	WIFI_DEV="wlan0"
 elif [ "${DEVICE}" == "kt" ]; then
 	WIFI_MODULE="ar6003"
 	WIFI_DEV="wlan0"
