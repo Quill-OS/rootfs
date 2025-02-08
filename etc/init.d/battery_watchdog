@@ -14,7 +14,7 @@ battery_check() {
 		SYSFS_PATH_CAPACITY="/sys/devices/system/yoshi_battery/yoshi_battery0/battery_capacity"
 		SYSFS_PATH_STATUS="/sys/devices/system/yoshi_battery/yoshi_battery0/battery_status"
 		STATUS_CHARGING=1
-	elif [ "${DEVICE}" == "n306" ] && [ "${DEVICE_VARIANT}" == "n306c" ]; then
+	elif [ "${DEVICE}" == "n418" ] || [ "${DEVICE}" == "n306" ] && [ "${DEVICE_VARIANT}" == "n306c" ]; then
 		SYSFS_PATH_CAPACITY="/sys/class/power_supply/battery/capacity"
 		SYSFS_PATH_STATUS="/sys/class/power_supply/battery/status"
 		STATUS_CHARGING="Charging"
