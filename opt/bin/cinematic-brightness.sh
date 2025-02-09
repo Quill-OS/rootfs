@@ -2,6 +2,11 @@
 
 DEVICE=$(cat /opt/inkbox_device)
 
+calculate() {
+        result=$(awk "BEGIN { print "$*" }")
+        printf "%.0f\n" ${result}
+}
+
 get_brightness() {
 	if [ "${DEVICE}" == "n613" ]; then
 		BRIGHTNESS=$(cat /opt/config/03-brightness/config)
@@ -10,6 +15,9 @@ get_brightness() {
 	elif [ "${DEVICE}" == "n249" ]; then
 		BRIGHTNESS=$(cat /sys/class/backlight/backlight_cold/actual_brightness)
 		WARM_BRIGHTNESS=$(cat /sys/class/backlight/backlight_warm/actual_brightness)
+	elif [ "${DEVICE}" == "n418" ] ;then
+		BRIGHTNESS=$(calculate $(cat /sys/class/leds/aw99703-bl_FL2/brightness)/2047*100)
+		WARM_BRIGHTNESS=$(calculate $(cat /sys/class/leds/aw99703-bl_FL1/brightness)/2047*100)
 	else
 		BRIGHTNESS=$(cat /sys/class/backlight/mxc_msp430.0/brightness)
 	fi
@@ -24,6 +32,9 @@ set_brightness() {
 		echo "${1}" > "/sys/class/backlight/backlight_cold/brightness"
 		# TODO: Improve this hackery
 		echo "${1}" > "/sys/class/backlight/backlight_warm/brightness"
+	elif [ "${DEVICE}" == "n418" ]; then
+		echo "$(calculate ${1}/100*2047)" > "/sys/class/leds/aw99703-bl_FL2/brightness"
+		echo "$(calculate ${1}/100*2047)" > "/sys/class/leds/aw99703-bl_FL1/brightness"
 	else
 		echo ${1} > "/sys/class/backlight/mxc_msp430.0/brightness"
 	fi
