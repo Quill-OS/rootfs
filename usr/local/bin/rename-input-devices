@@ -2,21 +2,23 @@
 
 DEVICE="$(cat /opt/inkbox_device)"
 
-while true; do
-	if [ -e "/dev/input/by-path" ]; then
-		sleep 5
-		if [ "${DEVICE}" == "n418" ]; then
-			PWRKEY=$(realpath "/dev/input/by-path/platform-21a8000.i2c-platform-bd71828-pwrkey-event")
-			TOUCHSCREEN=$(realpath "/dev/input/by-path/platform-21a4000.i2c-event-mouse")
-			ACCEL=$(realpath "/dev/input/by-path/platform-21a0000.i2c-event")
-			GPIO=$(realpath "/dev/input/by-path/platform-gpio-keys-event")
-			mkdir -p /dev/input/origin
-			mv "${PWRKEY}" "${TOUCHSCREEN}" "${ACCEL}" "${GPIO}" /dev/input/origin
-			ln -s /dev/input/origin/$(basename "${PWRKEY}") /dev/input/event0
-			ln -s /dev/input/origin/$(basename "${TOUCHSCREEN}") /dev/input/event1
-			ln -s /dev/input/origin/$(basename "${ACCEL}") /dev/input/event2
-			ln -s /dev/input/origin/$(basename "${GPIO}") /dev/input/event3
-			break
+if [ "${DEVICE}" == "n418" ]; then
+	while true; do
+		if [ -e "/dev/input/by-path" ]; then
+			sleep 5
+			if [ "${DEVICE}" == "n418" ]; then
+				PWRKEY=$(realpath "/dev/input/by-path/platform-21a8000.i2c-platform-bd71828-pwrkey-event")
+				TOUCHSCREEN=$(realpath "/dev/input/by-path/platform-21a4000.i2c-event-mouse")
+				ACCEL=$(realpath "/dev/input/by-path/platform-21a0000.i2c-event")
+				GPIO=$(realpath "/dev/input/by-path/platform-gpio-keys-event")
+				mkdir -p /dev/input/origin
+				mv "${PWRKEY}" "${TOUCHSCREEN}" "${ACCEL}" "${GPIO}" /dev/input/origin
+				ln -s /dev/input/origin/$(basename "${PWRKEY}") /dev/input/event0
+				ln -s /dev/input/origin/$(basename "${TOUCHSCREEN}") /dev/input/event1
+				ln -s /dev/input/origin/$(basename "${ACCEL}") /dev/input/event2
+				ln -s /dev/input/origin/$(basename "${GPIO}") /dev/input/event3
+				break
+			fi
 		fi
-	fi
-done
+	done
+fi
