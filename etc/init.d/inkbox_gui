@@ -45,6 +45,7 @@ start() {
 	rc-service xorg stop 2>/dev/null
 
 	umount -l -f /kobo 2>/dev/null
+	mkdir -p /opt/gui_rootfs/write /opt/gui_rootfs/read
 	unionfs -o cow,nonempty,nosuid,allow_other /opt/gui_rootfs/write=RW:/opt/gui_rootfs/read=RO /kobo
 
 	rc-service ibxd restart
@@ -68,6 +69,7 @@ start() {
 	fi
 
 	if [ "${EXIT_SIGN_FAILURE}" == 0 ]; then
+		mkdir -p /kobo/mnt/onboard/.adds/inkbox /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo /kobo/mnt/onboard/.adds/.koreader_write /kobo/mnt/onboard/.adds/.koreader_read /kobo/mnt/onboard/.adds/koreader
 		squashfuse -o allow_other,nosuid /opt/isa/inkbox.isa /kobo/mnt/onboard/.adds/inkbox
 		mount --bind /opt/config /kobo/mnt/onboard/.adds/inkbox/.config
 		squashfuse -o allow_other,nosuid /opt/isa/qt.isa /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo
@@ -89,6 +91,11 @@ start() {
 		else
 			mount --bind /usr/local/share/inkbox/stylesheets/eink-600x800.qss /kobo/mnt/onboard/.adds/inkbox/eink.qss
 		fi
+		# KOReader + unionfs framework
+		mount -t tmpfs tmpfs -o size=16M /kobo/mnt/onboard/.adds/.koreader_write
+		squashfuse -o allow_other,nosuid /opt/isa/koreader.isa /kobo/mnt/onboard/.adds/.koreader_read
+		unionfs -o cow,nonempty,nosuid,allow_other /kobo/mnt/onboard/.adds/.koreader_write=RW:/kobo/mnt/onboard/.adds/.koreader_read=RO /kobo/mnt/onboard/.adds/koreader
+		mkdir -p /kobo/mnt/onboard/.kobo/Kobo && touch "/kobo/mnt/onboard/.kobo/Kobo/Kobo eReader.conf"
 
 	        mount -t sysfs sysfs /kobo/sys
 	        mount -t proc proc /kobo/proc
