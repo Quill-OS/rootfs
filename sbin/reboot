@@ -22,7 +22,7 @@ if [ "${1}" != "no_splash" ]; then
 	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "kt" ]; then
 		:
 	else
-		/opt/bin/cinematic-brightness.sh 0 1
+		/opt/bin/cinematic_brightness 0 0 -1 -1 5000
 	fi
 else
 	if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "kt" ]; then
