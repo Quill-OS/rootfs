@@ -280,4 +280,6 @@ done
 # Wipe the clones on exit
 rm -f "/tmp/koreader.sh"
 
+echo "inkbox_splash" > /external_root/run/initrd-fifo
+sleep 2.5
 LD_LIBRARY_PATH='/mnt/onboard/.adds/qt-linux-5.15.2-kobo/lib' QT_FONT_DPI=${QT_FONT_DPI} /mnt/onboard/.adds/inkbox/inkbox
