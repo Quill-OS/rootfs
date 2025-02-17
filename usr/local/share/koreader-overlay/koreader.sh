@@ -280,4 +280,4 @@ done
 # Wipe the clones on exit
 rm -f "/tmp/koreader.sh"
 
-exit ${RETURN_VALUE}
+LD_LIBRARY_PATH='/mnt/onboard/.adds/qt-linux-5.15.2-kobo/lib' QT_FONT_DPI=${QT_FONT_DPI} /mnt/onboard/.adds/inkbox/inkbox
