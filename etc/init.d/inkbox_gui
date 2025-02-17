@@ -95,6 +95,7 @@ start() {
 		mount -t tmpfs tmpfs -o size=16M /kobo/mnt/onboard/.adds/.koreader_write
 		squashfuse -o allow_other,nosuid /opt/isa/koreader.isa /kobo/mnt/onboard/.adds/.koreader_read
 		unionfs -o cow,nonempty,nosuid,allow_other /kobo/mnt/onboard/.adds/.koreader_write=RW:/kobo/mnt/onboard/.adds/.koreader_read=RO /kobo/mnt/onboard/.adds/koreader
+		cp -r /usr/local/share/koreader-overlay/* /kobo/mnt/onboard/.adds/koreader
 		mkdir -p /kobo/mnt/onboard/.kobo/Kobo && touch "/kobo/mnt/onboard/.kobo/Kobo/Kobo eReader.conf"
 
 	        mount -t sysfs sysfs /kobo/sys
