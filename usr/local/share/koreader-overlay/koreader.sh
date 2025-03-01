@@ -178,7 +178,7 @@ while [ ${RETURN_VALUE} -ne 0 ]; do
         ko_do_fbdepth
     fi
 
-    ./reader.lua "$@" >>crash.log 2>&1
+    ./reader.lua "$(cat /inkbox/book_file)" >>crash.log 2>&1
     RETURN_VALUE=$?
 
     # Did we crash?
