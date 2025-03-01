@@ -248,6 +248,8 @@ start() {
 				else
 					echo false > /kobo/tmp/gui_apps_stopped
 				fi
+			elif [[ "$line" == "gui_soft_start" ]]; then
+				/usr/bin/inkbox.sh
 			fi
 		fi
 	done &

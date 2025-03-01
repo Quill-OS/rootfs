@@ -49,7 +49,7 @@ start() {
 	unionfs -o cow,nonempty,nosuid,allow_other /opt/gui_rootfs/write=RW:/opt/gui_rootfs/read=RO /kobo
 
 	rc-service ibxd restart
-	squashfuse /opt/update/update.isa /opt/isa
+	squashfuse -o allow_other,nosuid /opt/update/update.isa /opt/isa
 
 	DEVMODE=$(cat /opt/developer/key/valid-key 2>/dev/null)
 	if [ "${DEVMODE}" == "true" ]; then
@@ -69,6 +69,7 @@ start() {
 	fi
 
 	if [ "${EXIT_SIGN_FAILURE}" == 0 ]; then
+		mount --bind /etc/passwd /kobo/etc/passwd
 		mkdir -p /kobo/mnt/onboard/.adds/inkbox /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo /kobo/mnt/onboard/.adds/.koreader_write /kobo/mnt/onboard/.adds/.koreader_read /kobo/mnt/onboard/.adds/koreader
 		squashfuse -o allow_other,nosuid /opt/isa/inkbox.isa /kobo/mnt/onboard/.adds/inkbox
 		mount --bind /opt/config /kobo/mnt/onboard/.adds/inkbox/.config
@@ -104,6 +105,7 @@ start() {
 	        mount -t tmpfs tmpfs -o size=128M /kobo/var/run
 		mount --bind /dev /kobo/dev
 	        mount --bind /dev/pts /kobo/dev/pts
+		chown -R user:user /kobo/dev/fb0 /kobo/dev/ntx_io /kobo/opt/ibxd /kobo/sys/class/graphics/fb0/ /kobo/sys/class/backlight/*/* /sys/class/leds/*/*
 		if [ "${DEVICE}" != "n418" ]; then
 			mkdir -p /kobo/dev/ipd && mount --bind /run/ipd /kobo/dev/ipd
 		fi
@@ -203,7 +205,7 @@ start() {
 }
 stop() {
 	ebegin "Stopping InkBox GUI"
-	killall -q inkbox inkbox-bin oobe-inkbox oobe-inkbox-bin lockscreen lockscreen-bin inkbox.sh scribble lightmaps qalculate qalculate-bin calculator calculator-bin qreversi qreversi-bin 2048 2048-bin
+	killall -q inkbox inkbox-bin oobe-inkbox oobe-inkbox-bin lockscreen lockscreen-bin inkbox.sh scribble lightmaps qalculate qalculate-bin calculator calculator-bin qreversi qreversi-bin 2048 2048-bin koreader.sh luajit
 
 	rc-service gui_apps stop
 	umount -l -f /kobo 2>/dev/null

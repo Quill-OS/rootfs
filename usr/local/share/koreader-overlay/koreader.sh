@@ -35,18 +35,18 @@ if [ -z "${PLATFORM}" ]; then
     export $(grep -s -e '^PLATFORM=' "/proc/$(pidof -s udevd)/environ")
 fi
 
-if [ -z "${PLATFORM}" ]; then
-    PLATFORM="freescale"
-    if dd if="/dev/mmcblk0" bs=512 skip=1024 count=1 | grep -q "HW CONFIG"; then
-        CPU="$(ntx_hwconfig -s -p /dev/mmcblk0 CPU 2>/dev/null)"
-        PLATFORM="${CPU}-ntx"
-    fi
-
-    if [ "${PLATFORM}" != "freescale" ] && [ ! -e "/etc/u-boot/${PLATFORM}/u-boot.mmc" ]; then
-        PLATFORM="ntx508"
-    fi
-    export PLATFORM
-fi
+#if [ -z "${PLATFORM}" ]; then
+#    PLATFORM="freescale"
+#    if dd if="/dev/mmcblk0" bs=512 skip=1024 count=1 | grep -q "HW CONFIG"; then
+#        CPU="$(ntx_hwconfig -s -p /dev/mmcblk0 CPU 2>/dev/null)"
+#        PLATFORM="${CPU}-ntx"
+#    fi
+#
+#    if [ "${PLATFORM}" != "freescale" ] && [ ! -e "/etc/u-boot/${PLATFORM}/u-boot.mmc" ]; then
+#        PLATFORM="ntx508"
+#    fi
+#    export PLATFORM
+#fi
 
 # Make sure we have a sane-ish INTERFACE env var set...
 if [ -z "${INTERFACE}" ]; then
@@ -280,6 +280,6 @@ done
 # Wipe the clones on exit
 rm -f "/tmp/koreader.sh"
 
-echo "inkbox_splash" > /external_root/run/initrd-fifo
+echo "inkbox_splash" > /opt/ibxd
 sleep 2.5
-LD_LIBRARY_PATH='/mnt/onboard/.adds/qt-linux-5.15.2-kobo/lib' QT_FONT_DPI=${QT_FONT_DPI} /mnt/onboard/.adds/inkbox/inkbox
+echo "gui_soft_start" > /opt/ibxd
