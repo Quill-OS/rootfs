@@ -98,6 +98,7 @@ start() {
 		unionfs -o cow,nonempty,nosuid,allow_other /kobo/mnt/onboard/.adds/.koreader_write=RW:/kobo/mnt/onboard/.adds/.koreader_read=RO /kobo/mnt/onboard/.adds/koreader
 		cp -r /usr/local/share/koreader-overlay/* /kobo/mnt/onboard/.adds/koreader
 		mkdir -p /kobo/mnt/onboard/.kobo/Kobo && touch "/kobo/mnt/onboard/.kobo/Kobo/Kobo eReader.conf"
+		ln -s ../../qt-linux-5.15.2-kobo/lib/fonts /kobo/mnt/onboard/.adds/koreader/fonts/quill
 
 	        mount -t sysfs sysfs /kobo/sys
 	        mount -t proc proc /kobo/proc
