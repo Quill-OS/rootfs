@@ -178,7 +178,6 @@ local order = {
         "text_editor",
         "profiles",
         "qrclipboard",
-        "----------------------------",
     },
     more_tools = {
         "auto_frontlight",
