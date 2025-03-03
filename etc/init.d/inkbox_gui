@@ -97,7 +97,7 @@ start() {
 		squashfuse -o allow_other,nosuid /opt/isa/koreader.isa /kobo/mnt/onboard/.adds/.koreader_read
 		unionfs -o cow,nonempty,nosuid,allow_other /kobo/mnt/onboard/.adds/.koreader_write=RW:/kobo/mnt/onboard/.adds/.koreader_read=RO /kobo/mnt/onboard/.adds/koreader
 		cp -r /usr/local/share/koreader-overlay/* /kobo/mnt/onboard/.adds/koreader
-		mkdir -p /kobo/mnt/onboard/.kobo/Kobo && touch "/kobo/mnt/onboard/.kobo/Kobo/Kobo eReader.conf"
+		mkdir -p /kobo/mnt/onboard/.kobo/Kobo; rm "/kobo/mnt/onboard/.kobo/Kobo/Kobo eReader.conf"; touch "/kobo/mnt/onboard/.kobo/Kobo/Kobo eReader.conf"
 		ln -s ../../qt-linux-5.15.2-kobo/lib/fonts /kobo/mnt/onboard/.adds/koreader/fonts/quill
 
 	        mount -t sysfs sysfs /kobo/sys
@@ -106,7 +106,7 @@ start() {
 	        mount -t tmpfs tmpfs -o size=128M /kobo/var/run
 		mount --bind /dev /kobo/dev
 	        mount --bind /dev/pts /kobo/dev/pts
-		chown -R user:user /kobo/dev/input/* /kobo/dev/fb0 /kobo/dev/ntx_io /kobo/opt/ibxd /kobo/sys/class/graphics/fb0/ /kobo/sys/class/backlight/*/* /kobo/sys/class/leds/*/* /kobo/sys/class/power_supply/*/* /kobo/sys/devices/platform/pmic_battery.1/*/* /kobo/sys/devices/system/yoshi_battery/*/* &> /dev/null
+		chown -R user:user /kobo/dev/input/* /kobo/dev/fb0 /kobo/dev/ntx_io /kobo/opt/ibxd /kobo/sys/class/graphics/fb0/ /kobo/sys/class/backlight/*/* /kobo/sys/class/leds/*/* /kobo/sys/class/power_supply/*/* /kobo/sys/devices/platform/pmic_battery.1/*/* /kobo/sys/devices/system/yoshi_battery/*/* "/kobo/mnt/onboard/.kobo/Kobo/Kobo eReader.conf" &> /dev/null
 		if [ "${DEVICE}" != "n418" ]; then
 			mkdir -p /kobo/dev/ipd && mount --bind /run/ipd /kobo/dev/ipd
 		fi
