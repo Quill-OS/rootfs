@@ -5,7 +5,6 @@ local order = {
         "navi",
         "typeset",
         "setting",
-        "tools",
         "search",
         "main",
     },
