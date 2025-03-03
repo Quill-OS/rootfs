@@ -216,13 +216,6 @@ local order = {
     },
     filemanager = {},
     main = {
-        "book_status",
-        "book_info",
-        "----------------------------",
-        "mass_storage_actions", -- if Device:canToggleMassStorage()
-        "----------------------------",
-        "ota_update", -- if Device:hasOTAUpdates()
-        "----------------------------",
         "exit_menu",
     },
     help = {
