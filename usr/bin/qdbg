@@ -16,12 +16,14 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 AUTO_SERVER_PATH="/boot/flags/QDBG_SERVER"
+AUTO_ROUTE_PATH="/boot/flags/QDBG_ROUTE"
 
 if [ -z "${1}" ]; then
 	printf "Usage: ${0} <network server> <debug session type>\nNOTE: If a default server address is set at ${AUTO_SERVER_PATH}, usage is as follows: ${0} <debug session type>\n"
 fi
 
 AUTO_SERVER_ADDRESS="$(cat ${AUTO_SERVER_PATH} 2>/dev/null)"
+AUTO_ROUTE="$(cat ${AUTO_ROUTE_PATH} 2>/dev/null)"
 
 if [ ! -z "${AUTO_SERVER_ADDRESS}" ]; then
 	SERVER="${AUTO_SERVER_ADDRESS}"
@@ -29,6 +31,10 @@ if [ ! -z "${AUTO_SERVER_ADDRESS}" ]; then
 else
 	SERVER="${1}"
 	DBG="${2}"
+fi
+
+if [ ! -z "${AUTO_ROUTE}" ]; then
+	ip route add ${AUTO_ROUTE} 2>/dev/null
 fi
 
 if [ "${DBG}" == "qgui" ]; then
