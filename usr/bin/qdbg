@@ -1,0 +1,43 @@
+#!/bin/sh
+
+#    qdbg: Small tool to help you get through bad nights
+#    Copyright (C) 2025 Nicolas Mailloux <nicolecrivain@gmail.com>
+#    SPDX-License-Identifier: GPL-3.0-only
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+AUTO_SERVER_PATH="/boot/flags/QDBG_SERVER"
+
+if [ -z "${1}" ]; then
+	printf "Usage: ${0} <network server> <debug session type>\nNOTE: If a default server address is set at ${AUTO_SERVER_PATH}, usage is as follows: ${0} <debug session type>\n"
+fi
+
+AUTO_SERVER_ADDRESS="$(cat ${AUTO_SERVER_PATH} 2>/dev/null)"
+
+if [ ! -z "${AUTO_SERVER_ADDRESS}" ]; then
+	SERVER="${AUTO_SERVER_ADDRESS}"
+	DBG="${1}"
+else
+	SERVER="${1}"
+	DBG="${2}"
+fi
+
+if [ "${DBG}" == "qgui" ]; then
+	mount -o remount,size=32M /tmp
+	rm -f /tmp/inkbox /kobo/tmp/inkbox*
+	while ! wget "${SERVER}/inkbox" -O /tmp/inkbox; do continue; done
+	chmod +x /tmp/inkbox
+	killall -q inkbox inkbox-bin oobe-inkbox oobe-inkbox-bin lockscreen lockscreen-bin inkbox.sh scribble lightmaps qalculate qalculate-bin calculator calculator-bin qreversi qreversi-bin 2048 2048-bin koreader.sh luajit
+	umount -l -f /kobo/mnt/onboard/.adds/inkbox/inkbox-bin
+	mount --bind /tmp/inkbox /kobo/mnt/onboard/.adds/inkbox/inkbox-bin
+	env QT_QPA_PLATFORM=kobo chroot /kobo /mnt/onboard/.adds/inkbox/inkbox.sh
+fi
