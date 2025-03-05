@@ -327,6 +327,7 @@ local KoboNova = Kobo:extend{
         nl_max = 100,
         nl_inverted = false,
     },
+    battery_sysfs = "/sys/class/power_supply/rn5t618-battery",
 }
 
 -- Kobo Forma:
