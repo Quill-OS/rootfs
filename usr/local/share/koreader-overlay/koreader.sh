@@ -280,6 +280,9 @@ done
 # Wipe the clones on exit
 rm -f "/tmp/koreader.sh"
 
+if [ "${PRODUCT}" == "alyssum" ]; then
+	echo $(cat "/mnt/onboard/.kobo/Kobo/Kobo eReader.conf" | awk '/FrontLightLevel/' | sed 's/.*=//g') > /sys/class/backlight/mxc_msp430_fl.0/brightness
+fi
 echo "inkbox_splash" > /opt/ibxd
 sleep 2.5
 echo "gui_soft_start" > /opt/ibxd
