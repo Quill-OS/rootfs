@@ -85,6 +85,7 @@ start() {
 stop() {
 	ebegin "Stopping USBNet"
 	DEVICE=$(cat /opt/inkbox_device)
+	killall udhcpd
 	if [ "${DEVICE}" != "emu" ] && [ "${DEVICE}" != "kt" ]; then
 		rmmod g_ether
 	elif [ "${DEVICE}" == "kt" ]; then

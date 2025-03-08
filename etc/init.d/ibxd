@@ -137,6 +137,11 @@ start() {
 			elif [[ "$line" == "kobox_extensions_storage_unmount" ]]; then
 				sync
 				umount -l -f /opt/X11/extensions-user
+				if [ ${?} == 0 ]; then
+					echo "true" > /kobo/tmp/kobox_extensions_storage_unmounted
+				else
+					echo "false" > /kobo/tmp/kobox_extensions_storage_unmounted
+				fi
 			elif [[ "$line" == "ibxd_stop" ]]; then
 				break
 			elif [[ "$line" == "usbnet_start" ]]; then
