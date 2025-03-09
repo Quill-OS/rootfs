@@ -32,6 +32,9 @@ else
 fi
 echo ${FB_UR} > /sys/class/graphics/fb0/rotate
 
+# Preventing KT libs from getting in the way (provided they were mounted for KOReader)
+umount -l -f /kobo/lib
+
 if [ "${DEVICE}" != "emu" ]; then
 	env QT_QPA_PLATFORM="kobo:touchscreen_rotate=90:touchscreen_invert_x=auto:touchscreen_invert_y=auto:logicaldpitarget=0" chroot /kobo /mnt/onboard/.adds/inkbox/inkbox.sh &
 else
