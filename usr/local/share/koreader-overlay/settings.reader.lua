@@ -38,4 +38,6 @@ return {
         ["storagestat"] = true,
         ["zsync"] = true,
     },
+    ["kopt_page_scroll"] = 0,
+    ["kopt_zoom_mode_type"] = 2,
 }
