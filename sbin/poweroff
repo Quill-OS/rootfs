@@ -23,10 +23,10 @@ if [ "${1}" != "no_splash" ]; then
 		if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "kt" ]; then
 			:
 		else
-			/opt/bin/cinematic_brightness 0 0 -1 -1 5000
+			/opt/bin/cinematic_brightness 0 0 -1 -1 3000 1
 		fi
 	else
-		/opt/bin/cinematic_brightness 0 0 -1 -1 5000
+		/opt/bin/cinematic_brightness 0 0 -1 -1 3000 1
 	fi
 	/sbin/prepare_shutdown poweroff
 else
