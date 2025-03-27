@@ -198,6 +198,11 @@ start() {
 					if [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
 						bind_mount_wrapper "/sys/class/backlight/mxc_msp430_fl.0/"
 						chmod -R 707 "${extension_mountpoint}/sys/class/backlight/mxc_msp430_fl.0/" || die "Failed to chmod 707 '${extension_mountpoint}/sys/class/backlight/mxc_msp430_fl.0/'." 1
+					elif [ "${DEVICE}" == "n418" ]; then
+						bind_mount_wrapper "/sys/class/backlight/mxc_msp430.0/"
+						bind_mount_wrapper "/sys/class/leds/aw99703-bl_FL1/color"
+						chmod -R 707 "/sys/class/backlight/mxc_msp430.0"
+						chmod -R 707 "/sys/class/leds/aw99703-bl_FL1/color"
 					elif [ "${DEVICE}" == "n249" ]; then
 						bind_mount_wrapper "/sys/class/backlight/backlight_cold/"
 						bind_mount_wrapper "/sys/class/backlight/backlight_warm/"
