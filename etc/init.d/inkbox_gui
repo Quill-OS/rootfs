@@ -214,6 +214,7 @@ stop() {
 	rc-service gui_apps stop
 	umount -l -f /kobo 2>/dev/null
 	umount -l -f /opt/isa 2>/dev/null
+	umount -l -f /data/onboard/.flashexam 2>/dev/null
 
 	eend $?
 }
