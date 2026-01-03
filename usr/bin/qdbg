@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #    qdbg: Small tool to help you get through bad nights
-#    Copyright (C) 2025 Nicolas Mailloux <nicolecrivain@gmail.com>
+#    Copyright (C) 2025-2026 Nicolas Mailloux <nicolecrivain@gmail.com>
 #    SPDX-License-Identifier: GPL-3.0-only
 #
 #    This program is free software: you can redistribute it and/or modify

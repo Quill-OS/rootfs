@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #    ifsctl: Manage filesystems
-#    Copyright (C) 2021-2025 Nicolas Mailloux <nicolecrivain@gmail.com>
+#    Copyright (C) 2021-2026 Nicolas Mailloux <nicolecrivain@gmail.com>
 #    SPDX-License-Identifier: GPL-3.0-only
 #
 #    This program is free software: you can redistribute it and/or modify
