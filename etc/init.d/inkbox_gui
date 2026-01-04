@@ -216,5 +216,5 @@ stop() {
 	umount -l -f /opt/isa 2>/dev/null
 	umount -l -f /data/onboard/.flashexam 2>/dev/null
 
-	eend $?
+	eend 0
 }
