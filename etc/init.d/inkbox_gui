@@ -29,6 +29,10 @@ write_device_ID() {
 		DEVICE_ID=384
 	elif [ "${DEVICE}" == "n418" ]; then
 		DEVICE_ID=388
+	elif [ "${DEVICE}" == "n367" ]; then
+		DEVICE_ID=393
+	elif [ "${DEVICE}" == "n428" ]; then
+		DEVICE_ID=390
 	fi
 	VERSION="$(cat /opt/inkbox_device | tr [:lower:] [:upper:])000000000,${KERNEL_VERSION},$(cat /opt/version),${KERNEL_VERSION},${KERNEL_VERSION},00000000-0000-0000-0000-000000000${DEVICE_ID}"
 
