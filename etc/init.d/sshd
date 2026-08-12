@@ -65,7 +65,7 @@ checkconfig() {
 		&& command_args="$command_args -f $cfgfile"
 
 	DEVICE="$(cat /opt/inkbox_device)"
-	if [ "${DEVICE}" == "n249" ]; then
+	if [ "${DEVICE}" == "n249" ] || [ "${DEVICE}" == "n367" ] || [ "${DEVICE}" == "n428" ]; then
 		[ ! -e "/etc/ssh/id_rsa" ] && /usr/local/bin/dropbearkey -t rsa -f "/etc/ssh/id_rsa"
 		/usr/local/sbin/dropbear -r "/etc/ssh/id_rsa" || return 1
 	else
