@@ -11,9 +11,7 @@ else
 	echo "false" > /kobo/tmp/first_launch_since_boot
 fi
 
-if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ]; then
-	FB_UR=3
-elif [ "${DEVICE}" == "n306" ]; then
+if [ "${DEVICE}" == "n705" ] || [ "${DEVICE}" == "n905b" ] || [ "${DEVICE}" == "n905c" ] || [ "${DEVICE}" == "n613" ] || [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "n367" ]; then
 	FB_UR=3
 elif [ "${DEVICE}" == "n873" ]; then
 	FB_UR=0
@@ -25,7 +23,7 @@ elif [ "${DEVICE}" == "bpi" ]; then
 	FB_UR=0
 elif [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n249" ]; then
 	FB_UR=3
-elif [ "${DEVICE}" == "n418" ] || [ "${DEVICE}" == "kt" ]; then
+elif [ "${DEVICE}" == "n418" ] || [ "${DEVICE}" == "n428" ] || [ "${DEVICE}" == "kt" ]; then
 	FB_UR=1
 else
 	FB_UR=0
