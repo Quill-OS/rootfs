@@ -80,6 +80,8 @@ start() {
 		squashfuse -o allow_other,nosuid /opt/isa/qt.isa /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo
 		if [ "${DEVICE}" == "n437" ] || [ "${DEVICE}" == "n306" ] || [ "${DEVICE}" == "n249" ] || [ "${DEVICE}" == "n418" ]; then
 			mount --bind /lib/qt5-plugins/libkobo.so.2 /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo/plugins/platforms/libkobo.so
+		elif [ "${DEVICE}" == "n367" ] || [ "${DEVICE}" == "n428" ]; then
+			mount --bind /lib/qt5-plugins/libkobo.so.4 /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo/plugins/platforms/libkobo.so
 		elif [ "${DEVICE}" == "kt" ]; then
 			mount --bind /lib/qt5-plugins/libkobo.so.3 /kobo/mnt/onboard/.adds/qt-linux-5.15.2-kobo/plugins/platforms/libkobo.so
 		else
