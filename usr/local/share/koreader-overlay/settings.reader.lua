@@ -1,5 +1,6 @@
 -- ./settings.reader.lua
 return {
+    ["color_rendering"] = true,
     ["footer"] = {
         ["progress_style_thin"] = true,
         ["progress_style_thin_height"] = 4,
