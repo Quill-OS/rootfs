@@ -25,7 +25,7 @@ elif [ "${DEVICE}" == "n873" ]; then
 elif [ "${DEVICE}" == "n418" ]; then
 	echo "io"
 elif [ "${DEVICE}" == "n367" ]; then
-	echo "spa"
+	echo "spaColour"
 elif [ "${DEVICE}" == "n428" ]; then
 	echo "monza"
 fi
