@@ -16,6 +16,8 @@ turn_off_led() {
 		echo 1 > "/sys/devices/platform/leds/leds/GLED/brightness" ; echo 0 > "/sys/devices/platform/leds/leds/GLED/brightness"
 	elif [ "${DEVICE}" == "n873" ] || [ "${DEVICE}" == "n418" ]; then
 		echo 1 > "/sys/class/leds/GLED/brightness" ; echo 0 > "/sys/class/leds/GLED/brightness"
+	elif [ "${DEVICE}" == "n367" ] || [ "${DEVICE}" == "n428" ]; then
+		echo 1 > "/sys/devices/platform/leds/leds/LED/brightness"; echo 0 > "/sys/devices/platform/leds/leds/LED/brightness"
 	elif [ "${DEVICE}" == "bpi" ]; then
 		echo 0 > "/sys/devices/platform/leds/leds/bpi:red:pwr/brightness"
 	elif [ "${DEVICE}" == "n236" ] || [ "${DEVICE}" == "n437" ]; then
