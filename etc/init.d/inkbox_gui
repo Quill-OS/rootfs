@@ -103,6 +103,9 @@ start() {
 		squashfuse -o allow_other,nosuid /opt/isa/koreader.isa /kobo/mnt/onboard/.adds/.koreader_read
 		unionfs -o cow,nonempty,nosuid,allow_other /kobo/mnt/onboard/.adds/.koreader_write=RW:/kobo/mnt/onboard/.adds/.koreader_read=RO /kobo/mnt/onboard/.adds/koreader
 		cp -r /usr/local/share/koreader-overlay/* /kobo/mnt/onboard/.adds/koreader
+		if [ "${DEVICE}" != "n367" ] && [ "${DEVICE}" != "n428" ]; then
+			sed -i '/color_rendering/d' /kobo/mnt/onboard/.adds/koreader/settings.reader.lua
+		fi
 		cp /usr/bin/fbdepth /kobo/mnt/onboard/.adds/koreader
 		mkdir -p /kobo/mnt/onboard/.kobo/Kobo; rm "/kobo/mnt/onboard/.kobo/Kobo/Kobo eReader.conf"; touch "/kobo/mnt/onboard/.kobo/Kobo/Kobo eReader.conf" 2>/dev/null
 		ln -s ../../qt-linux-5.15.2-kobo/lib/fonts /kobo/mnt/onboard/.adds/koreader/fonts/quill
